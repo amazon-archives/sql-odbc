@@ -1,0 +1,17 @@
+Windows Registry Editor Version 5.00
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\ODBC\ODBCINST.INI\ODBC Drivers]
+"ElasticsearchODBC"="Installed"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\ODBC\ODBCINST.INI\ElasticsearchODBC]
+"Driver"="<project-root>\\bin64\\Release\\elasticodbc.dll"
+"Setup"="<project-root>\\bin64\\Release\\elasticodbc.dll"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\ODBC\ODBC.INI\ODBC Data Sources]
+"test_dsn"="ElasticsearchODBC"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\ODBC\ODBC.INI\test_dsn]
+"Host"="localhost"
+"Port"="9200"
+"Username"="admin"
+"Password"="admin"

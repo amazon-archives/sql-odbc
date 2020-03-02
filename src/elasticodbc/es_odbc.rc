@@ -1,0 +1,198 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+#include "version.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// Japanese (Japan) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_JPN)
+LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
+#pragma code_page(932)
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "#include ""version.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+#endif    // Japanese (Japan) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// English (United States) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+DLG_CONFIG DIALOGEX 65, 43, 306, 178
+STYLE DS_SETFONT | DS_MODALFRAME | DS_3DLOOK | DS_CENTER | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Elasticsearch ANSI ODBC Driver (ElasticsearchODBC) Setup"
+FONT 8, "MS Sans Serif", 0, 0, 0x0
+BEGIN
+    RTEXT           "Data&base",IDC_STATIC,15,18,38,12,NOT WS_GROUP
+    EDITTEXT        IDC_DATABASE,57,17,72,12,ES_AUTOHSCROLL
+    RTEXT           "&Server",IDC_STATIC,24,33,29,12,NOT WS_GROUP
+    EDITTEXT        IDC_SERVER,57,32,72,12,ES_AUTOHSCROLL
+    RTEXT           "&Port",IDC_STATIC,31,49,22,12
+    EDITTEXT        IDC_PORT,57,47,72,12,ES_AUTOHSCROLL
+    RTEXT           "&User Name",IDC_USERNAME_STATIC,138,34,43,12
+    EDITTEXT        IDC_USER,185,33,72,12,ES_AUTOHSCROLL
+    RTEXT           "Pass&word",IDC_PASSWORD_STATIC,140,49,41,12
+    EDITTEXT        IDC_PASSWORD,185,48,72,12,ES_PASSWORD | ES_AUTOHSCROLL
+    DEFPUSHBUTTON   "OK",IDOK,205,157,44,15,WS_GROUP
+    PUSHBUTTON      "Cancel",IDCANCEL,259,157,44,15
+    DEFPUSHBUTTON   "Test",IDOK2,259,137,44,15,WS_GROUP
+    LTEXT           "Timeout (s)",IDC_STATIC,19,65,35,8
+    EDITTEXT        IDC_CONNTIMEOUT,57,63,71,12,ES_AUTOHSCROLL | ES_NUMBER
+    CONTROL         "Logging",IDC_CHECK1,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,261,122,41,10
+    LTEXT           "Encryption",IDC_STATIC,181,85,52,8
+    LTEXT           "Connection",IDC_STATIC,58,8,54,8
+    COMBOBOX        IDC_AUTHTYPE,185,16,72,30,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Authentication",IDC_STATIC,193,8,59,8
+    CONTROL         "Use SSL",IDC_USESSL,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,180,95,43,10
+    CONTROL         "Allow Self Signed Certificate",IDC_ALLOWSELFSIGNED,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,180,107,115,10
+    RTEXT           "Certificate Path",IDC_CERTIFICATE_STATIC,103,122,73,12,NOT WS_GROUP
+    EDITTEXT        IDC_CERTIFICATE,180,120,72,12,ES_AUTOHSCROLL
+    RTEXT           "Key Path",IDC_KEY_STATIC,95,136,81,12,NOT WS_GROUP
+    EDITTEXT        IDC_KEY,180,134,72,12,ES_AUTOHSCROLL
+    RTEXT           "Region",IDC_REGION_STATIC,156,65,24,8
+    EDITTEXT        IDC_REGION,185,64,71,12,ES_AUTOHSCROLL
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    DLG_CONFIG, DIALOG
+    BEGIN
+        RIGHTMARGIN, 303
+        TOPMARGIN, 8
+        BOTTOMMARGIN, 172
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 12,0,0,0
+ PRODUCTVERSION 12,0,0,0
+ FILEFLAGSMASK 0x3L
+#ifdef _DEBUG
+ FILEFLAGS 0x9L
+#else
+ FILEFLAGS 0x8L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x2L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904e4"
+        BEGIN
+            VALUE "Comments", "Elasticsearch ANSI ODBC driver"
+            VALUE "CompanyName", "Amazon"
+            VALUE "FileDescription", "Elasticsearch ODBC Driver (English)"
+            VALUE "FileVersion", "12.00.0000"
+            VALUE "InternalName", "elasticodbc"
+            VALUE "LegalCopyright", "Copyright"
+            VALUE "LegalTrademarks", "ODBC(TM) is a trademark of Microsoft Corporation.  Microsoft? is a registered trademark of Microsoft Corporation. Windows(TM) is a trademark of Microsoft Corporation."
+            VALUE "OriginalFilename", "elasticodbc.dll"
+            VALUE "ProductName", "Elasticsearch"
+            VALUE "ProductVersion", "12.00.0000"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1252
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// AFX_DIALOG_LAYOUT
+//
+
+DLG_CONFIG AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE
+BEGIN
+    IDS_AUTHTYPE_NONE       "NONE"
+    IDS_AUTHTYPE_BASIC      "BASIC"
+    IDS_AUTHTYPE_IAM        "AWS_SIGV4"
+END
+
+#endif    // English (United States) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+
