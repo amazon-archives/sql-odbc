@@ -66,31 +66,7 @@ static const std::string JSON_KW_SIZE = "size";
 static const std::string JSON_KW_STATUS = "status";
 static const std::string JSON_KW_DATAROWS = "datarows";
 static const std::string JSON_KW_ERROR = "error";
-static const std::string JSON_SCHEMA =
-	"{"	 // This was generated from the example elasticsearch data
-		"\"type\": \"object\","
-		"\"properties\": {"
-			"\"schema\": {"
-				"\"type\": \"array\","
-				"\"items\": [{"
-					"\"type\": \"object\","
-					"\"properties\": {"
-						"\"name\": { \"type\": \"string\" },"
-						"\"type\": { \"type\": \"string\" }"
-					"},"
-					"\"required\": [ \"name\", \"type\" ]"
-				"}]"
-			"},"
-			"\"total\": { \"type\": \"integer\" },"
-			"\"datarows\": {"
-				"\"type\": \"array\","
-				"\"items\": {}"
-			"},"
-			"\"size\": { \"type\": \"integer\" },"
-			"\"status\": { \"type\": \"integer\" }"
-		"},"
-		"\"required\": [\"schema\", \"total\", \"datarows\", \"size\", \"status\"]"
-	"}";
+
 // clang-format on
 const std::unordered_map< std::string, OID > type_to_oid_map = {
     {"boolean", ES_TYPE_BOOL},
@@ -135,23 +111,6 @@ std::string GetResultParserError() {
     return error_msg;
 }
 
-static void GetJsonSchema(ESResult& es_result, json_doc& es_result_doc, schema_type& doc_schema){
-    // Prepare document and validate schema
-    try {
-        es_result_doc.parse(es_result.result_json, JSON_SCHEMA);
-    } catch (const rabbit::parse_error &e) {
-        // The exception rabbit gives is quite useless - providing the json
-        // will aid debugging for users
-        std::string str = "Exception obtained '" + std::string(e.what())
-                            + "' when parsing json string '"
-                            + es_result.result_json + "'.";
-        throw std::runtime_error(str.c_str());
-    }
-
-    // Get schema to process data with
-    GetSchemaInfo(doc_schema, es_result_doc);
-}
-
 BOOL CC_from_ESResult(QResultClass *q_res, ConnectionClass *conn,
                       const char *cursor, ESResult &es_result) {
     ClearError();
@@ -166,7 +125,7 @@ BOOL CC_Metadata_from_ESResult(QResultClass *q_res, ConnectionClass *conn,
 }
 
 BOOL CC_No_Metadata_from_ESResult(QResultClass *q_res, ConnectionClass *conn,
-                                 const char *cursor, ESResult &es_result) {
+                                  const char *cursor, ESResult &es_result) {
     ClearError();
     return _CC_No_Metadata_from_ESResult(q_res, conn, cursor, es_result)
                ? TRUE
@@ -180,14 +139,13 @@ bool _CC_No_Metadata_from_ESResult(QResultClass *q_res, ConnectionClass *conn,
         return false;
 
     try {
-        json_doc es_result_doc;
         schema_type doc_schema;
-        GetJsonSchema(es_result, es_result_doc, doc_schema);
+        GetSchemaInfo(doc_schema, es_result.es_result_doc);
 
         SQLULEN starting_cached_rows = q_res->num_cached_rows;
 
         // Assign table data and column headers
-        if (!AssignTableData(es_result_doc, q_res, doc_schema,
+        if (!AssignTableData(es_result.es_result_doc, q_res, doc_schema,
                              *(q_res->fields)))
             return false;
 
@@ -219,9 +177,8 @@ bool _CC_Metadata_from_ESResult(QResultClass *q_res, ConnectionClass *conn,
 
     QR_set_conn(q_res, conn);
     try {
-        json_doc es_result_doc;
         schema_type doc_schema;
-        GetJsonSchema(es_result, es_result_doc, doc_schema);
+        GetSchemaInfo(doc_schema, es_result.es_result_doc);
 
         // Assign table data and column headers
         if (!AssignColumnHeaders(doc_schema, q_res, es_result))
@@ -257,14 +214,13 @@ bool _CC_from_ESResult(QResultClass *q_res, ConnectionClass *conn,
 
     QR_set_conn(q_res, conn);
     try {
-        json_doc es_result_doc;
         schema_type doc_schema;
-        GetJsonSchema(es_result, es_result_doc, doc_schema);
+        GetSchemaInfo(doc_schema, es_result.es_result_doc);
         SQLULEN starting_cached_rows = q_res->num_cached_rows;
 
         // Assign table data and column headers
         if ((!AssignColumnHeaders(doc_schema, q_res, es_result))
-            || (!AssignTableData(es_result_doc, q_res, doc_schema,
+            || (!AssignTableData(es_result.es_result_doc, q_res, doc_schema,
                                  *(q_res->fields))))
             return false;
 

@@ -21,7 +21,6 @@
 #include "es_helper.h"
 #include "misc.h"
 #include "statement.h"
-#include "es_parse_result.h"
 
 extern "C" void *common_cs;
 
@@ -44,27 +43,7 @@ RETCODE ExecuteStatement(StatementClass *stmt, BOOL commit) {
             if (!SC_get_errormsg(stmt) || !SC_get_errormsg(stmt)[0]) {
                 if (STMT_NO_MEMORY_ERROR != SC_get_errornumber(stmt))
                     SC_set_errormsg(stmt, "Error while executing the query");
-#ifdef WIN32
-#pragma warning(push)
-#pragma warning(disable : 4551)  // MYLOG complains 'function call missing
-                                 // argument list' on Windows, which is isn't
-#endif
-                MYLOG(0, "%s", "Encountered error while executing query");
-#ifdef WIN32
-#pragma warning(pop)
-#endif
                 SC_log_error(func, NULL, stmt);
-            } else {
-#ifdef WIN32
-#pragma warning(push)
-#pragma warning(disable : 4551)  // MYLOG complains 'function call missing
-                                 // argument list' on Windows, which is isn't
-#endif
-                MYLOG(0, "%s. %s", "Encountered error while executing query",
-                      SC_get_errormsg(stmt));
-#ifdef WIN32
-#pragma warning(pop)
-#endif
             }
             return SQL_ERROR;
         }
@@ -88,12 +67,12 @@ RETCODE ExecuteStatement(StatementClass *stmt, BOOL commit) {
 
     QResultClass *res = SendQueryGetResult(stmt, commit);
     if (!res) {
-        std::string es_conn_err = GetErrorMsg(SC_get_conn(stmt)->esconn);
-        std::string es_parse_err = GetResultParserError();
-        if (!es_conn_err.empty()) {
-            SC_set_error(stmt, STMT_NO_RESPONSE, es_conn_err.c_str(), func);
-        } else if (!es_parse_err.empty()) {
-            SC_set_error(stmt, STMT_EXEC_ERROR, es_parse_err.c_str(), func);
+        const char *es_conn_err = GetErrorMsg(SC_get_conn(stmt)->esconn);
+        const char *es_parse_err = GetResultParserError();
+        if (es_conn_err != NULL) {
+            SC_set_error(stmt, STMT_NO_RESPONSE, es_conn_err, func);
+        } else if (es_parse_err != NULL) {
+            SC_set_error(stmt, STMT_EXEC_ERROR, es_parse_err, func);
         } else if (SC_get_errornumber(stmt) <= 0) {
             SC_set_error(
                 stmt, STMT_NO_RESPONSE,

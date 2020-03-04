@@ -156,7 +156,7 @@ const char *GetExeProgramName() {
 
 static void *qlog_cs, *mylog_cs;
 
-static int mylog_on = 1, qlog_on = 1;
+static enum ESLogLevel mylog_on = ES_Warning, qlog_on = ES_Warning;
 
 #define INIT_QLOG_CS XPlatformInitializeCriticalSection(&qlog_cs)
 #define ENTER_QLOG_CS XPlatformEnterCriticalSection(qlog_cs)
@@ -181,10 +181,10 @@ static int mylog_on = 1, qlog_on = 1;
 #define QLOGDIR "c:"
 #endif /* WIN32 */
 
-int get_mylog(void) {
+enum ESLogLevel get_mylog(void) {
     return mylog_on;
 }
-int get_qlog(void) {
+enum ESLogLevel get_qlog(void) {
     return qlog_on;
 }
 
@@ -231,7 +231,7 @@ void logs_on_off(int cnopen, int mylog_onoff, int qlog_onoff) {
     else if (getGlobalCommlog() > 0)
         qlog_on = getGlobalCommlog();
     LEAVE_QLOG_CS;
-    MYLOG(0, "mylog_on=%d qlog_on=%d\n", mylog_on, qlog_on);
+    MYLOG(ES_Debug, "mylog_on=%d qlog_on=%d\n", mylog_on, qlog_on);
 }
 
 #ifdef WIN32

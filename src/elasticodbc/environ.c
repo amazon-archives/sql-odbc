@@ -41,7 +41,7 @@ RETCODE SQL_API ESAPI_AllocEnv(HENV *phenv) {
     CSTR func = "ESAPI_AllocEnv";
     SQLRETURN ret = SQL_SUCCESS;
 
-    MYLOG(0, "entering\n");
+    MYLOG(ES_Debug, "entering\n");
 
     /*
      * For systems on which none of the constructor-making
@@ -57,7 +57,7 @@ RETCODE SQL_API ESAPI_AllocEnv(HENV *phenv) {
         ret = SQL_ERROR;
     }
 
-    MYLOG(0, "leaving phenv=%p\n", *phenv);
+    MYLOG(ES_Debug, "leaving phenv=%p\n", *phenv);
     return ret;
 }
 
@@ -66,10 +66,10 @@ RETCODE SQL_API ESAPI_FreeEnv(HENV henv) {
     SQLRETURN ret = SQL_SUCCESS;
     EnvironmentClass *env = (EnvironmentClass *)henv;
 
-    MYLOG(0, "entering env=%p\n", env);
+    MYLOG(ES_Debug, "entering env=%p\n", env);
 
     if (env && EN_Destructor(env)) {
-        MYLOG(0, "   ok\n");
+        MYLOG(ES_Debug, "   ok\n");
         goto cleanup;
     }
 
@@ -151,7 +151,7 @@ RETCODE SQL_API ER_ReturnError(ES_ErrorInfo *eserror, SQLSMALLINT RecNumber,
         return SQL_NO_DATA_FOUND;
     error = eserror;
     msg = error->__error_message;
-    MYLOG(0, "entering status = %d, msg = #%s#\n", error->status, msg);
+    MYLOG(ES_Debug, "entering status = %d, msg = #%s#\n", error->status, msg);
     msglen = (SQLSMALLINT)strlen(msg);
     /*
      *	Even though an application specifies a larger error message
@@ -203,8 +203,8 @@ RETCODE SQL_API ER_ReturnError(ES_ErrorInfo *eserror, SQLSMALLINT RecNumber,
     if (NULL != szSqlState)
         strncpy_null((char *)szSqlState, error->sqlstate, 6);
 
-    MYLOG(0, "	     szSqlState = '%s',len=%d, szError='%s'\n", szSqlState,
-          pcblen, szErrorMsg);
+    MYLOG(ES_Debug, "	     szSqlState = '%s',len=%d, szError='%s'\n",
+          szSqlState, pcblen, szErrorMsg);
     if (wrtlen < pcblen)
         return SQL_SUCCESS_WITH_INFO;
     else
@@ -225,14 +225,14 @@ RETCODE SQL_API ESAPI_ConnectError(HDBC hdbc, SQLSMALLINT RecNumber,
     BOOL once_again = FALSE;
     ssize_t msglen;
 
-    MYLOG(0, "entering hdbc=%p <%d>\n", hdbc, cbErrorMsgMax);
+    MYLOG(ES_Error, "entering hdbc=%p <%d>\n", hdbc, cbErrorMsgMax);
     if (RecNumber != 1 && RecNumber != -1)
         return SQL_NO_DATA_FOUND;
     if (cbErrorMsgMax < 0)
         return SQL_ERROR;
     if (CONN_EXECUTING == conn->status || !CC_get_error(conn, &status, &msg)
         || NULL == msg) {
-        MYLOG(0, "CC_Get_error returned nothing.\n");
+        MYLOG(ES_Error, "CC_Get_error returned nothing.\n");
         if (NULL != szSqlState)
             strncpy_null((char *)szSqlState, "00000", SIZEOF_SQLSTATE);
         if (NULL != pcbErrorMsg)
@@ -242,7 +242,7 @@ RETCODE SQL_API ESAPI_ConnectError(HDBC hdbc, SQLSMALLINT RecNumber,
 
         return SQL_NO_DATA_FOUND;
     }
-    MYLOG(0, "CC_get_error: status = %d, msg = #%s#\n", status, msg);
+    MYLOG(ES_Error, "CC_get_error: status = %d, msg = #%s#\n", status, msg);
 
     msglen = strlen(msg);
     if (NULL != pcbErrorMsg) {
@@ -326,7 +326,8 @@ RETCODE SQL_API ESAPI_ConnectError(HDBC hdbc, SQLSMALLINT RecNumber,
             }
     }
 
-    MYLOG(0, "	     szSqlState = '%s',len=" FORMAT_SSIZE_T ", szError='%s'\n",
+    MYLOG(ES_Debug,
+          "	     szSqlState = '%s',len=" FORMAT_SSIZE_T ", szError='%s'\n",
           szSqlState ? (char *)szSqlState : PRINT_NULL, msglen,
           szErrorMsg ? (char *)szErrorMsg : PRINT_NULL);
     if (once_again) {
@@ -345,13 +346,13 @@ RETCODE SQL_API ESAPI_EnvError(HENV henv, SQLSMALLINT RecNumber,
     char *msg = NULL;
     int status;
 
-    MYLOG(0, "entering henv=%p <%d>\n", henv, cbErrorMsgMax);
+    MYLOG(ES_Error, "entering henv=%p <%d>\n", henv, cbErrorMsgMax);
     if (RecNumber != 1 && RecNumber != -1)
         return SQL_NO_DATA_FOUND;
     if (cbErrorMsgMax < 0)
         return SQL_ERROR;
     if (!EN_get_error(env, &status, &msg) || NULL == msg) {
-        MYLOG(0, "EN_get_error: msg = #%s#\n", msg);
+        MYLOG(ES_Error, "EN_get_error: msg = #%s#\n", msg);
 
         if (NULL != szSqlState)
             es_sqlstate_set(env, szSqlState, "00000", "00000");
@@ -362,7 +363,7 @@ RETCODE SQL_API ESAPI_EnvError(HENV henv, SQLSMALLINT RecNumber,
 
         return SQL_NO_DATA_FOUND;
     }
-    MYLOG(0, "EN_get_error: status = %d, msg = #%s#\n", status, msg);
+    MYLOG(ES_Error, "EN_get_error: status = %d, msg = #%s#\n", status, msg);
 
     if (NULL != pcbErrorMsg)
         *pcbErrorMsg = (SQLSMALLINT)strlen(msg);
@@ -401,7 +402,7 @@ EnvironmentClass *EN_Constructor(void) {
     wVersionRequested = MAKEWORD(major, minor);
 
     if (WSAStartup(wVersionRequested, &wsaData)) {
-        MYLOG(0, " WSAStartup error\n");
+        MYLOG(ES_Error, " WSAStartup error\n");
         return rv;
     }
     /* Verify that this is the minimum version of WinSock */
@@ -409,15 +410,15 @@ EnvironmentClass *EN_Constructor(void) {
         && (LOBYTE(wsaData.wVersion) >= 2 || HIBYTE(wsaData.wVersion) >= 1))
         ;
     else {
-        MYLOG(0, " WSAStartup version=(%d,%d)\n", LOBYTE(wsaData.wVersion),
-              HIBYTE(wsaData.wVersion));
+        MYLOG(ES_Debug, " WSAStartup version=(%d,%d)\n",
+              LOBYTE(wsaData.wVersion), HIBYTE(wsaData.wVersion));
         goto cleanup;
     }
 #endif /* WIN32 */
 
     rv = (EnvironmentClass *)malloc(sizeof(EnvironmentClass));
     if (NULL == rv) {
-        MYLOG(0, " malloc error\n");
+        MYLOG(ES_Error, " malloc error\n");
         goto cleanup;
     }
     rv->errormsg = 0;
@@ -438,7 +439,7 @@ char EN_Destructor(EnvironmentClass *self) {
     int lf, nullcnt;
     char rv = 1;
 
-    MYLOG(0, "entering self=%p\n", self);
+    MYLOG(ES_Debug, "entering self=%p\n", self);
     if (!self)
         return 0;
 
@@ -461,7 +462,7 @@ char EN_Destructor(EnvironmentClass *self) {
         }
     }
     if (conns && nullcnt >= conns_count) {
-        MYLOG(0, "clearing conns count=%d\n", conns_count);
+        MYLOG(ES_Debug, "clearing conns count=%d\n", conns_count);
         free(conns);
         conns = NULL;
         conns_count = 0;
@@ -473,7 +474,7 @@ char EN_Destructor(EnvironmentClass *self) {
 #ifdef WIN32
     WSACleanup();
 #endif
-    MYLOG(0, "leaving rv=%d\n", rv);
+    MYLOG(ES_Debug, "leaving rv=%d\n", rv);
 #ifdef _MEMORY_DEBUG_
     debug_memory_check();
 #endif /* _MEMORY_DEBUG_ */
@@ -498,7 +499,7 @@ char EN_add_connection(EnvironmentClass *self, ConnectionClass *conn) {
     ConnectionClass **newa;
     char ret = FALSE;
 
-    MYLOG(0, "entering self = %p, conn = %p\n", self, conn);
+    MYLOG(ES_Debug, "entering self = %p, conn = %p\n", self, conn);
 
     ENTER_CONNS_CS;
     for (i = 0; i < conns_count; i++) {
@@ -525,7 +526,8 @@ char EN_add_connection(EnvironmentClass *self, ConnectionClass *conn) {
     newa[conns_count] = conn;
     conns = newa;
     ret = TRUE;
-    MYLOG(0, "       added at %d, conn->henv = %p, conns[%d]->henv = %p\n",
+    MYLOG(ES_Debug,
+          "       added at %d, conn->henv = %p, conns[%d]->henv = %p\n",
           conns_count, conn->henv, conns_count, conns[conns_count]->henv);
     for (i = conns_count + 1; i < alloc; i++)
         conns[i] = NULL;
@@ -552,9 +554,10 @@ char EN_remove_connection(EnvironmentClass *self, ConnectionClass *conn) {
 
 void EN_log_error(const char *func, char *desc, EnvironmentClass *self) {
     if (self)
-        MYLOG(0, "ENVIRON ERROR: func=%s, desc='%s', errnum=%d, errmsg='%s'\n",
+        MYLOG(ES_Error,
+              "ENVIRON ERROR: func=%s, desc='%s', errnum=%d, errmsg='%s'\n",
               func, desc, self->errornumber, self->errormsg);
     else
-        MYLOG(0, "INVALID ENVIRON HANDLE ERROR: func=%s, desc='%s'\n", func,
-              desc);
+        MYLOG(ES_Error, "INVALID ENVIRON HANDLE ERROR: func=%s, desc='%s'\n",
+              func, desc);
 }

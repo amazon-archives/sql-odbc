@@ -531,7 +531,7 @@ typedef struct {
 typedef struct GlobalValues_ {
     esNAME drivername;
     char output_dir[LARGE_REGISTRY_LEN];
-    char loglevel;
+    enum ESLogLevel loglevel;
 } GLOBAL_VALUES;
 
 void copy_globals(GLOBAL_VALUES *to, const GLOBAL_VALUES *from);

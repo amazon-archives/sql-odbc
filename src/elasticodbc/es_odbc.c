@@ -108,14 +108,14 @@ BOOL WINAPI DllMain(HANDLE hInst, ULONG ul_reason_for_call, LPVOID lpReserved) {
             else if (strnicmp(exename, "sqlservr", 8) == 0)
                 exeesm = 3;
             initialize_global_cs();
-            MYLOG(0, "exe name=%s\n", exename);
+            MYLOG(ES_Debug, "exe name=%s\n", exename);
             break;
 
         case DLL_THREAD_ATTACH:
             break;
 
         case DLL_PROCESS_DETACH:
-            MYLOG(0, "DETACHING %s\n", DRIVER_FILE_NAME);
+            MYLOG(ES_Debug, "DETACHING %s\n", DRIVER_FILE_NAME);
             CleanupDelayLoadedDLLs();
             /* my(q)log is unavailable from here */
             finalize_global_cs();

@@ -59,7 +59,7 @@ RETCODE SQL_API ESAPI_GetInfo(HDBC hdbc, SQLUSMALLINT fInfoType,
     RETCODE ret = SQL_ERROR;
     char odbcver[16];
 
-    MYLOG(0, "entering...fInfoType=%d\n", fInfoType);
+    MYLOG(ES_Debug, "entering...fInfoType=%d\n", fInfoType);
 
     if (!conn) {
         CC_log_error(func, NULL_STRING, NULL);
@@ -147,7 +147,7 @@ RETCODE SQL_API ESAPI_GetInfo(HDBC hdbc, SQLUSMALLINT fInfoType,
         case SQL_CONVERT_FUNCTIONS: /* ODBC 1.0 */
             len = sizeof(SQLUINTEGER);
             value = SQL_FN_CVT_CAST;
-            MYLOG(0, "CONVERT_FUNCTIONS=" FORMAT_ULEN "\n", value);
+            MYLOG(ES_Debug, "CONVERT_FUNCTIONS=" FORMAT_ULEN "\n", value);
             break;
 
         case SQL_CORRELATION_NAME: /* ODBC 1.0 */
@@ -885,7 +885,7 @@ RETCODE SQL_API ESAPI_GetInfo(HDBC hdbc, SQLUSMALLINT fInfoType,
 
     ret = SQL_SUCCESS;
 
-    MYLOG(0, "p='%s', len=" FORMAT_ULEN ", value=" FORMAT_ULEN ", cbMax=%d\n",
+    MYLOG(ES_Debug, "p='%s', len=" FORMAT_ULEN ", value=" FORMAT_ULEN ", cbMax=%d\n",
           p ? p : "<NULL>", len, value, cbInfoValueMax);
 
     /*
@@ -962,7 +962,7 @@ cleanup:
 RETCODE SQL_API ESAPI_GetFunctions(HDBC hdbc, SQLUSMALLINT fFunction,
                                    SQLUSMALLINT *pfExists) {
     UNUSED(hdbc);
-    MYLOG(0, "entering...%u\n", fFunction);
+    MYLOG(ES_Debug, "entering...%u\n", fFunction);
 
     if (fFunction == SQL_API_ALL_FUNCTIONS) {
         memset(pfExists, 0, sizeof(pfExists[0]) * 100);
@@ -1217,7 +1217,7 @@ char *identifierEscape(const SQLCHAR *src, SQLLEN srclen,
         srclen = (SQLLEN)strlen((char *)src);
     if (srclen <= 0)
         return dest;
-    MYLOG(0, "entering in=%s(" FORMAT_LEN ")\n", src, srclen);
+    MYLOG(ES_Debug, "entering in=%s(" FORMAT_LEN ")\n", src, srclen);
     if (NULL != buf && bufsize > 0)
         dest = buf;
     else {
@@ -1246,7 +1246,7 @@ char *identifierEscape(const SQLCHAR *src, SQLLEN srclen,
     if (double_quote)
         dest[outlen++] = IDENTIFIER_QUOTE;
     dest[outlen] = '\0';
-    MYLOG(0, "leaving output=%s(%d)\n", dest, (int)outlen);
+    MYLOG(ES_Debug, "leaving output=%s(%d)\n", dest, (int)outlen);
     return dest;
 }
 

@@ -125,12 +125,21 @@ const char *po_basename(const char *path);
     } while (0)
 #endif /* __GNUC__ */
 
-#define MIN_LOG_LEVEL 0
-#define TUPLE_LOG_LEVEL 1
-#define DETAIL_LOG_LEVEL 2
+enum ESLogLevel {
+    // Prefixing with ES_ because C does not support namespaces and we may get a
+    // collision, given how common these names are
+    ES_Off,
+    ES_Fatal,
+    ES_Error,
+    ES_Warning,
+    ES_Info,
+    ES_Debug,
+    ES_Trace,
+    ES_All
+};
 
-int get_qlog(void);
-int get_mylog(void);
+enum ESLogLevel get_qlog(void);
+enum ESLogLevel get_mylog(void);
 
 int getGlobalDebug();
 int setGlobalDebug(int val);

@@ -114,22 +114,22 @@ int LIBES_connect(ConnectionClass *self) {
 
     void *esconn = ESConnectDBParams(rt_opts, FALSE, OPTION_COUNT);
     if (esconn == NULL) {
-        std::string err = GetErrorMsg(esconn);
+        const char *err = GetErrorMsg(esconn);
         CC_set_error(self, CONN_OPENDB_ERROR,
-                     (err.empty()) ? "ESConnectDBParams error" : err.c_str(),
+                     (err == NULL) ? "ESConnectDBParams error" : err,
                      "LIBES_connect");
         return 0;
     }
 
     // Check connection status
     if (ESStatus(esconn) != CONNECTION_OK) {
-        std::string msg = GetErrorMsg(esconn);
+        const char *msg = GetErrorMsg(esconn);
         char error_message_out[ERROR_BUFF_SIZE] = "";
-        if (!msg.empty())
+        if (msg != NULL)
             SPRINTF_FIXED(
                 error_message_out,
                 "elasticsearch connection status was not CONNECTION_OK: %s",
-                msg.c_str());
+                msg);
         else
             STRCPY_FIXED(error_message_out,
                          "elasticsearch connection status was not "

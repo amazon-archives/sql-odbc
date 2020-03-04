@@ -14,23 +14,21 @@
  *
  */
 
-#include "es_odbc.h"
-
+#include <limits.h>
+#include <stdio.h>
 #include <string.h>
+
 #include "bind.h"
 #include "convert.h"
 #include "dlg_specific.h"
 #include "environ.h"
+#include "es_apifunc.h"
 #include "es_connection.h"
+#include "es_odbc.h"
 #include "es_types.h"
 #include "misc.h"
 #include "qresult.h"
 #include "statement.h"
-
-#include <limits.h>
-#include <stdio.h>
-
-#include "es_apifunc.h"
 
 /*	Helper macro */
 #define getEffectiveOid(conn, fi) \
@@ -42,14 +40,14 @@ RETCODE SQL_API ESAPI_RowCount(HSTMT hstmt, SQLLEN *pcrow) {
     StatementClass *stmt = (StatementClass *)hstmt;
     QResultClass *res;
 
-    MYLOG(0, "entering...\n");
+    MYLOG(ES_Debug, "entering...\n");
     if (!stmt) {
         SC_log_error(func, NULL_STRING, NULL);
         return SQL_INVALID_HANDLE;
     }
     if (stmt->proc_return > 0) {
         *pcrow = 0;
-        MYLOG(DETAIL_LOG_LEVEL, "returning RowCount=" FORMAT_LEN "\n", *pcrow);
+        MYLOG(ES_All, "returning RowCount=" FORMAT_LEN "\n", *pcrow);
         return SQL_SUCCESS;
     }
 
@@ -64,14 +62,14 @@ RETCODE SQL_API ESAPI_RowCount(HSTMT hstmt, SQLLEN *pcrow) {
         }
         if (res->recent_processed_row_count >= 0) {
             *pcrow = res->recent_processed_row_count;
-            MYLOG(0, "**** THE ROWS: *pcrow = " FORMAT_LEN "\n", *pcrow);
+            MYLOG(ES_Debug, "**** THE ROWS: *pcrow = " FORMAT_LEN "\n", *pcrow);
 
             return SQL_SUCCESS;
         } else if (QR_NumResultCols(res) > 0) {
             *pcrow = QR_get_cursor(res)
                          ? -1
                          : QR_get_num_total_tuples(res) - res->dl_count;
-            MYLOG(0, "RowCount=" FORMAT_LEN "\n", *pcrow);
+            MYLOG(ES_Debug, "RowCount=" FORMAT_LEN "\n", *pcrow);
             return SQL_SUCCESS;
         }
     }
@@ -89,7 +87,7 @@ RETCODE SQL_API ESAPI_NumResultCols(HSTMT hstmt, SQLSMALLINT *pccol) {
     QResultClass *result;
     RETCODE ret = SQL_SUCCESS;
 
-    MYLOG(0, "entering...\n");
+    MYLOG(ES_Debug, "entering...\n");
     if (!stmt) {
         SC_log_error(func, NULL_STRING, NULL);
         return SQL_INVALID_HANDLE;
@@ -147,7 +145,7 @@ RETCODE SQL_API ESAPI_DescribeCol(HSTMT hstmt, SQLUSMALLINT icol,
     int len = 0;
     RETCODE result = SQL_SUCCESS;
 
-    MYLOG(0, "entering.%d..\n", icol);
+    MYLOG(ES_Debug, "entering.%d..\n", icol);
 
     if (!stmt) {
         SC_log_error(func, NULL_STRING, NULL);
@@ -175,7 +173,7 @@ RETCODE SQL_API ESAPI_DescribeCol(HSTMT hstmt, SQLUSMALLINT icol,
                                 ? SQL_BINARY
                                 : SQL_INTEGER;
 
-        MYLOG(DETAIL_LOG_LEVEL, "answering bookmark info\n");
+        MYLOG(ES_All, "answering bookmark info\n");
         if (szColName && cbColNameMax > 0)
             *szColName = '\0';
         if (pcbColName)
@@ -248,7 +246,7 @@ RETCODE SQL_API ESAPI_DescribeCol(HSTMT hstmt, SQLUSMALLINT icol,
             decimal_digits = estype_decimal_digits(stmt, fieldtype, icol);
         }
 
-        MYLOG(0,
+        MYLOG(ES_Debug,
               "PARSE: fieldtype=%u, col_name='%s', column_size=" FORMAT_LEN
               "\n",
               fieldtype, NULL_IF_NULL(col_name), column_size);
@@ -260,9 +258,9 @@ RETCODE SQL_API ESAPI_DescribeCol(HSTMT hstmt, SQLUSMALLINT icol,
         decimal_digits = estype_decimal_digits(stmt, fieldtype, icol);
     }
 
-    MYLOG(0, "col %d fieldname = '%s'\n", icol, NULL_IF_NULL(col_name));
-    MYLOG(0, "col %d fieldtype = %d\n", icol, fieldtype);
-    MYLOG(0, "col %d column_size = " FORMAT_LEN "\n", icol, column_size);
+    MYLOG(ES_Debug, "col %d fieldname = '%s'\n", icol, NULL_IF_NULL(col_name));
+    MYLOG(ES_Debug, "col %d fieldtype = %d\n", icol, fieldtype);
+    MYLOG(ES_Debug, "col %d column_size = " FORMAT_LEN "\n", icol, column_size);
 
     result = SQL_SUCCESS;
 
@@ -294,7 +292,7 @@ RETCODE SQL_API ESAPI_DescribeCol(HSTMT hstmt, SQLUSMALLINT icol,
         *pfSqlType =
             estype_to_concise_type(stmt, fieldtype, icol, unknown_sizes);
 
-        MYLOG(0, "col %d *pfSqlType = %d\n", icol, *pfSqlType);
+        MYLOG(ES_Debug, "col %d *pfSqlType = %d\n", icol, *pfSqlType);
     }
 
     /*
@@ -306,7 +304,7 @@ RETCODE SQL_API ESAPI_DescribeCol(HSTMT hstmt, SQLUSMALLINT icol,
 
         *pcbColDef = column_size;
 
-        MYLOG(0, "Col: col %d  *pcbColDef = " FORMAT_ULEN "\n", icol,
+        MYLOG(ES_Debug, "Col: col %d  *pcbColDef = " FORMAT_ULEN "\n", icol,
               *pcbColDef);
     }
 
@@ -318,7 +316,7 @@ RETCODE SQL_API ESAPI_DescribeCol(HSTMT hstmt, SQLUSMALLINT icol,
             decimal_digits = 0;
 
         *pibScale = (SQLSMALLINT)decimal_digits;
-        MYLOG(0, "col %d  *pibScale = %d\n", icol, *pibScale);
+        MYLOG(ES_Debug, "col %d  *pibScale = %d\n", icol, *pibScale);
     }
 
     /*
@@ -330,7 +328,7 @@ RETCODE SQL_API ESAPI_DescribeCol(HSTMT hstmt, SQLUSMALLINT icol,
         else
             *pfNullable = fi ? fi->nullable : estype_nullable(conn, fieldtype);
 
-        MYLOG(0, "col %d  *pfNullable = %d\n", icol, *pfNullable);
+        MYLOG(ES_Debug, "col %d  *pfNullable = %d\n", icol, *pfNullable);
     }
 
 cleanup:
@@ -360,7 +358,8 @@ RETCODE SQL_API ESAPI_ColAttributes(HSTMT hstmt, SQLUSMALLINT icol,
     QResultClass *res;
     BOOL stmt_updatable;
 
-    MYLOG(0, "entering..col=%d %d len=%d.\n", icol, fDescType, cbDescMax);
+    MYLOG(ES_Debug, "entering..col=%d %d len=%d.\n", icol, fDescType,
+          cbDescMax);
 
     if (!stmt) {
         SC_log_error(func, NULL_STRING, NULL);
@@ -387,7 +386,7 @@ RETCODE SQL_API ESAPI_ColAttributes(HSTMT hstmt, SQLUSMALLINT icol,
     res = SC_get_Curres(stmt);
     if (0 == icol && SQL_DESC_COUNT != fDescType) /* bookmark column */
     {
-        MYLOG(DETAIL_LOG_LEVEL, "answering bookmark info\n");
+        MYLOG(ES_All, "answering bookmark info\n");
         switch (fDescType) {
             case SQL_DESC_OCTET_LENGTH:
                 if (pfDesc)
@@ -489,7 +488,8 @@ RETCODE SQL_API ESAPI_ColAttributes(HSTMT hstmt, SQLUSMALLINT icol,
         field_type = getEffectiveOid(conn, fi);
     }
 
-    MYLOG(0, "col %d field_type=%d fi,ti=%p,%p\n", col_idx, field_type, fi, ti);
+    MYLOG(ES_Debug, "col %d field_type=%d fi,ti=%p,%p\n", col_idx, field_type,
+          fi, ti);
 
 #ifdef SUPPRESS_LONGEST_ON_CURSORS
     if (UNKNOWNS_AS_LONGEST == unknown_sizes) {
@@ -515,7 +515,7 @@ RETCODE SQL_API ESAPI_ColAttributes(HSTMT hstmt, SQLUSMALLINT icol,
                 value = estype_auto_increment(conn, field_type);
             if (value == -1) /* non-numeric becomes FALSE (ODBC Doc) */
                 value = FALSE;
-            MYLOG(0, "AUTO_INCREMENT=" FORMAT_LEN "\n", value);
+            MYLOG(ES_Debug, "AUTO_INCREMENT=" FORMAT_LEN "\n", value);
 
             break;
 
@@ -534,7 +534,8 @@ RETCODE SQL_API ESAPI_ColAttributes(HSTMT hstmt, SQLUSMALLINT icol,
                         : estype_display_size(stmt, field_type, col_idx,
                                               unknown_sizes);
 
-            MYLOG(0, "col %d, display_size= " FORMAT_LEN "\n", col_idx, value);
+            MYLOG(ES_Debug, "col %d, display_size= " FORMAT_LEN "\n", col_idx,
+                  value);
 
             break;
 
@@ -542,25 +543,24 @@ RETCODE SQL_API ESAPI_ColAttributes(HSTMT hstmt, SQLUSMALLINT icol,
             if (fi && (NAME_IS_VALID(fi->column_alias))) {
                 p = GET_NAME(fi->column_alias);
 
-                MYLOG(0, "COLUMN_LABEL = '%s'\n", p);
+                MYLOG(ES_Debug, "COLUMN_LABEL = '%s'\n", p);
                 break;
             }
             /* otherwise same as column name -- FALL THROUGH!!! */
 
         case SQL_DESC_NAME:
-            MYLOG(DETAIL_LOG_LEVEL, "fi=%p (alias, name)=", fi);
+            MYLOG(ES_All, "fi=%p (alias, name)=", fi);
             if (fi)
-                MYPRINTF(DETAIL_LOG_LEVEL, "(%s,%s)\n",
-                         PRINT_NAME(fi->column_alias),
+                MYPRINTF(ES_Debug, "(%s,%s)\n", PRINT_NAME(fi->column_alias),
                          PRINT_NAME(fi->column_name));
             else
-                MYPRINTF(DETAIL_LOG_LEVEL, "NULL\n");
+                MYPRINTF(ES_Debug, "NULL\n");
             p = fi ? (NAME_IS_NULL(fi->column_alias)
                           ? SAFE_NAME(fi->column_name)
                           : GET_NAME(fi->column_alias))
                    : QR_get_fieldname(res, col_idx);
 
-            MYLOG(0, "COLUMN_NAME = '%s'\n", p);
+            MYLOG(ES_Debug, "COLUMN_NAME = '%s'\n", p);
             break;
 
         case SQL_COLUMN_LENGTH:
@@ -572,13 +572,13 @@ RETCODE SQL_API ESAPI_ColAttributes(HSTMT hstmt, SQLUSMALLINT icol,
                 /* if (-1 == value)  I'm not sure which is right */
                 value = 0;
 
-            MYLOG(0, "col %d, column_length = " FORMAT_LEN "\n", col_idx,
+            MYLOG(ES_Debug, "col %d, column_length = " FORMAT_LEN "\n", col_idx,
                   value);
             break;
 
         case SQL_COLUMN_MONEY: /* == SQL_DESC_FIXED_PREC_SCALE */
             value = estype_money(conn, field_type);
-            MYLOG(DETAIL_LOG_LEVEL, "COLUMN_MONEY=" FORMAT_LEN "\n", value);
+            MYLOG(ES_All, "COLUMN_MONEY=" FORMAT_LEN "\n", value);
             break;
 
         case SQL_DESC_NULLABLE:
@@ -586,12 +586,12 @@ RETCODE SQL_API ESAPI_ColAttributes(HSTMT hstmt, SQLUSMALLINT icol,
                 value = TRUE;
             else
                 value = fi ? fi->nullable : estype_nullable(conn, field_type);
-            MYLOG(DETAIL_LOG_LEVEL, "COLUMN_NULLABLE=" FORMAT_LEN "\n", value);
+            MYLOG(ES_All, "COLUMN_NULLABLE=" FORMAT_LEN "\n", value);
             break;
 
         case SQL_COLUMN_OWNER_NAME: /* == SQL_DESC_SCHEMA_NAME */
             p = ti ? SAFE_NAME(ti->schema_name) : NULL_STRING;
-            MYLOG(0, "SCHEMA_NAME = '%s'\n", p);
+            MYLOG(ES_Debug, "SCHEMA_NAME = '%s'\n", p);
             break;
 
         case SQL_COLUMN_PRECISION: /* in 2.x */
@@ -599,7 +599,8 @@ RETCODE SQL_API ESAPI_ColAttributes(HSTMT hstmt, SQLUSMALLINT icol,
             if (value < 0)
                 value = 0;
 
-            MYLOG(0, "col %d, column_size = " FORMAT_LEN "\n", col_idx, value);
+            MYLOG(ES_Debug, "col %d, column_size = " FORMAT_LEN "\n", col_idx,
+                  value);
             break;
 
         case SQL_COLUMN_QUALIFIER_NAME: /* == SQL_DESC_CATALOG_NAME */
@@ -609,7 +610,7 @@ RETCODE SQL_API ESAPI_ColAttributes(HSTMT hstmt, SQLUSMALLINT icol,
 
         case SQL_COLUMN_SCALE: /* in 2.x */
             value = estype_decimal_digits(stmt, field_type, col_idx);
-            MYLOG(DETAIL_LOG_LEVEL, "COLUMN_SCALE=" FORMAT_LEN "\n", value);
+            MYLOG(ES_All, "COLUMN_SCALE=" FORMAT_LEN "\n", value);
             if (value < 0)
                 value = 0;
             break;
@@ -621,13 +622,13 @@ RETCODE SQL_API ESAPI_ColAttributes(HSTMT hstmt, SQLUSMALLINT icol,
         case SQL_COLUMN_TABLE_NAME: /* == SQL_DESC_TABLE_NAME */
             p = ti ? SAFE_NAME(ti->table_name) : NULL_STRING;
 
-            MYLOG(0, "TABLE_NAME = '%s'\n", p);
+            MYLOG(ES_Debug, "TABLE_NAME = '%s'\n", p);
             break;
 
         case SQL_COLUMN_TYPE: /* == SQL_DESC_CONCISE_TYPE */
             value = estype_to_concise_type(stmt, field_type, col_idx,
                                            unknown_sizes);
-            MYLOG(0, "COLUMN_TYPE=" FORMAT_LEN "\n", value);
+            MYLOG(ES_Debug, "COLUMN_TYPE=" FORMAT_LEN "\n", value);
             break;
 
         case SQL_COLUMN_TYPE_NAME: /* == SQL_DESC_TYPE_NAME */
@@ -667,19 +668,19 @@ RETCODE SQL_API ESAPI_ColAttributes(HSTMT hstmt, SQLUSMALLINT icol,
                     value = SQL_ATTR_READONLY;
             }
 
-            MYLOG(0, "%s: UPDATEABLE = " FORMAT_LEN "\n", func, value);
+            MYLOG(ES_Debug, "%s: UPDATEABLE = " FORMAT_LEN "\n", func, value);
             break;
         case SQL_DESC_BASE_COLUMN_NAME:
 
             p = fi ? SAFE_NAME(fi->column_name)
                    : QR_get_fieldname(res, col_idx);
 
-            MYLOG(0, "BASE_COLUMN_NAME = '%s'\n", p);
+            MYLOG(ES_Debug, "BASE_COLUMN_NAME = '%s'\n", p);
             break;
         case SQL_DESC_BASE_TABLE_NAME: /* the same as TABLE_NAME ok ? */
             p = ti ? SAFE_NAME(ti->table_name) : NULL_STRING;
 
-            MYLOG(0, "BASE_TABLE_NAME = '%s'\n", p);
+            MYLOG(ES_Debug, "BASE_TABLE_NAME = '%s'\n", p);
             break;
         case SQL_DESC_LENGTH: /* different from SQL_COLUMN_LENGTH */
             value = (fi && column_size > 0)
@@ -689,7 +690,8 @@ RETCODE SQL_API ESAPI_ColAttributes(HSTMT hstmt, SQLUSMALLINT icol,
             if (-1 == value)
                 value = 0;
 
-            MYLOG(0, "col %d, desc_length = " FORMAT_LEN "\n", col_idx, value);
+            MYLOG(ES_Debug, "col %d, desc_length = " FORMAT_LEN "\n", col_idx,
+                  value);
             break;
         case SQL_DESC_OCTET_LENGTH:
             value = (USE_FI(fi, unknown_sizes) && fi->length > 0)
@@ -698,7 +700,8 @@ RETCODE SQL_API ESAPI_ColAttributes(HSTMT hstmt, SQLUSMALLINT icol,
                             conn, field_type, column_size, unknown_sizes);
             if (-1 == value)
                 value = 0;
-            MYLOG(0, "col %d, octet_length = " FORMAT_LEN "\n", col_idx, value);
+            MYLOG(ES_Debug, "col %d, octet_length = " FORMAT_LEN "\n", col_idx,
+                  value);
             break;
         case SQL_DESC_PRECISION: /* different from SQL_COLUMN_PRECISION */
             if (value = FI_precision(fi), value <= 0)
@@ -707,8 +710,8 @@ RETCODE SQL_API ESAPI_ColAttributes(HSTMT hstmt, SQLUSMALLINT icol,
             if (value < 0)
                 value = 0;
 
-            MYLOG(0, "col %d, desc_precision = " FORMAT_LEN "\n", col_idx,
-                  value);
+            MYLOG(ES_Debug, "col %d, desc_precision = " FORMAT_LEN "\n",
+                  col_idx, value);
             break;
         case SQL_DESC_SCALE: /* different from SQL_COLUMN_SCALE */
             value = estype_scale(stmt, field_type, col_idx);
@@ -798,7 +801,7 @@ RETCODE SQL_API ESAPI_GetData(HSTMT hstmt, SQLUSMALLINT icol,
     SQLCHAR dum_rgb[2] = "\0\0";
 #endif /* WITH_UNIXODBC */
 
-    MYLOG(0, "entering stmt=%p icol=%d\n", stmt, icol);
+    MYLOG(ES_Debug, "entering stmt=%p icol=%d\n", stmt, icol);
 
     if (!stmt) {
         SC_log_error(func, NULL_STRING, NULL);
@@ -839,7 +842,7 @@ RETCODE SQL_API ESAPI_GetData(HSTMT hstmt, SQLUSMALLINT icol,
             binfo = &opts->bindings[icol - 1];
         if (binfo) {
             target_type = binfo->returntype;
-            MYLOG(0, "SQL_ARD_TYPE=%d\n", target_type);
+            MYLOG(ES_Debug, "SQL_ARD_TYPE=%d\n", target_type);
             precision = binfo->precision;
         } else {
             SC_set_error(stmt, STMT_STATUS_ERROR,
@@ -864,7 +867,7 @@ RETCODE SQL_API ESAPI_GetData(HSTMT hstmt, SQLUSMALLINT icol,
                 break;
             default:
                 MYLOG(
-                    DETAIL_LOG_LEVEL,
+                    ES_All,
                     "GetData Column 0 is type %d not of type SQL_C_BOOKMARK\n",
                     target_type);
                 SC_set_error(stmt, STMT_PROGRAM_TYPE_OUT_OF_RANGE,
@@ -903,17 +906,17 @@ RETCODE SQL_API ESAPI_GetData(HSTMT hstmt, SQLUSMALLINT icol,
             result = SQL_ERROR;
             goto cleanup;
         }
-        MYLOG(0, "     num_rows = " FORMAT_LEN "\n", num_rows);
+        MYLOG(ES_Debug, "     num_rows = " FORMAT_LEN "\n", num_rows);
 
         if (!get_bookmark) {
             SQLLEN curt = GIdx2CacheIdx(stmt->currTuple, stmt, res);
             value = QR_get_value_backend_row(res, curt, icol);
-            MYLOG(DETAIL_LOG_LEVEL,
+            MYLOG(ES_Debug,
                   "currT=" FORMAT_LEN " base=" FORMAT_LEN " rowset=" FORMAT_LEN
                   "\n",
                   stmt->currTuple, QR_get_rowstart_in_cache(res),
                   SC_get_rowset_start(stmt));
-            MYLOG(0, "     value = '%s'\n", NULL_IF_NULL(value));
+            MYLOG(ES_Debug, "     value = '%s'\n", NULL_IF_NULL(value));
         }
     } else {
         /* it's a SOCKET result (backend data) */
@@ -930,7 +933,7 @@ RETCODE SQL_API ESAPI_GetData(HSTMT hstmt, SQLUSMALLINT icol,
             SQLLEN curt = GIdx2CacheIdx(stmt->currTuple, stmt, res);
             value = QR_get_value_backend_row(res, curt, icol);
         }
-        MYLOG(0, "  socket: value = '%s'\n", NULL_IF_NULL(value));
+        MYLOG(ES_Debug, "  socket: value = '%s'\n", NULL_IF_NULL(value));
     }
 
     if (get_bookmark) {
@@ -960,7 +963,7 @@ RETCODE SQL_API ESAPI_GetData(HSTMT hstmt, SQLUSMALLINT icol,
     field_type = QR_get_field_type(res, icol);
     atttypmod = QR_get_atttypmod(res, icol);
 
-    MYLOG(0,
+    MYLOG(ES_Debug,
           "**** icol = %d, target_type = %d, field_type = %d, value = '%s'\n",
           icol, target_type, field_type, NULL_IF_NULL(value));
 
@@ -1020,7 +1023,7 @@ RETCODE SQL_API ESAPI_GetData(HSTMT hstmt, SQLUSMALLINT icol,
 
 cleanup:
 #undef return
-    MYLOG(DETAIL_LOG_LEVEL, "leaving %d\n", result);
+    MYLOG(ES_All, "leaving %d\n", result);
     return result;
 }
 
@@ -1036,7 +1039,7 @@ RETCODE SQL_API ESAPI_Fetch(HSTMT hstmt) {
     BindInfoClass *bookmark;
     RETCODE retval = SQL_SUCCESS;
 
-    MYLOG(0, "entering stmt = %p, stmt->result= %p\n", stmt,
+    MYLOG(ES_Debug, "entering stmt = %p, stmt->result= %p\n", stmt,
           stmt ? SC_get_Curres(stmt) : NULL);
 
     if (!stmt) {
@@ -1116,12 +1119,12 @@ getNthValid(const QResultClass *res, SQLLEN sta, UWORD orientation, SQLULEN nth,
     if (!QR_once_reached_eof(res))
         num_tuples = INT_MAX;
     /* Note that the parameter nth is 1-based */
-    MYLOG(DETAIL_LOG_LEVEL,
+    MYLOG(ES_Debug,
           "get " FORMAT_ULEN "th Valid data from " FORMAT_LEN " to %s [dlt=%d]",
           nth, sta, orientation == SQL_FETCH_PRIOR ? "backward" : "forward",
           res->dl_count);
     if (0 == res->dl_count) {
-        MYPRINTF(DETAIL_LOG_LEVEL, "\n");
+        MYPRINTF(ES_Debug, "\n");
         if (SQL_FETCH_PRIOR == orientation) {
             if (sta + 1 >= (SQLLEN)nth) {
                 *nearest = sta + 1 - nth;
@@ -1147,24 +1150,24 @@ getNthValid(const QResultClass *res, SQLLEN sta, UWORD orientation, SQLULEN nth,
         if (SQL_FETCH_PRIOR == orientation) {
             *nearest = sta + 1 - nth;
             delsta = (-1);
-            MYPRINTF(DETAIL_LOG_LEVEL, "deleted ");
+            MYPRINTF(ES_Debug, "deleted ");
             for (i = res->dl_count - 1; i >= 0 && *nearest <= deleted[i]; i--) {
-                MYPRINTF(DETAIL_LOG_LEVEL, "[" FORMAT_LEN "]=" FORMAT_LEN " ",
-                         i, deleted[i]);
+                MYPRINTF(ES_Debug, "[" FORMAT_LEN "]=" FORMAT_LEN " ", i,
+                         deleted[i]);
                 if (sta >= deleted[i]) {
                     (*nearest)--;
                     if (i > delsta)
                         delsta = i;
                 }
             }
-            MYPRINTF(DETAIL_LOG_LEVEL, "nearest=" FORMAT_LEN "\n", *nearest);
+            MYPRINTF(ES_Debug, "nearest=" FORMAT_LEN "\n", *nearest);
             if (*nearest < 0) {
                 *nearest = -1;
                 count = sta - delsta;
             } else
                 return nth;
         } else {
-            MYPRINTF(DETAIL_LOG_LEVEL, "\n");
+            MYPRINTF(ES_Debug, "\n");
             *nearest = sta - 1 + nth;
             delsta = res->dl_count;
             if (!QR_once_reached_eof(res))
@@ -1189,8 +1192,7 @@ getNthValid(const QResultClass *res, SQLLEN sta, UWORD orientation, SQLULEN nth,
                     & (CURS_SELF_DELETING | CURS_SELF_DELETED
                        | CURS_OTHER_DELETED))) {
                 *nearest = i;
-                MYPRINTF(DETAIL_LOG_LEVEL, " nearest=" FORMAT_LEN "\n",
-                         *nearest);
+                MYPRINTF(ES_Debug, " nearest=" FORMAT_LEN "\n", *nearest);
                 if (++count == nth)
                     return count;
             }
@@ -1204,15 +1206,14 @@ getNthValid(const QResultClass *res, SQLLEN sta, UWORD orientation, SQLULEN nth,
                     & (CURS_SELF_DELETING | CURS_SELF_DELETED
                        | CURS_OTHER_DELETED))) {
                 *nearest = i;
-                MYPRINTF(DETAIL_LOG_LEVEL, " nearest=" FORMAT_LEN "\n",
-                         *nearest);
+                MYPRINTF(ES_Debug, " nearest=" FORMAT_LEN "\n", *nearest);
                 if (++count == nth)
                     return count;
             }
         }
         *nearest = num_tuples;
     }
-    MYPRINTF(DETAIL_LOG_LEVEL, " nearest not found\n");
+    MYPRINTF(ES_Debug, " nearest not found\n");
     return -(SQLLEN)count;
 }
 
@@ -1222,7 +1223,7 @@ getNthValid(const QResultClass *res, SQLLEN sta, UWORD orientation, SQLULEN nth,
  */
 #define EXTFETCH_RETURN_BOF(stmt, res)                   \
     {                                                    \
-        MYLOG(DETAIL_LOG_LEVEL, "RETURN_BOF\n");         \
+        MYLOG(ES_All, "RETURN_BOF\n");                   \
         SC_set_rowset_start(stmt, -1, TRUE);             \
         stmt->currTuple = -1;                            \
         /* move_cursor_position_if_needed(stmt, res); */ \
@@ -1230,7 +1231,7 @@ getNthValid(const QResultClass *res, SQLLEN sta, UWORD orientation, SQLULEN nth,
     }
 #define EXTFETCH_RETURN_EOF(stmt, res)                   \
     {                                                    \
-        MYLOG(DETAIL_LOG_LEVEL, "RETURN_EOF\n");         \
+        MYLOG(ES_All, "RETURN_EOF\n");                   \
         SC_set_rowset_start(stmt, num_tuples, TRUE);     \
         stmt->currTuple = -1;                            \
         /* move_cursor_position_if_needed(stmt, res); */ \
@@ -1258,7 +1259,8 @@ RETCODE SQL_API ESAPI_ExtendedFetch(HSTMT hstmt, SQLUSMALLINT fFetchType,
     BOOL currp_is_valid, reached_eof, useCursor;
     SQLLEN reqsize = rowsetSize;
 
-    MYLOG(0, "entering stmt=%p rowsetSize=" FORMAT_LEN "\n", stmt, rowsetSize);
+    MYLOG(ES_Debug, "entering stmt=%p rowsetSize=" FORMAT_LEN "\n", stmt,
+          rowsetSize);
 
     if (!stmt) {
         SC_log_error(func, NULL_STRING, NULL);
@@ -1334,7 +1336,7 @@ RETCODE SQL_API ESAPI_ExtendedFetch(HSTMT hstmt, SQLUSMALLINT fFetchType,
     if (useCursor && !reached_eof)
         num_tuples = INT_MAX;
 
-    MYLOG(DETAIL_LOG_LEVEL, "num_tuples=" FORMAT_LEN "\n", num_tuples);
+    MYLOG(ES_All, "num_tuples=" FORMAT_LEN "\n", num_tuples);
     /* Save and discard the saved rowset size */
     save_rowset_size = stmt->save_rowset_size;
     stmt->save_rowset_size = -1;
@@ -1365,7 +1367,7 @@ RETCODE SQL_API ESAPI_ExtendedFetch(HSTMT hstmt, SQLUSMALLINT fFetchType,
                 }
             } else
                 SC_inc_rowset_start(stmt, progress_size);
-            MYLOG(0,
+            MYLOG(ES_Debug,
                   "SQL_FETCH_NEXT: num_tuples=" FORMAT_LEN
                   ", currtuple=" FORMAT_LEN ", rowst=" FORMAT_LEN "\n",
                   num_tuples, stmt->currTuple, rowset_start);
@@ -1429,7 +1431,7 @@ RETCODE SQL_API ESAPI_ExtendedFetch(HSTMT hstmt, SQLUSMALLINT fFetchType,
 
     /* Physical Row advancement occurs for each row fetched below */
 
-    MYLOG(0, "new currTuple = " FORMAT_LEN "\n", stmt->currTuple);
+    MYLOG(ES_Debug, "new currTuple = " FORMAT_LEN "\n", stmt->currTuple);
 
     truncated = error = FALSE;
 
@@ -1440,10 +1442,11 @@ RETCODE SQL_API ESAPI_ExtendedFetch(HSTMT hstmt, SQLUSMALLINT fFetchType,
         goto cleanup;
     if (SQL_NO_DATA_FOUND != result && res->keyset) {
         currp = GIdx2KResIdx(SC_get_rowset_start(stmt), stmt, res);
-        MYLOG(DETAIL_LOG_LEVEL, "currp=" FORMAT_LEN "\n", currp);
+        MYLOG(ES_All, "currp=" FORMAT_LEN "\n", currp);
         if (currp < 0) {
             result = SQL_ERROR;
-            MYLOG(0, "rowset_start=" FORMAT_LEN " but currp=" FORMAT_LEN "\n",
+            MYLOG(ES_Debug,
+                  "rowset_start=" FORMAT_LEN " but currp=" FORMAT_LEN "\n",
                   SC_get_rowset_start(stmt), currp);
             SC_set_error(stmt, STMT_INTERNAL_ERROR,
                          "rowset_start not in the keyset", func);
@@ -1460,15 +1463,14 @@ RETCODE SQL_API ESAPI_ExtendedFetch(HSTMT hstmt, SQLUSMALLINT fFetchType,
                 res->keyset[currp].status &=
                     ~CURS_IN_ROWSET; /* Off the flag first */
             } else {
-                MYLOG(0, "Umm current row is out of keyset\n");
+                MYLOG(ES_Debug, "Umm current row is out of keyset\n");
                 break;
             }
         }
-        MYLOG(DETAIL_LOG_LEVEL, "ExtFetch result=%d\n", result);
+        MYLOG(ES_All, "ExtFetch result=%d\n", result);
         if (currp_is_valid && SQL_SUCCESS_WITH_INFO == result
             && 0 == stmt->last_fetch_count) {
-            MYLOG(DETAIL_LOG_LEVEL,
-                  "just skipping deleted row " FORMAT_LEN "\n", currp);
+            MYLOG(ES_All, "just skipping deleted row " FORMAT_LEN "\n", currp);
             if (rowsetSize - i + fc_io > reqsize)
                 QR_set_reqsize(res, (Int4)(rowsetSize - i + fc_io));
             result = SC_fetch(stmt);
@@ -1534,7 +1536,7 @@ RETCODE SQL_API ESAPI_ExtendedFetch(HSTMT hstmt, SQLUSMALLINT fFetchType,
     /* Set the number of rows retrieved */
     if (pcrow)
         *pcrow = i;
-    MYLOG(DETAIL_LOG_LEVEL, "pcrow=" FORMAT_LEN "\n", i);
+    MYLOG(ES_All, "pcrow=" FORMAT_LEN "\n", i);
 
     if (i == 0)
         /* Only DeclareFetch should wind up here */
@@ -1563,7 +1565,7 @@ RETCODE SQL_API ESAPI_MoreResults(HSTMT hstmt) {
     QResultClass *res;
     RETCODE ret = SQL_SUCCESS;
 
-    MYLOG(0, "entering...\n");
+    MYLOG(ES_Debug, "entering...\n");
     res = SC_get_Curres(stmt);
     if (res) {
         res = res->next;
@@ -1591,7 +1593,7 @@ RETCODE SQL_API ESAPI_MoreResults(HSTMT hstmt) {
         ESAPI_FreeStmt(hstmt, SQL_CLOSE);
         ret = SQL_NO_DATA_FOUND;
     }
-    MYLOG(0, "leaving %d\n", ret);
+    MYLOG(ES_Debug, "leaving %d\n", ret);
     return ret;
 }
 
@@ -1600,7 +1602,7 @@ SQLLEN ClearCachedRows(TupleField *tuple, int num_fields, SQLLEN num_rows) {
 
     for (i = 0; i < num_fields * num_rows; i++, tuple++) {
         if (tuple->value) {
-            MYLOG(DETAIL_LOG_LEVEL,
+            MYLOG(ES_All,
                   "freeing tuple[" FORMAT_LEN "][" FORMAT_LEN "].value=%p\n",
                   i / num_fields, i % num_fields, tuple->value);
             free(tuple->value);
@@ -1617,7 +1619,7 @@ RETCODE SQL_API ESAPI_SetCursorName(HSTMT hstmt, const SQLCHAR *szCursor,
     CSTR func = "ESAPI_SetCursorName";
     StatementClass *stmt = (StatementClass *)hstmt;
 
-    MYLOG(0, "entering hstmt=%p, szCursor=%p, cbCursorMax=%d\n", hstmt,
+    MYLOG(ES_Debug, "entering hstmt=%p, szCursor=%p, cbCursorMax=%d\n", hstmt,
           szCursor, cbCursor);
 
     if (!stmt) {
@@ -1639,7 +1641,8 @@ RETCODE SQL_API ESAPI_GetCursorName(HSTMT hstmt, SQLCHAR *szCursor,
     size_t len = 0;
     RETCODE result;
 
-    MYLOG(0, "entering hstmt=%p, szCursor=%p, cbCursorMax=%d, pcbCursor=%p\n",
+    MYLOG(ES_Debug,
+          "entering hstmt=%p, szCursor=%p, cbCursorMax=%d, pcbCursor=%p\n",
           hstmt, szCursor, cbCursorMax, pcbCursor);
 
     if (!stmt) {

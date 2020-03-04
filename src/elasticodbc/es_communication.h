@@ -48,7 +48,7 @@ class ESCommunication {
     EXPORTED ~ESCommunication();
 
     // Create function for factory
-    EXPORTED std::string GetErrorMessage();
+    EXPORTED const char* GetErrorMessage();
     EXPORTED bool ConnectionOptions(runtime_options& rt_opts, bool use_defaults,
                                     int expand_dbname,
                                     unsigned int option_count);
@@ -56,7 +56,7 @@ class ESCommunication {
     EXPORTED bool ConnectDBStart();
     EXPORTED ConnStatusType GetConnectionStatus();
     EXPORTED void DropDBConnection();
-    EXPORTED void LogMsg(const char* msg);
+    EXPORTED void LogMsg(ESLogLevel level, const char* msg);
     EXPORTED int ExecDirect(const char* query);
     EXPORTED ESResult* PopResult();
     EXPORTED std::string GetClientEncoding();
@@ -72,7 +72,10 @@ class ESCommunication {
                       const Aws::Http::HttpMethod request_type,
                       const std::string& content_type, const std::string& query,
                       std::shared_ptr< Aws::Http::HttpResponse >& response);
-    void ConstructESResult(std::string& query_result_json, ESResult& result);
+    void ConstructESResult(ESResult& result);
+    void AwsHttpResponseToString(
+    std::shared_ptr< Aws::Http::HttpResponse > response, std::string& output);
+    void GetJsonSchema(ESResult& es_result);;
     std::string m_error_message;  // TODO: Go through and add error messages on
                                   // exit conditions
     const std::vector< std::string > m_supported_client_encodings = {"UTF8"};
@@ -83,6 +86,7 @@ class ESCommunication {
     runtime_options m_rt_opts;
     std::string m_client_encoding;
     Aws::SDKOptions m_options;
+    std::string m_response_str;
     std::shared_ptr< Aws::Http::HttpClient > m_http_client;
 };
 

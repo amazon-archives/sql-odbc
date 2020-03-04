@@ -104,7 +104,7 @@ char *make_string(const SQLCHAR *s, SQLINTEGER len, char *buf, size_t bufsize) {
     else if (SQL_NTS == len)
         length = strlen((char *)s);
     else {
-        MYLOG(0, "invalid length=" FORMAT_INTEGER "\n", len);
+        MYLOG(ES_Debug, "invalid length=" FORMAT_INTEGER "\n", len);
         return NULL;
     }
     if (buf) {
@@ -112,9 +112,9 @@ char *make_string(const SQLCHAR *s, SQLINTEGER len, char *buf, size_t bufsize) {
         return buf;
     }
 
-    MYLOG(DETAIL_LOG_LEVEL, "malloc size=" FORMAT_SIZE_T "\n", length);
+    MYLOG(ES_Debug, "malloc size=" FORMAT_SIZE_T "\n", length);
     str = malloc(length + 1);
-    MYLOG(DETAIL_LOG_LEVEL, "str=%p\n", str);
+    MYLOG(ES_Debug, "str=%p\n", str);
     if (!str)
         return NULL;
 
