@@ -144,9 +144,11 @@ BOOL copyConnAttributes(ConnInfo *ci, const char *attribute,
         STRCPY_FIXED(ci->server, value);
     else if (stricmp(attribute, INI_PORT) == 0)
         STRCPY_FIXED(ci->port, value);
-    else if (stricmp(attribute, INI_USERNAME) == 0)
+    else if ((stricmp(attribute, INI_USERNAME) == 0)
+             || (stricmp(attribute, INI_USERNAME_ABBR) == 0))
         STRCPY_FIXED(ci->username, value);
-    else if (stricmp(attribute, INI_PASSWORD) == 0) {
+    else if ((stricmp(attribute, INI_PASSWORD) == 0)
+             || (stricmp(attribute, INI_PASSWORD_ABBR) == 0)) {
         ci->password = decode_or_remove_braces(value);
 #ifndef FORCE_PASSWORDE_DISPLAY
         MYLOG(0, "key='%s' value='xxxxxxxx'\n", attribute);
@@ -269,7 +271,15 @@ void getDSNinfo(ConnInfo *ci, const char *configDrvrname) {
                                    sizeof(temp), ODBC_INI)
         > 0)
         STRCPY_FIXED(ci->username, temp);
+    if (SQLGetPrivateProfileString(DSN, INI_USERNAME_ABBR, NULL_STRING, temp,
+                                   sizeof(temp), ODBC_INI)
+        > 0)
+        STRCPY_FIXED(ci->username, temp);
     if (SQLGetPrivateProfileString(DSN, INI_PASSWORD, NULL_STRING, temp,
+                                   sizeof(temp), ODBC_INI)
+        > 0)
+        ci->password = decode(temp);
+    if (SQLGetPrivateProfileString(DSN, INI_PASSWORD_ABBR, NULL_STRING, temp,
                                    sizeof(temp), ODBC_INI)
         > 0)
         ci->password = decode(temp);
