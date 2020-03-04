@@ -27,7 +27,6 @@ if(APPLE)
 	add_definitions(-DHAVE_STRLCAT)
 endif()
 
-# TODO AE-222: Uncomment these once Mac and Windows compile without any warnings at max warning level 
 if(MSVC)
   add_compile_options(/W4 /WX)
 else()
