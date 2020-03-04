@@ -91,7 +91,7 @@ void makeConnectString(char *connect_string, const ConnInfo *ci, UWORD len) {
     /* fundamental info */
     nlen = MAX_CONNECT_STRING;
     olen = snprintf(connect_string, nlen,
-             "%s=%s;" INI_SERVER "=%s;" INI_PORT "=%s;" INI_USERNAME
+             "%s=%s;" INI_HOST "=%s;" INI_PORT "=%s;" INI_USERNAME
              "=%s;" INI_PASSWORD "=%s;" INI_AUTH_MODE "=%s;" INI_REGION
              "=%s;" INI_SSL_USE "=%d;" INI_SSL_HOST_VERIFY "=%d;" INI_LOG_LEVEL
              "=%d;" INI_LOG_OUTPUT "=%s;" INI_TIMEOUT "=%s;",
@@ -141,6 +141,8 @@ BOOL copyConnAttributes(ConnInfo *ci, const char *attribute,
     else if (stricmp(attribute, "driver") == 0)
         STRCPY_FIXED(ci->drivername, value);
     else if (stricmp(attribute, INI_SERVER) == 0)
+        STRCPY_FIXED(ci->server, value);
+    else if (stricmp(attribute, INI_HOST) == 0)
         STRCPY_FIXED(ci->server, value);
     else if (stricmp(attribute, INI_PORT) == 0)
         STRCPY_FIXED(ci->port, value);
@@ -263,6 +265,10 @@ void getDSNinfo(ConnInfo *ci, const char *configDrvrname) {
                                    sizeof(temp), ODBC_INI)
         > 0)
         STRCPY_FIXED(ci->server, temp);
+    if (SQLGetPrivateProfileString(DSN, INI_HOST, NULL_STRING, temp,
+                                   sizeof(temp), ODBC_INI)
+        > 0)
+        STRCPY_FIXED(ci->server, temp);
     if (SQLGetPrivateProfileString(DSN, INI_PORT, NULL_STRING, temp,
                                    sizeof(temp), ODBC_INI)
         > 0)
@@ -334,7 +340,7 @@ void writeDSNinfo(const ConnInfo *ci) {
     const char *DSN = ci->dsn;
     char encoded_item[MEDIUM_REGISTRY_LEN], temp[SMALL_REGISTRY_LEN];
     
-    SQLWritePrivateProfileString(DSN, INI_SERVER, ci->server, ODBC_INI);
+    SQLWritePrivateProfileString(DSN, INI_HOST, ci->server, ODBC_INI);
     SQLWritePrivateProfileString(DSN, INI_PORT, ci->port, ODBC_INI);
     SQLWritePrivateProfileString(DSN, INI_USERNAME, ci->username, ODBC_INI);
     encode(ci->password, encoded_item, sizeof(encoded_item));

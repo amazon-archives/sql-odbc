@@ -50,8 +50,9 @@ extern "C" {
 #else
 #define INI_DSN "Elasticsearch30"
 #endif /* UNICODE_SUPPORT */
-
-#define INI_SERVER "host"
+    
+#define INI_HOST "host"
+#define INI_SERVER "server"
 #define INI_PORT "port"
 #define INI_USERNAME "user"    
 #define INI_USERNAME_ABBR "UID"        
