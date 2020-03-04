@@ -131,8 +131,8 @@ void SetError(const char *err) {
 void ClearError() {
     error_msg = "";
 }
-const char *GetResultParserError() {
-    return (error_msg != "") ? error_msg.c_str() : NULL;
+std::string GetResultParserError() {
+    return error_msg;
 }
 
 static void GetJsonSchema(ESResult& es_result, json_doc& es_result_doc, schema_type& doc_schema){

@@ -60,9 +60,8 @@ ESCommunication::~ESCommunication() {
     Aws::ShutdownAPI(m_options);
 }
 
-const char* ESCommunication::GetErrorMessage() {
-    // TODO: Check if they expect NULL or "" when there is no error.
-    return m_error_message == "" ? NULL : m_error_message.c_str();
+std::string ESCommunication::GetErrorMessage() {
+    return m_error_message;
 }
 
 bool ESCommunication::ConnectionOptions(runtime_options& rt_opts,
@@ -92,7 +91,8 @@ bool ESCommunication::ConnectDBStart() {
 
     m_status = ConnStatusType::CONNECTION_NEEDED;
     if (!EstablishConnection()) {
-        m_error_message = "Failed to establish connection to DB.";
+        if (m_error_message.empty())
+            m_error_message = "Failed to establish connection to DB.";
         LogMsg(m_error_message.c_str());
         DropDBConnection();
         return false;
@@ -156,7 +156,8 @@ void ESCommunication::InitializeConnection() {
     long response_timeout =
         static_cast< long >(DEFAULT_RESPONSE_TIMEOUT) * 1000L;
     try {
-        response_timeout = std::stol(m_rt_opts.conn.timeout, nullptr, 10) * 1000L;
+        response_timeout =
+            std::stol(m_rt_opts.conn.timeout, nullptr, 10) * 1000L;
     } catch (...) {
     }
     config.connectTimeoutMs = response_timeout;
@@ -294,10 +295,11 @@ bool ESCommunication::EstablishConnection() {
             if (IsSQLPluginInstalled(ss.str())) {
                 return true;
             } else {
-                m_error_message =
-                    "The SQL plugin must be installed in order to use this "
-                    "driver. Response body: '"
-                    + ss.str() + "'";
+                if (m_error_message.empty())
+                    m_error_message =
+                        "The SQL plugin must be installed in order to use this "
+                        "driver. Response body: '"
+                        + ss.str() + "'";
             }
         }
     }
@@ -331,6 +333,7 @@ int ESCommunication::ExecDirect(const char* query) {
         m_error_message =
             "Failed to receive response from query. "
             "Received NULL response.";
+        LogMsg(m_error_message.c_str());
         return -1;
     }
 
@@ -351,6 +354,7 @@ int ESCommunication::ExecDirect(const char* query) {
         if (!body.empty()) {
             m_error_message += " Response error: '" + body + "'.";
         }
+        LogMsg(m_error_message.c_str());
         return -1;
     }
 
@@ -440,6 +444,7 @@ std::string ESCommunication::GetServerVersion() {
         m_error_message =
             "Failed to receive response from query. "
             "Received NULL response.";
+        LogMsg(m_error_message.c_str());
         return "";
     }
 

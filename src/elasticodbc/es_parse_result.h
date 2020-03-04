@@ -16,17 +16,8 @@
 
 #ifndef _ES_PARSE_RESULT_H_
 #define _ES_PARSE_RESULT_H_
+
 #include "qresult.h"
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-const char *GetResultParserError();
-#ifdef __cplusplus
-}
-#endif
-
-#ifdef __cplusplus
 #include "es_helper.h"
 // const char* is used instead of string for the cursor, because a NULL cursor
 // is sometimes used Cannot pass q_res as reference because it breaks qresult.h
@@ -37,5 +28,6 @@ BOOL CC_Metadata_from_ESResult(QResultClass *q_res, ConnectionClass *conn,
                       const char *cursor, ESResult &es_result);
 BOOL CC_No_Metadata_from_ESResult(QResultClass *q_res, ConnectionClass *conn,
                       const char *cursor, ESResult &es_result);
-#endif
+std::string GetResultParserError();
+
 #endif

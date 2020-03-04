@@ -174,7 +174,7 @@ static SQLRETURN SetupConnString(const SQLCHAR *conn_str_in,
         make_string(conn_str_in, conn_str_in_len, NULL, 0));
     
     if (!dconn_get_DSN_or_Driver(conn_str.get(), ci)) {
-        CC_set_error(conn, CONN_OPENDB_ERROR, "Connection string parse error",
+        CC_set_error(conn, CONN_OPENDB_ERROR, "Connection string parse error in dconn_get_DSN_or_Driver",
                      func);
         return SQL_ERROR;
     }
@@ -186,7 +186,7 @@ static SQLRETURN SetupConnString(const SQLCHAR *conn_str_in,
 
     // Parse the connect string and fill in conninfo
     if (!dconn_get_connect_attributes(conn_str.get(), ci)) {
-        CC_set_error(conn, CONN_OPENDB_ERROR, "Connection string parse error",
+        CC_set_error(conn, CONN_OPENDB_ERROR, "Connection string parse error in dconn_get_connect_attributes",
                      func);
         return SQL_ERROR;
     }

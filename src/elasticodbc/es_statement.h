@@ -17,7 +17,6 @@
 #ifndef _ES_STATEMENT_H_
 #define _ES_STATEMENT_H_
 
-#include "es_parse_result.h"
 #include "qresult.h"
 #include "statement.h"
 

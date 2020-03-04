@@ -48,7 +48,7 @@ class ESCommunication {
     EXPORTED ~ESCommunication();
 
     // Create function for factory
-    EXPORTED const char* GetErrorMessage();
+    EXPORTED std::string GetErrorMessage();
     EXPORTED bool ConnectionOptions(runtime_options& rt_opts, bool use_defaults,
                                     int expand_dbname,
                                     unsigned int option_count);
