@@ -171,7 +171,6 @@ RETCODE RePrepareStatement(StatementClass *stmt) {
 RETCODE PrepareStatement(StatementClass *stmt, const SQLCHAR *stmt_str,
                          SQLINTEGER stmt_sz) {
     CSTR func = "PrepareStatement";
-    const ConnectionClass *conn = SC_get_conn(stmt);
     RETCODE result = SC_initialize_and_recycle(stmt);
     if (result != SQL_SUCCESS)
         return result;
@@ -190,14 +189,6 @@ RETCODE PrepareStatement(StatementClass *stmt, const SQLCHAR *stmt_str,
         stmt->status = STMT_FINISHED;
     stmt->statement_type = (short)statement_type(stmt->statement);
 
-    /* Check if connection is onlyread (only selects are allowed) */
-    if (CC_is_onlyread(conn) && STMT_UPDATE(stmt)) {
-        SC_set_error(
-            stmt, STMT_EXEC_ERROR,
-            "Connection is readonly, only select statements are allowed.",
-            func);
-        return SQL_ERROR;
-    }
     return SQL_SUCCESS;
 }
 

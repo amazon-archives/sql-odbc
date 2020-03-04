@@ -26,16 +26,16 @@
 #include <ctype.h>
 #include <stdio.h>
 #include <string.h>
+#include <time.h>
 
 #include "multibyte.h"
-
-#include <time.h>
 #ifdef HAVE_LOCALE_H
 #include <locale.h>
 #endif
 #include <limits.h>
 #include <math.h>
 #include <stdlib.h>
+
 #include "bind.h"
 #include "catfunc.h"
 #include "es_apifunc.h"
@@ -683,7 +683,7 @@ static int setup_getdataclass(SQLLEN *const length_return,
     int needbuflen = 0;
     int result = COPY_OK;
 
-    BOOL lf_conv = conn->connInfo.lf_conversion;
+    BOOL lf_conv = 0;
     int bytea_process_kind = 0;
     BOOL already_processed = FALSE;
     BOOL changed = FALSE;
@@ -710,7 +710,7 @@ static int setup_getdataclass(SQLLEN *const length_return,
         if (get_convtype()
             > 0) /* coversion between the current locale is available */
         {
-            BOOL wcs_debug = conn->connInfo.wcs_debug;
+            BOOL wcs_debug = 0;
             BOOL same_encoding =
                 (conn->ccsc == es_CS_code(conn->locale_encoding));
             BOOL is_utf8 = (UTF8 == conn->ccsc);
@@ -1065,54 +1065,11 @@ int copy_and_convert_field(StatementClass *stmt, OID field_type, int atttypmod,
           field_type, fCType, (value == NULL) ? "<NULL>" : value, cbValueMax);
 
     if (!value) {
-        MYLOG(0, "null_cvt_date_string=%d\n",
-              conn->connInfo.cvt_null_date_string);
-        /* a speicial handling for FOXPRO NULL -> NULL_STRING */
-        if (conn->connInfo.cvt_null_date_string > 0
-            && (ES_TYPE_DATE == field_type || ES_TYPE_DATETIME == field_type
-                || ES_TYPE_TIMESTAMP_NO_TMZONE == field_type)
-            && (SQL_C_CHAR == fCType ||
-#ifdef UNICODE_SUPPORT
-                SQL_C_WCHAR == fCType ||
-#endif /* UNICODE_SUPPORT */
-                SQL_C_DATE == fCType || SQL_C_TYPE_DATE == fCType
-                || SQL_C_DEFAULT == fCType)) {
-            if (pcbValueBindRow)
-                *pcbValueBindRow = 0;
-            switch (fCType) {
-                case SQL_C_CHAR:
-                    if (rgbValueBindRow && cbValueMax > 0)
-                        *rgbValueBindRow = '\0';
-                    else
-                        result = COPY_RESULT_TRUNCATED;
-                    break;
-                case SQL_C_DATE:
-                case SQL_C_TYPE_DATE:
-                case SQL_C_DEFAULT:
-                    if (rgbValueBindRow
-                        && cbValueMax >= (SQLLEN)sizeof(DATE_STRUCT)) {
-                        memset(rgbValueBindRow, 0, cbValueMax);
-                        if (pcbValueBindRow)
-                            *pcbValueBindRow = sizeof(DATE_STRUCT);
-                    } else
-                        result = COPY_RESULT_TRUNCATED;
-                    break;
-#ifdef UNICODE_SUPPORT
-                case SQL_C_WCHAR:
-                    if (rgbValueBindRow && cbValueMax >= (SQLLEN)WCLEN)
-                        memset(rgbValueBindRow, 0, WCLEN);
-                    else
-                        result = COPY_RESULT_TRUNCATED;
-                    break;
-#endif /* UNICODE_SUPPORT */
-            }
-            return result;
-        }
         /*
          * handle a null just by returning SQL_NULL_DATA in pcbValue, and
          * doing nothing to the buffer.
          */
-        else if (pIndicator) {
+        if (pIndicator) {
             *pIndicatorBindRow = SQL_NULL_DATA;
             return COPY_OK;
         } else {
@@ -1212,8 +1169,6 @@ int copy_and_convert_field(StatementClass *stmt, OID field_type, int atttypmod,
             break;
 
         case ES_TYPE_BOOL: { /* change T/F to 1/0 */
-            const ConnInfo *ci = &(conn->connInfo);
-
             switch (((char *)value)[0]) {
                 case 'f':
                 case 'F':
@@ -1223,10 +1178,7 @@ int copy_and_convert_field(StatementClass *stmt, OID field_type, int atttypmod,
                     STRCPY_FIXED(booltemp, "0");
                     break;
                 default:
-                    if (ci->true_is_minus1)
-                        STRCPY_FIXED(booltemp, "-1");
-                    else
-                        STRCPY_FIXED(booltemp, "1");
+                    STRCPY_FIXED(booltemp, "1");
             }
             neut_str = booltemp;
         } break;

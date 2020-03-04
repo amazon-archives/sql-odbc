@@ -490,9 +490,6 @@ RETCODE SQL_API SQLSetStmtAttr(HSTMT StatementHandle, SQLINTEGER Attribute,
 RETCODE SQL_API ESAPI_GetFunctions30(HDBC hdbc, SQLUSMALLINT fFunction,
                                      SQLUSMALLINT FAR *pfExists) {
     ConnectionClass *conn = (ConnectionClass *)hdbc;
-    ConnInfo *ci = &(conn->connInfo);
-
-    MYLOG(DETAIL_LOG_LEVEL, "lie=%d\n", ci->drivers.lie);
     CC_clear_error(conn);
     if (fFunction != SQL_API_ODBC3_ALL_FUNCTIONS)
         return SQL_ERROR;
@@ -547,13 +544,8 @@ RETCODE SQL_API ESAPI_GetFunctions30(HDBC hdbc, SQLUSMALLINT fFunction,
     SQL_FUNC_ESET(pfExists, SQL_API_SQLSPECIALCOLUMNS); /* 52 */
     SQL_FUNC_ESET(pfExists, SQL_API_SQLSTATISTICS);     /* 53 */
     SQL_FUNC_ESET(pfExists, SQL_API_SQLTABLES);         /* 54 */
-    if (ci->drivers.lie)
-        SQL_FUNC_ESET(pfExists, SQL_API_SQLBROWSECONNECT); /* 55 */
-    if (ci->drivers.lie)
-        SQL_FUNC_ESET(pfExists, SQL_API_SQLCOLUMNPRIVILEGES); /* 56 */
     SQL_FUNC_ESET(pfExists, SQL_API_SQLDATASOURCES);          /* 57 */
-    if (SUPPORT_DESCRIBE_PARAM(ci) || ci->drivers.lie)
-        SQL_FUNC_ESET(pfExists, SQL_API_SQLDESCRIBEPARAM); /* 58 */
+    SQL_FUNC_ESET(pfExists, SQL_API_SQLDESCRIBEPARAM); /* 58 */
     SQL_FUNC_ESET(pfExists, SQL_API_SQLEXTENDEDFETCH);     /* 59 deprecated ? */
 
     /*
@@ -582,10 +574,6 @@ RETCODE SQL_API ESAPI_GetFunctions30(HDBC hdbc, SQLUSMALLINT fFunction,
     SQL_FUNC_ESET(pfExists, SQL_API_SQLFREEHANDLE);     /* 1006 */
     SQL_FUNC_ESET(pfExists, SQL_API_SQLGETCONNECTATTR); /* 1007 */
     SQL_FUNC_ESET(pfExists, SQL_API_SQLGETDESCFIELD);   /* 1008 */
-    if (ci->drivers.lie) {
-        SQL_FUNC_ESET(pfExists,
-                      SQL_API_SQLGETDESCREC); /* 1009 not implemented yet */
-    }
     SQL_FUNC_ESET(pfExists,
                   SQL_API_SQLGETDIAGFIELD); /* 1010 minimal implementation */
     SQL_FUNC_ESET(pfExists, SQL_API_SQLGETDIAGREC);     /* 1011 */
@@ -593,16 +581,9 @@ RETCODE SQL_API ESAPI_GetFunctions30(HDBC hdbc, SQLUSMALLINT fFunction,
     SQL_FUNC_ESET(pfExists, SQL_API_SQLGETSTMTATTR);    /* 1014 */
     SQL_FUNC_ESET(pfExists, SQL_API_SQLSETCONNECTATTR); /* 1016 */
     SQL_FUNC_ESET(pfExists, SQL_API_SQLSETDESCFIELD);   /* 1017 */
-    if (ci->drivers.lie) {
-        SQL_FUNC_ESET(pfExists,
-                      SQL_API_SQLSETDESCREC); /* 1018 not implemented yet */
-    }
     SQL_FUNC_ESET(pfExists, SQL_API_SQLSETENVATTR);  /* 1019 */
     SQL_FUNC_ESET(pfExists, SQL_API_SQLSETSTMTATTR); /* 1020 */
     SQL_FUNC_ESET(pfExists, SQL_API_SQLFETCHSCROLL); /* 1021 */
-    if (0 != (ALLOW_BULK_OPERATIONS & ci->updatable_cursors))
-        SQL_FUNC_ESET(pfExists, SQL_API_SQLBULKOPERATIONS); /* 24 */
-
     return SQL_SUCCESS;
 }
 

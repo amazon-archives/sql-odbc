@@ -156,7 +156,7 @@ RETCODE SQL_API ESAPI_DescribeCol(HSTMT hstmt, SQLUSMALLINT icol,
 
     conn = SC_get_conn(stmt);
     ci = &(conn->connInfo);
-    unknown_sizes = ci->drivers.unknown_sizes;
+    unknown_sizes = DEFAULT_UNKNOWNSIZES;
 
     SC_clear_error(stmt);
 
@@ -405,7 +405,7 @@ RETCODE SQL_API ESAPI_ColAttributes(HSTMT hstmt, SQLUSMALLINT icol,
 
     col_idx = icol - 1;
 
-    unknown_sizes = ci->drivers.unknown_sizes;
+    unknown_sizes = DEFAULT_UNKNOWNSIZES;
 
     /* not appropriate for SQLColAttributes() */
     if (stmt->catalog_result)

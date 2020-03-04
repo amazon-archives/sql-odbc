@@ -100,15 +100,6 @@ void ESClearResult(ESResult* es_result) {
     delete es_result;
 }
 
-void GetElasticSpecificOpts(runtime_options& rt_opts, const char* esopts) {
-    (void)(rt_opts);
-    std::string opts = esopts;
-
-    // TODO AE-45: Parse out elastic specific runtime options
-    // NOTE: Throw std::exception on error - error will be propagated to
-    // connection class
-}
-
 // This class provides a cross platform way of entering critical sections
 class CriticalSectionHelper {
    public:

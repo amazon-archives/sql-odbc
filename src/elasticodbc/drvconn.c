@@ -138,17 +138,8 @@ LRESULT CALLBACK dconn_FDriverConnectProc(HWND hdlg, UINT wMsg, WPARAM wParam,
             SetWindowLongPtr(hdlg, DWLP_USER,
                              lParam); /* Save the ConnInfo for the "OK" */
             SetDlgStuff(hdlg, ci);
-
-            if (ci->password_required) {
-                HWND notu = GetDlgItem(hdlg, IDC_NOTICE_USER);
-
-                SetFocus(GetDlgItem(hdlg, IDC_PASSWORD));
-                SetWindowText(notu, "  Supply password       ");
-                ShowWindow(notu, SW_SHOW);
-                SendMessage(notu, WM_CTLCOLOR, 0, 0);
-            } else if (ci->database[0] == '\0')
-                ; /* default focus */
-            else if (ci->server[0] == '\0')
+            
+            if (ci->server[0] == '\0')
                 SetFocus(GetDlgItem(hdlg, IDC_SERVER));
             else if (ci->port[0] == '\0')
                 SetFocus(GetDlgItem(hdlg, IDC_PORT));
@@ -190,19 +181,6 @@ LRESULT CALLBACK dconn_FDriverConnectProc(HWND hdlg, UINT wMsg, WPARAM wParam,
                 case IDOK:
                     ci = (ConnInfo *)GetWindowLongPtr(hdlg, DWLP_USER);
                     GetDlgStuff(hdlg, ci);
-
-                    if (ci->use_ssl) {
-                        if ((strcmp(ci->key, "") == 0)
-                            && (strcmp(ci->certificate, "") == 0)) {
-                            MessageBox(hdlg,
-                                       "If SSL is checked, certificate and key "
-                                       "must be provided.",
-                                       "Configuration is invalid.",
-                                       MB_ICONEXCLAMATION | MB_OK);
-                            break;
-                        }
-                    }
-
                 case IDCANCEL:
                     EndDialog(hdlg, GET_WM_COMMAND_ID(wParam, lParam) == IDOK);
                     return TRUE;
@@ -212,19 +190,6 @@ LRESULT CALLBACK dconn_FDriverConnectProc(HWND hdlg, UINT wMsg, WPARAM wParam,
                     ConnInfo tmp_info;
                     ci = (ConnInfo *)GetWindowLongPtr(hdlg, DWLP_USER);
                     GetDlgStuff(hdlg, ci);
-
-                    if (ci->use_ssl) {
-                        if ((strcmp(ci->key, "") == 0)
-                            && (strcmp(ci->certificate, "") == 0)) {
-                            MessageBox(hdlg,
-                                       "If SSL is checked, certificate and key "
-                                       "must be provided.",
-                                       "Configuration is invalid.",
-                                       MB_ICONEXCLAMATION | MB_OK);
-                            break;
-                        }
-                    }
-
                     CC_copy_conninfo(&tmp_info, ci);
                     test_connection(hdlg, &tmp_info, FALSE);
                     CC_conninfo_release(&tmp_info);

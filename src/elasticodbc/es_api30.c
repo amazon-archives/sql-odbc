@@ -383,45 +383,10 @@ RETCODE SQL_API ESAPI_GetConnectAttr(HDBC ConnectionHandle,
             *((SQLUINTEGER *)Value) = conn->stmtOptions.metadata_id;
             break;
         case SQL_ATTR_ESOPT_DEBUG:
-            *((SQLINTEGER *)Value) = conn->connInfo.drivers.debug;
+            *((SQLINTEGER *)Value) = conn->connInfo.drivers.loglevel;
             break;
         case SQL_ATTR_ESOPT_COMMLOG:
-            *((SQLINTEGER *)Value) = conn->connInfo.drivers.commlog;
-            break;
-        case SQL_ATTR_ESOPT_PARSE:
-            *((SQLINTEGER *)Value) = conn->connInfo.drivers.parse;
-            break;
-        case SQL_ATTR_ESOPT_USE_DECLAREFETCH:
-            *((SQLINTEGER *)Value) = conn->connInfo.drivers.use_declarefetch;
-            break;
-        case SQL_ATTR_ESOPT_SERVER_SIDE_PREPARE:
-            *((SQLINTEGER *)Value) = conn->connInfo.use_server_side_prepare;
-            break;
-        case SQL_ATTR_ESOPT_FETCH:
-            *((SQLINTEGER *)Value) = conn->connInfo.drivers.fetch_max;
-            break;
-        case SQL_ATTR_ESOPT_UNKNOWNSIZES:
-            *((SQLINTEGER *)Value) = conn->connInfo.drivers.unknown_sizes;
-            break;
-        case SQL_ATTR_ESOPT_TEXTASLONGVARCHAR:
-            *((SQLINTEGER *)Value) = conn->connInfo.drivers.text_as_longvarchar;
-            break;
-        case SQL_ATTR_ESOPT_UNKNOWNSASLONGVARCHAR:
-            *((SQLINTEGER *)Value) =
-                conn->connInfo.drivers.unknowns_as_longvarchar;
-            break;
-        case SQL_ATTR_ESOPT_BOOLSASCHAR:
-            *((SQLINTEGER *)Value) = conn->connInfo.drivers.bools_as_char;
-            break;
-        case SQL_ATTR_ESOPT_MAXVARCHARSIZE:
-            *((SQLINTEGER *)Value) = conn->connInfo.drivers.max_varchar_size;
-            break;
-        case SQL_ATTR_ESOPT_MAXLONGVARCHARSIZE:
-            *((SQLINTEGER *)Value) =
-                conn->connInfo.drivers.max_longvarchar_size;
-            break;
-        case SQL_ATTR_ESOPT_MSJET:
-            *((SQLINTEGER *)Value) = conn->ms_jet;
+            *((SQLINTEGER *)Value) = conn->connInfo.drivers.loglevel;
             break;
         default:
             ret = ESAPI_GetConnectOption(ConnectionHandle, (UWORD)Attribute,
@@ -1631,91 +1596,30 @@ RETCODE SQL_API ESAPI_SetConnectAttr(HDBC ConnectionHandle,
         case SQL_ATTR_ESOPT_DEBUG:
             newValue = CAST_UPTR(SQLCHAR, Value);
             if (newValue > 0) {
-                logs_on_off(-1, conn->connInfo.drivers.debug, 0);
-                conn->connInfo.drivers.debug = (char)newValue;
-                logs_on_off(1, conn->connInfo.drivers.debug, 0);
-                MYLOG(0, "debug => %d\n", conn->connInfo.drivers.debug);
-            } else if (newValue == 0 && conn->connInfo.drivers.debug > 0) {
+                logs_on_off(-1, conn->connInfo.drivers.loglevel, 0);
+                conn->connInfo.drivers.loglevel = (char)newValue;
+                logs_on_off(1, conn->connInfo.drivers.loglevel, 0);
+                MYLOG(0, "debug => %d\n", conn->connInfo.drivers.loglevel);
+            } else if (newValue == 0 && conn->connInfo.drivers.loglevel > 0) {
                 MYLOG(0, "debug => %d\n", newValue);
-                logs_on_off(-1, conn->connInfo.drivers.debug, 0);
-                conn->connInfo.drivers.debug = (char)newValue;
+                logs_on_off(-1, conn->connInfo.drivers.loglevel, 0);
+                conn->connInfo.drivers.loglevel = (char)newValue;
                 logs_on_off(1, 0, 0);
             }
             break;
         case SQL_ATTR_ESOPT_COMMLOG:
             newValue = CAST_UPTR(SQLCHAR, Value);
             if (newValue > 0) {
-                logs_on_off(-1, 0, conn->connInfo.drivers.commlog);
-                conn->connInfo.drivers.commlog = (char)newValue;
-                logs_on_off(1, 0, conn->connInfo.drivers.commlog);
-                MYLOG(0, "commlog => %d\n", conn->connInfo.drivers.commlog);
-            } else if (newValue == 0 && conn->connInfo.drivers.commlog > 0) {
+                logs_on_off(-1, 0, conn->connInfo.drivers.loglevel);
+                conn->connInfo.drivers.loglevel = (char)newValue;
+                logs_on_off(1, 0, conn->connInfo.drivers.loglevel);
+                MYLOG(0, "commlog => %d\n", conn->connInfo.drivers.loglevel);
+            } else if (newValue == 0 && conn->connInfo.drivers.loglevel > 0) {
                 MYLOG(0, "commlog => %d\n", newValue);
-                logs_on_off(-1, 0, conn->connInfo.drivers.commlog);
-                conn->connInfo.drivers.debug = (char)newValue;
+                logs_on_off(-1, 0, conn->connInfo.drivers.loglevel);
+                conn->connInfo.drivers.loglevel = (char)newValue;
                 logs_on_off(1, 0, 0);
             }
-            break;
-        case SQL_ATTR_ESOPT_PARSE:
-            conn->connInfo.drivers.parse = CAST_UPTR(SQLCHAR, Value);
-            MYLOG(0, "parse => %d\n", conn->connInfo.drivers.parse);
-            break;
-        case SQL_ATTR_ESOPT_USE_DECLAREFETCH:
-            conn->connInfo.drivers.use_declarefetch = CAST_UPTR(SQLCHAR, Value);
-            ci_updatable_cursors_set(&conn->connInfo);
-            MYLOG(0, "declarefetch => %d\n",
-                  conn->connInfo.drivers.use_declarefetch);
-            break;
-        case SQL_ATTR_ESOPT_SERVER_SIDE_PREPARE:
-            conn->connInfo.use_server_side_prepare = CAST_UPTR(SQLCHAR, Value);
-            MYLOG(0, "server_side_prepare => %d\n",
-                  conn->connInfo.use_server_side_prepare);
-            break;
-        case SQL_ATTR_ESOPT_FETCH:
-            conn->connInfo.drivers.fetch_max = CAST_PTR(SQLINTEGER, Value);
-            MYLOG(0, "fetch => %d\n", conn->connInfo.drivers.fetch_max);
-            break;
-        case SQL_ATTR_ESOPT_UNKNOWNSIZES:
-            conn->connInfo.drivers.unknown_sizes = CAST_PTR(SQLINTEGER, Value);
-            MYLOG(0, "unknown_sizes => %d\n",
-                  conn->connInfo.drivers.unknown_sizes);
-            break;
-        case SQL_ATTR_ESOPT_TEXTASLONGVARCHAR:
-            conn->connInfo.drivers.text_as_longvarchar =
-                CAST_PTR(SQLCHAR, Value);
-            MYLOG(0, "text_as_longvarchar => %d\n",
-                  conn->connInfo.drivers.text_as_longvarchar);
-            break;
-        case SQL_ATTR_ESOPT_UNKNOWNSASLONGVARCHAR:
-            conn->connInfo.drivers.unknowns_as_longvarchar =
-                CAST_PTR(SQLCHAR, Value);
-            MYLOG(0, "unknowns_as_long_varchar => %d\n",
-                  conn->connInfo.drivers.unknowns_as_longvarchar);
-            break;
-        case SQL_ATTR_ESOPT_BOOLSASCHAR:
-            conn->connInfo.drivers.bools_as_char = CAST_PTR(SQLCHAR, Value);
-            MYLOG(0, "bools_as_char => %d\n",
-                  conn->connInfo.drivers.bools_as_char);
-            break;
-        case SQL_ATTR_ESOPT_MAXVARCHARSIZE:
-            conn->connInfo.drivers.max_varchar_size =
-                CAST_PTR(SQLINTEGER, Value);
-            MYLOG(0, "max_varchar_size => %d\n",
-                  conn->connInfo.drivers.max_varchar_size);
-            break;
-        case SQL_ATTR_ESOPT_MAXLONGVARCHARSIZE:
-            conn->connInfo.drivers.max_longvarchar_size =
-                CAST_PTR(SQLINTEGER, Value);
-            MYLOG(0, "max_longvarchar_size => %d\n",
-                  conn->connInfo.drivers.max_longvarchar_size);
-            break;
-        case SQL_ATTR_ESOPT_WCSDEBUG:
-            conn->connInfo.wcs_debug = CAST_PTR(SQLCHAR, Value);
-            MYLOG(0, "wcs_debug => %d\n", conn->connInfo.wcs_debug);
-            break;
-        case SQL_ATTR_ESOPT_MSJET:
-            conn->ms_jet = CAST_PTR(SQLCHAR, Value);
-            MYLOG(0, "ms_jet => %d\n", conn->ms_jet);
             break;
         default:
             if (Attribute < 65536)

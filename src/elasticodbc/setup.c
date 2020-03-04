@@ -320,11 +320,9 @@ LRESULT CALLBACK ConfigDlgProc(HWND hdlg, UINT wMsg, WPARAM wParam,
                                        sizeof(lpsetupdlg->ci.dsn));
 
                     /* Get Dialog Values */
-                    UINT log_button_checked =
-                        (IsDlgButtonChecked(hdlg, IDC_CHECK1) ? 1 : 0);
+                    UINT log_button_checked = (IsDlgButtonChecked(hdlg, IDC_CHECK1) ? 1 : 0);
                     setGlobalCommlog(log_button_checked);
-                    lpsetupdlg->ci.drivers.commlog = (char)log_button_checked;
-                    lpsetupdlg->ci.drivers.debug = (char)log_button_checked;
+                    lpsetupdlg->ci.drivers.loglevel = (char)log_button_checked;
                     GetDlgStuff(hdlg, &lpsetupdlg->ci);
                     /* Update ODBC.INI */
                     SetDSNAttributes(hdlg, lpsetupdlg, NULL);
@@ -442,10 +440,6 @@ void test_connection(HANDLE hwnd, ConnInfo *ci, BOOL withDTC) {
 
     dsn_1st = ci->dsn[0];
     ci->dsn[0] = '\0';
-    if (NAME_IS_VALID(ci->conn_settings))
-        ci->conn_settings_in_str = TRUE;
-    if (NAME_IS_VALID(ci->esopt))
-        ci->esopt_in_str = TRUE;
     makeConnectString(out_conn, ci, sizeof(out_conn));
     MYLOG(0, "conn_string=%s\n", out_conn);
 #ifdef UNICODE_SUPPORT

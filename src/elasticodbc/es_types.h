@@ -250,7 +250,6 @@ typedef struct encryption_options {
 typedef struct connection_options {
     std::string server;
     std::string port;
-    std::string database;
     std::string timeout;
 } connection_options;
 

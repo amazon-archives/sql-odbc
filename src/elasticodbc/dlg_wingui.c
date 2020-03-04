@@ -55,7 +55,6 @@ void SetAuthenticationVisibility(HWND hdlg, const struct authmode *am) {
 
 void SetDlgStuff(HWND hdlg, const ConnInfo *ci) {
     // Connection
-    SetDlgItemText(hdlg, IDC_DATABASE, ci->database);
     SetDlgItemText(hdlg, IDC_SERVER, ci->server);
     SetDlgItemText(hdlg, IDC_PORT, ci->port);
     SetDlgItemText(hdlg, IDC_CONNTIMEOUT, ci->response_timeout);
@@ -72,11 +71,9 @@ void SetDlgStuff(HWND hdlg, const ConnInfo *ci) {
     ShowWindow(GetDlgItem(hdlg, IDC_CERTIFICATE_STATIC), use_ssl);
     ShowWindow(GetDlgItem(hdlg, IDC_KEY), use_ssl);
     ShowWindow(GetDlgItem(hdlg, IDC_KEY_STATIC), use_ssl);
-    SetDlgItemText(hdlg, IDC_CERTIFICATE, ci->certificate);
-    SetDlgItemText(hdlg, IDC_KEY, ci->key);
 
     // Misc
-    UINT log_button_checked = ci->drivers.commlog && ci->drivers.debug;
+    UINT log_button_checked = ci->drivers.loglevel;
     CheckDlgButton(hdlg, IDC_CHECK1, log_button_checked);
 }
 
@@ -89,7 +86,6 @@ static void GetNameField(HWND hdlg, int item, esNAME *name) {
 void GetDlgStuff(HWND hdlg, ConnInfo *ci) {
     // Connection
     GetDlgItemText(hdlg, IDC_DESC, ci->desc, sizeof(ci->desc));
-    GetDlgItemText(hdlg, IDC_DATABASE, ci->database, sizeof(ci->database));
     GetDlgItemText(hdlg, IDC_SERVER, ci->server, sizeof(ci->server));
     GetDlgItemText(hdlg, IDC_CONNTIMEOUT, ci->response_timeout,
                    sizeof(ci->response_timeout));
@@ -109,14 +105,10 @@ void GetDlgStuff(HWND hdlg, ConnInfo *ci) {
     ShowWindow(GetDlgItem(hdlg, IDC_CERTIFICATE), ci->use_ssl);
     ShowWindow(GetDlgItem(hdlg, IDC_CERTIFICATE_STATIC), ci->use_ssl);
     ShowWindow(GetDlgItem(hdlg, IDC_CERTIFICATENOTE_STATIC), ci->use_ssl);
-    GetDlgItemText(hdlg, IDC_CERTIFICATE, ci->certificate,
-                   sizeof(ci->certificate));
-    GetDlgItemText(hdlg, IDC_KEY, ci->key, sizeof(ci->key));
 
     // Misc
-    ci->drivers.commlog = ci->drivers.debug =
-        (IsDlgButtonChecked(hdlg, IDC_CHECK1) ? 1 : 0);
-    setGlobalCommlog(ci->drivers.commlog);
+    ci->drivers.loglevel = (IsDlgButtonChecked(hdlg, IDC_CHECK1) ? 1 : 0);
+    setGlobalCommlog(ci->drivers.loglevel);
 }
 
 const struct authmode *GetAuthModes(unsigned int *count) {

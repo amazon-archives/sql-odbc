@@ -435,12 +435,12 @@ int getGlobalDebug() {
     if (globalDebug >= 0)
         return globalDebug;
     /* Debug is stored in the driver section */
-    SQLGetPrivateProfileString(DBMS_NAME, INI_DEBUG, "", temp, sizeof(temp),
+    SQLGetPrivateProfileString(DBMS_NAME, INI_LOG_LEVEL, "", temp, sizeof(temp),
                                ODBCINST_INI);
     if (temp[0])
         globalDebug = atoi(temp);
     else
-        globalDebug = DEFAULT_DEBUG;
+        globalDebug = DEFAULT_LOGLEVEL;
 
     return globalDebug;
 }
@@ -456,12 +456,12 @@ int getGlobalCommlog() {
     if (globalCommlog >= 0)
         return globalCommlog;
     /* Commlog is stored in the driver section */
-    SQLGetPrivateProfileString(DBMS_NAME, INI_COMMLOG, "", temp, sizeof(temp),
+    SQLGetPrivateProfileString(DBMS_NAME, INI_LOG_LEVEL, "", temp, sizeof(temp),
                                ODBCINST_INI);
     if (temp[0])
         globalCommlog = atoi(temp);
     else
-        globalCommlog = DEFAULT_COMMLOG;
+        globalCommlog = DEFAULT_LOGLEVEL;
 
     return globalCommlog;
 }
@@ -474,19 +474,19 @@ int writeGlobalLogs() {
     char temp[10];
 
     ITOA_FIXED(temp, globalDebug);
-    SQLWritePrivateProfileString(DBMS_NAME, INI_DEBUG, temp, ODBCINST_INI);
+    SQLWritePrivateProfileString(DBMS_NAME, INI_LOG_LEVEL, temp, ODBCINST_INI);
     ITOA_FIXED(temp, globalCommlog);
-    SQLWritePrivateProfileString(DBMS_NAME, INI_COMMLOG, temp, ODBCINST_INI);
+    SQLWritePrivateProfileString(DBMS_NAME, INI_LOG_LEVEL, temp, ODBCINST_INI);
     return 0;
 }
 
 int getLogDir(char *dir, int dirmax) {
-    return SQLGetPrivateProfileString(DBMS_NAME, INI_LOGDIR, "", dir, dirmax,
+    return SQLGetPrivateProfileString(DBMS_NAME, INI_LOG_OUTPUT, "", dir, dirmax,
                                       ODBCINST_INI);
 }
 
 int setLogDir(const char *dir) {
-    return SQLWritePrivateProfileString(DBMS_NAME, INI_LOGDIR, dir,
+    return SQLWritePrivateProfileString(DBMS_NAME, INI_LOG_OUTPUT, dir,
                                         ODBCINST_INI);
 }
 

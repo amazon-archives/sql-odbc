@@ -28,7 +28,6 @@ void ESClearResult(ESResult* es_result);
 void* ESConnectDBParams(runtime_options& rt_opts, int expand_dbname,
                         unsigned int option_count);
 std::string GetServerVersion(void* es_conn);
-void GetElasticSpecificOpts(runtime_options& rt_opts, const char* esopts);
 
 // C Interface
 extern "C" {

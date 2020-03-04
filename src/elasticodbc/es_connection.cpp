@@ -64,15 +64,6 @@ char CC_connect(ConnectionClass *self) {
     if (conn_code <= 0)
         return static_cast< char >(conn_code);
 
-    // Set translation and check for errors
-    CC_set_translation(self);
-    if ((CC_get_errornumber(self) > 0) || (self->status == CONN_DOWN)) {
-        const char *err_msg = CC_get_errormsg(self);
-        if (err_msg != NULL)
-            CC_set_error(self, -1, err_msg, "CC_connect");
-        return 0;
-    }
-
     // Set encodings
     CC_determine_locale_encoding(self);
 #ifdef UNICODE_SUPPORT
@@ -90,10 +81,8 @@ char CC_connect(ConnectionClass *self) {
     }
 
     // Set cursor parameters based on connection info
-    ci_updatable_cursors_set(&(self->connInfo));
     self->status = CONN_CONNECTED;
-    if ((CC_is_in_unicode_driver(self))
-        && ((CC_is_in_ansi_app(self)) || (self->connInfo.bde_environment > 0)))
+    if ((CC_is_in_unicode_driver(self)) && (CC_is_in_ansi_app(self)))
         self->unicode |= CONN_DISALLOW_WCHAR;
 
     // 1 is SQL_SUCCESS and 2 is SQL_SCCUESS_WITH_INFO
@@ -110,7 +99,6 @@ int LIBES_connect(ConnectionClass *self) {
     // Connection
     rt_opts.conn.server.assign(self->connInfo.server);
     rt_opts.conn.port.assign(self->connInfo.port);
-    rt_opts.conn.database.assign(self->connInfo.database);
     rt_opts.conn.timeout.assign(self->connInfo.response_timeout);
 
     // Authentication
@@ -124,14 +112,6 @@ int LIBES_connect(ConnectionClass *self) {
     rt_opts.crypt.use_ssl = (self->connInfo.use_ssl == 1);
     // TODO AE-288: Add settings if required for Mac support
 
-    // Connect to DB with parameters
-    try {
-        if (self->connInfo.esopt_in_str)
-            GetElasticSpecificOpts(rt_opts, SAFE_NAME(self->connInfo.esopt));
-    } catch (std::exception &e) {
-        CC_set_error(self, CONN_OPENDB_ERROR, e.what(), "LIBES_connect");
-        return 0;
-    }
     void *esconn = ESConnectDBParams(rt_opts, FALSE, OPTION_COUNT);
     if (esconn == NULL) {
         const char *err = GetErrorMsg(esconn);

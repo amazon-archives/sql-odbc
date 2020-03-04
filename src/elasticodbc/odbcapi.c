@@ -84,7 +84,6 @@ RETCODE SQL_API SQLColumns(HSTMT StatementHandle, SQLCHAR *CatalogName,
     StatementClass *stmt = (StatementClass *)StatementHandle;
     SQLCHAR *ctName = CatalogName, *scName = SchemaName, *tbName = TableName,
             *clName = ColumnName;
-    ConnInfo *ci = &(SC_get_conn(stmt)->connInfo);
     UWORD flag = PODBC_SEARCH_PUBLIC_SCHEMA;
 
     MYLOG(0, "Entering\n");
@@ -95,10 +94,6 @@ RETCODE SQL_API SQLColumns(HSTMT StatementHandle, SQLCHAR *CatalogName,
     SC_clear_error(stmt);
     if (stmt->options.metadata_id)
         flag |= PODBC_NOT_SEARCH_PATTERN;
-    if (atoi(ci->show_oid_column))
-        flag |= PODBC_SHOW_OID_COLUMN;
-    if (atoi(ci->row_versioning))
-        flag |= PODBC_ROW_VERSIONING;
     if (SC_opencheck(stmt, func))
         ret = SQL_ERROR;
     else
@@ -110,8 +105,6 @@ RETCODE SQL_API SQLColumns(HSTMT StatementHandle, SQLCHAR *CatalogName,
         SQLCHAR *newCt = NULL, *newSc = NULL, *newTb = NULL, *newCl = NULL;
         ConnectionClass *conn = SC_get_conn(stmt);
 
-        if (SC_is_lower_case(stmt, conn)) /* case-insensitive identifier */
-            ifallupper = FALSE;
         if (newCt = make_lstring_ifneeded(conn, CatalogName, NameLength1,
                                           ifallupper),
             NULL != newCt) {
@@ -589,8 +582,6 @@ RETCODE SQL_API SQLSpecialColumns(HSTMT StatementHandle,
         SQLCHAR *newCt = NULL, *newSc = NULL, *newTb = NULL;
         ConnectionClass *conn = SC_get_conn(stmt);
 
-        if (SC_is_lower_case(stmt, conn)) /* case-insensitive identifier */
-            ifallupper = FALSE;
         if (newCt = make_lstring_ifneeded(conn, CatalogName, NameLength1,
                                           ifallupper),
             NULL != newCt) {
@@ -652,8 +643,6 @@ RETCODE SQL_API SQLStatistics(HSTMT StatementHandle, SQLCHAR *CatalogName,
         SQLCHAR *newCt = NULL, *newSc = NULL, *newTb = NULL;
         ConnectionClass *conn = SC_get_conn(stmt);
 
-        if (SC_is_lower_case(stmt, conn)) /* case-insensitive identifier */
-            ifallupper = FALSE;
         if (newCt = make_lstring_ifneeded(conn, CatalogName, NameLength1,
                                           ifallupper),
             NULL != newCt) {
@@ -718,8 +707,6 @@ RETCODE SQL_API SQLTables(HSTMT StatementHandle, SQLCHAR *CatalogName,
         SQLCHAR *newCt = NULL, *newSc = NULL, *newTb = NULL;
         ConnectionClass *conn = SC_get_conn(stmt);
 
-        if (SC_is_lower_case(stmt, conn)) /* case-insensitive identifier */
-            ifallupper = FALSE;
         if (newCt = make_lstring_ifneeded(conn, CatalogName, NameLength1,
                                           ifallupper),
             NULL != newCt) {
@@ -784,8 +771,6 @@ RETCODE SQL_API SQLColumnPrivileges(
         SQLCHAR *newCt = NULL, *newSc = NULL, *newTb = NULL, *newCl = NULL;
         ConnectionClass *conn = SC_get_conn(stmt);
 
-        if (SC_is_lower_case(stmt, conn)) /* case-insensitive identifier */
-            ifallupper = FALSE;
         if (newCt = make_lstring_ifneeded(conn, szCatalogName, cbCatalogName,
                                           ifallupper),
             NULL != newCt) {
@@ -913,8 +898,6 @@ RETCODE SQL_API SQLForeignKeys(
                 *newFkct = NULL, *newFksc = NULL, *newFktb = NULL;
         ConnectionClass *conn = SC_get_conn(stmt);
 
-        if (SC_is_lower_case(stmt, conn)) /* case-insensitive identifier */
-            ifallupper = FALSE;
         if (newPkct = make_lstring_ifneeded(conn, szPkCatalogName,
                                             cbPkCatalogName, ifallupper),
             NULL != newPkct) {
@@ -1047,8 +1030,6 @@ RETCODE SQL_API SQLPrimaryKeys(HSTMT hstmt, SQLCHAR *szCatalogName,
         SQLCHAR *newCt = NULL, *newSc = NULL, *newTb = NULL;
         ConnectionClass *conn = SC_get_conn(stmt);
 
-        if (SC_is_lower_case(stmt, conn)) /* case-insensitive identifier */
-            ifallupper = FALSE;
         if (newCt = make_lstring_ifneeded(conn, szCatalogName, cbCatalogName,
                                           ifallupper),
             NULL != newCt) {
@@ -1112,8 +1093,6 @@ RETCODE SQL_API SQLProcedureColumns(
         SQLCHAR *newCt = NULL, *newSc = NULL, *newPr = NULL, *newCl = NULL;
         ConnectionClass *conn = SC_get_conn(stmt);
 
-        if (SC_is_lower_case(stmt, conn)) /* case-insensitive identifier */
-            ifallupper = FALSE;
         if (newCt = make_lstring_ifneeded(conn, szCatalogName, cbCatalogName,
                                           ifallupper),
             NULL != newCt) {
@@ -1185,8 +1164,6 @@ RETCODE SQL_API SQLProcedures(HSTMT hstmt, SQLCHAR *szCatalogName,
         SQLCHAR *newCt = NULL, *newSc = NULL, *newPr = NULL;
         ConnectionClass *conn = SC_get_conn(stmt);
 
-        if (SC_is_lower_case(stmt, conn)) /* case-insensitive identifier */
-            ifallupper = FALSE;
         if (newCt = make_lstring_ifneeded(conn, szCatalogName, cbCatalogName,
                                           ifallupper),
             NULL != newCt) {
@@ -1265,8 +1242,6 @@ RETCODE SQL_API SQLTablePrivileges(HSTMT hstmt, SQLCHAR *szCatalogName,
         SQLCHAR *newCt = NULL, *newSc = NULL, *newTb = NULL;
         ConnectionClass *conn = SC_get_conn(stmt);
 
-        if (SC_is_lower_case(stmt, conn)) /* case-insensitive identifier */
-            ifallupper = FALSE;
         if (newCt = make_lstring_ifneeded(conn, szCatalogName, cbCatalogName,
                                           ifallupper),
             NULL != newCt) {
