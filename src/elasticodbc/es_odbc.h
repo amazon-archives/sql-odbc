@@ -530,21 +530,8 @@ typedef struct {
 
 typedef struct GlobalValues_ {
     esNAME drivername;
-    int fetch_max;
-    int unknown_sizes;
-    int max_varchar_size;
-    int max_longvarchar_size;
-    char debug;
-    char commlog;
-    char unique_index;
-    char use_declarefetch;
-    char text_as_longvarchar;
-    char unknowns_as_longvarchar;
-    char bools_as_char;
-    char lie;
-    char parse;
-    char extra_systable_prefixes[MEDIUM_REGISTRY_LEN];
-    char protocol[SMALL_REGISTRY_LEN];
+    char output_dir[LARGE_REGISTRY_LEN];
+    char loglevel;
 } GLOBAL_VALUES;
 
 void copy_globals(GLOBAL_VALUES *to, const GLOBAL_VALUES *from);
@@ -621,73 +608,34 @@ void logs_on_off(int cnopen, int, int);
     8192                             /* this seems sufficiently big for \ \
                                       * queries used in info.c inoue    \ \
                                       * 2001/05/17 */
-#define DEFAULT_RESPONSE_TIMEOUT 10  // Seconds
-#define DEFAULT_RESPONSE_TIMEOUT_STR "10"
-#define DEFAULT_AUTHTYPE "NONE"
-#define DEFAULT_VERIFY_SERVER 1
 #define LENADDR_SHIFT(x, sft) ((x) ? (SQLLEN *)((char *)(x) + (sft)) : NULL)
 
 /*	Structure to hold all the connection attributes for a specific
     connection (used for both registry and file, DSN and DRIVER)
 */
-// TODO: STrip out unused entries
 typedef struct {
+    // Connection
     char dsn[MEDIUM_REGISTRY_LEN];
     char desc[MEDIUM_REGISTRY_LEN];
     char drivername[MEDIUM_REGISTRY_LEN];
     char server[MEDIUM_REGISTRY_LEN];
-    char database[MEDIUM_REGISTRY_LEN];
+    char port[SMALL_REGISTRY_LEN];
+    char response_timeout[SMALL_REGISTRY_LEN];
+
+    // Authentication
     char authtype[MEDIUM_REGISTRY_LEN];
     char username[MEDIUM_REGISTRY_LEN];
     esNAME password;
     char region[MEDIUM_REGISTRY_LEN];
+
+    // Encryption
     char use_ssl;
     char verify_server;
-    char trust_self_signed;
-    char certificate[MEDIUM_REGISTRY_LEN];
-    char key[MEDIUM_REGISTRY_LEN];
-    char port[SMALL_REGISTRY_LEN];
-    char onlyread[SMALL_REGISTRY_LEN];
-    char fake_oid_index[SMALL_REGISTRY_LEN];
-    char show_oid_column[SMALL_REGISTRY_LEN];
-    char row_versioning[SMALL_REGISTRY_LEN];
-    char show_system_tables[SMALL_REGISTRY_LEN];
-    char translation_dll[MEDIUM_REGISTRY_LEN];
-    char translation_option[SMALL_REGISTRY_LEN];
-    char response_timeout[SMALL_REGISTRY_LEN];
-    char password_required;
-    char conn_settings_in_str;
-    char esopt_in_str;
-    esNAME conn_settings;
-    esNAME esopt;
-    signed char allow_keyset;
-    signed char updatable_cursors;
-    signed char lf_conversion;
-    signed char true_is_minus1;
-    signed char int8_as;
-    signed char bytea_as_longvarbinary;
-    signed char use_server_side_prepare;
-    signed char lower_case_identifier;
-    signed char rollback_on_error;
-    signed char force_abbrev_connstr;
-    signed char bde_environment;
-    signed char fake_mss;
-    signed char cvt_null_date_string;
-    signed char accessible_only;
-    signed char ignore_round_trip_time;
-    signed char disable_keepalive;
-    signed char wcs_debug;
-    signed char numeric_as;
-    UInt4 extra_opts;
-    Int4 keepalive_idle;
-    Int4 keepalive_interval;
-#ifdef _HANDLE_ENLIST_IN_DTC_
-    signed char xa_opt;
-#endif                     /* _HANDLE_ENLIST_IN_DTC_ */
+
     GLOBAL_VALUES drivers; /* moved from driver's option */
 } ConnInfo;
 
-#define SUPPORT_DESCRIBE_PARAM(conninfo_) (conninfo_->use_server_side_prepare)
+#define SUPPORT_DESCRIBE_PARAM(conninfo_) (1)
 
 int initialize_global_cs(void);
 enum {                        /* CC_conninfo_init option */

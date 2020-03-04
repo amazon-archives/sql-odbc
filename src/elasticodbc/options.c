@@ -55,12 +55,6 @@ static RETCODE set_statement_option(ConnectionClass *conn, StatementClass *stmt,
              */
             MYLOG(0, "SQL_CONCURRENCY = " FORMAT_LEN " ", vParam);
             setval = SQL_CONCUR_READ_ONLY;
-            if (SQL_CONCUR_READ_ONLY == vParam)
-                ;
-            else if (ci->drivers.lie)
-                setval = vParam;
-            else if (0 != ci->updatable_cursors)
-                setval = SQL_CONCUR_ROWVER;
             if (conn)
                 conn->stmtOptions.scroll_concurrency = (SQLUINTEGER)setval;
             else if (stmt) {
@@ -86,24 +80,12 @@ static RETCODE set_statement_option(ConnectionClass *conn, StatementClass *stmt,
              */
             MYLOG(0, "SQL_CURSOR_TYPE = " FORMAT_LEN " ", vParam);
             setval = SQL_CURSOR_FORWARD_ONLY;
-            if (ci->drivers.lie)
-                setval = vParam;
-            else if (SQL_CURSOR_STATIC == vParam)
+            if (SQL_CURSOR_STATIC == vParam)
                 setval = vParam;
             else if (SQL_CURSOR_KEYSET_DRIVEN == vParam) {
-                if (0 != (ci->updatable_cursors & ALLOW_KEYSET_DRIVEN_CURSORS))
-                    setval = vParam;
-                else
-                    setval = SQL_CURSOR_STATIC; /* at least scrollable */
+                setval = SQL_CURSOR_STATIC; /* at least scrollable */
             } else if (SQL_CURSOR_DYNAMIC == vParam) {
-                if (0 != (ci->updatable_cursors & ALLOW_DYNAMIC_CURSORS))
-                    setval = vParam;
-                else if (0
-                         != (ci->updatable_cursors
-                             & ALLOW_KEYSET_DRIVEN_CURSORS))
-                    setval = SQL_CURSOR_KEYSET_DRIVEN;
-                else
-                    setval = SQL_CURSOR_STATIC; /* at least scrollable */
+                setval = SQL_CURSOR_STATIC; /* at least scrollable */
             }
             if (conn)
                 conn->stmtOptions.cursor_type = (SQLUINTEGER)setval;

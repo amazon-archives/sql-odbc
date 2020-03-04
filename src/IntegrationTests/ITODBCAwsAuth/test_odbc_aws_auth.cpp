@@ -19,7 +19,7 @@
 #include "it_odbc_helper.h"
 // clang-format on
 
-std::wstring dsn_name = L"test_dsn";
+std::wstring dsn_name = L"test_aws_auth_dsn";
 std::wstring aws_auth_conn_string =
     L"Driver={Elasticsearch};DataBase=database_name;"
     L"Server=https://"

@@ -85,7 +85,6 @@ static RETCODE GetRequirementsAndConnect(const SQLUSMALLINT driver_completion,
                      "ESAPI_DriverConnect->GetRequirements");
         return SQL_ERROR;
     }
-    reqs = ci->password_required ? PASSWORD_IS_REQUIRED : 0;
     ret_val = CC_connect(conn);
     return SQL_SUCCESS;
 }
@@ -173,7 +172,7 @@ static SQLRETURN SetupConnString(const SQLCHAR *conn_str_in,
     // Make connection string and get DSN
     std::unique_ptr< char, free_delete > conn_str(
         make_string(conn_str_in, conn_str_in_len, NULL, 0));
-
+    
     if (!dconn_get_DSN_or_Driver(conn_str.get(), ci)) {
         CC_set_error(conn, CONN_OPENDB_ERROR, "Connection string parse error",
                      func);
@@ -191,7 +190,7 @@ static SQLRETURN SetupConnString(const SQLCHAR *conn_str_in,
                      func);
         return SQL_ERROR;
     }
-    logs_on_off(1, ci->drivers.debug, ci->drivers.commlog);
+    logs_on_off(1, ci->drivers.loglevel, ci->drivers.loglevel);
 
     return SQL_SUCCESS;
 }

@@ -51,144 +51,30 @@ extern "C" {
 #define INI_DSN "Elasticsearch30"
 #endif /* UNICODE_SUPPORT */
 
-#define INI_KDESC                  \
-    "Description" /* Data source \ \
-                   * description */
-#define INI_SERVER                        \
-    "Host" /* Name of Server            \ \
-            * running the Elasticsearch \ \
-            * service */
-#define SPEC_SERVER "server"
-#define INI_PORT                                                  \
-    "Port"                                 /* Port on which the \ \
-                                            * Postmaster is listening */
-#define INI_DATABASE "Database"            /* Database Name */
-#define ABBR_DATABASE "DX"                 /* Database Name */
-#define INI_AUTH_MODE "AuthenticationMode" /* Default Authentication Mode */
-#define INI_REGION "Region"				/* Default Region */
-#define INI_UID "UID"                      /* Default User Name */
-#define INI_USERNAME "Username"            /* Default User Name */
-#define INI_PASSWORD "Password"            /* Default Password */
-#define INI_TIMEOUT "ResponseTimeout"      /* Default Response Timeout */
-#define INI_SSL_USE "SSLUse"               /* Default Use SSL */
-#define INI_SSL_VERIFY_SERVER "SSLVerifyServer"               /* Default Verify Server */
-#define INI_SSL_ALLOW_SELF_SIGNED "SSLSelfSigned" /* Default SSL Self Signed*/
-#define INI_SSL_CERTIFICATE "SSLCertificate"      /* Default SSL Certificate */
-#define INI_SSL_KEY "SSLKey"                      /* Default SSL Key */
+#define INI_SERVER "host"
+#define INI_PORT "port"
+#define INI_USERNAME "user"        
+#define INI_PASSWORD "password"  
+#define INI_AUTH_MODE "auth"
+#define INI_REGION "region" 
+#define INI_SSL_USE "useSSL"  
+#define INI_SSL_HOST_VERIFY "hostnameVerification"
+#define INI_LOG_LEVEL "logLevel"
+#define INI_LOG_OUTPUT "logOutput"
+#define INI_TIMEOUT "responseTimeout"
 
-#define INI_ABBREVIATE "CX"
-#define INI_DEBUG "Debug" /* Debug flag */
-#define ABBR_DEBUG "B2"
-#define INI_FETCH "Fetch" /* Fetch Max Count */
-#define ABBR_FETCH "A7"
-#define INI_READONLY "ReadOnly" /* Database is read only */
-#define ABBR_READONLY "A0"
-#define INI_COMMLOG                 \
-    "CommLog" /* Communication to \ \
-               * backend logging */
-#define ABBR_COMMLOG "B3"
-#define INI_PROTOCOL                            \
-    "Protocol" /* Controls rollback-on-error  \ \
-                * behavior. Called "Protocol" \ \
-                * for historical reasons */
-#define ABBR_PROTOCOL "A1"
-/*	"Optimizer", abbreviated to B4 used to stand for "disable genetic query
- * optimizer". No longer supported, you can use generic ConnSettings instead.
-#define INI_OPTIMIZER			"Optimizer"
-#define ABBR_OPTIMIZER			"B4"
-*/
-/* "Ksqo", abbreviated to B5 was used with pre-7.1 server versions for
- * "keyset query optimization". No longer used.
-#define INI_KSQO                       "Ksqo"
-#define ABBR_KSQO                      "B5"
-*/
-#define INI_CONNSETTINGS                      \
-    "ConnSettings" /* Anything to send to   \ \
-                    * backend on successful \ \
-                    * connection */
-#define ABBR_CONNSETTINGS "A6"
-#define INI_UNIQUEINDEX                 \
-    "UniqueIndex" /* Recognize unique \ \
-                   * indexes */
-#define INI_UNKNOWNSIZES                      \
-    "UnknownSizes" /* How to handle unknown \ \
-                    * result set sizes */
-#define ABBR_UNKNOWNSIZES "A9"
-
-/* "CancelAsFreeStmt", abbreviated to "C1" was used with ODBC versions older
- * than 3.51. It was a hack that made SQLCancel to imply
- * SQLFreeStmt(SQL_CLOSE). It never had an effect in > 3.51 mode.
-#define INI_CANCELASFREESTMT		"CancelAsFreeStmt"
-#define ABBR_CANCELASFREESTMT	"C1"
-*/
-#define INI_USEDECLAREFETCH                  \
-    "UseDeclareFetch" /* Use Declare/Fetch \ \
-                       * cursors */
-#define ABBR_USEDECLAREFETCH "B6"
-
-/*	More ini stuff */
-#define INI_TEXTASLONGVARCHAR "TextAsLongVarchar"
-#define ABBR_TEXTASLONGVARCHAR "B7"
-#define INI_UNKNOWNSASLONGVARCHAR "UnknownsAsLongVarchar"
-#define ABBR_UNKNOWNSASLONGVARCHAR "B8"
-#define INI_BOOLSASCHAR "BoolsAsChar"
-#define ABBR_BOOLSASCHAR "B9"
-#define INI_MAXVARCHARSIZE "MaxVarcharSize"
-#define ABBR_MAXVARCHARSIZE "B0"
-#define INI_MAXLONGVARCHARSIZE "MaxLongVarcharSize"
-#define ABBR_MAXLONGVARCHARSIZE "B1"
-
-#define INI_FAKEOIDINDEX "FakeOidIndex"
-#define ABBR_FAKEOIDINDEX "A2"
-#define INI_SHOWOIDCOLUMN "ShowOidColumn"
-#define ABBR_SHOWOIDCOLUMN "A3"
-#define INI_ROWVERSIONING "RowVersioning"
-#define ABBR_ROWVERSIONING "A4"
-#define INI_SHOWSYSTEMTABLES "ShowSystemTables"
-#define ABBR_SHOWSYSTEMTABLES "A5"
-#define INI_LIE "Lie"
-#define INI_PARSE "Parse"
-#define ABBR_PARSE "C0"
-#define INI_EXTRASYSTABLEPREFIXES "ExtraSysTablePrefixes"
-#define ABBR_EXTRASYSTABLEPREFIXES "C2"
-
-#define INI_TRANSLATIONNAME "TranslationName"
-#define INI_TRANSLATIONDLL "TranslationDLL"
-#define INI_TRANSLATIONOPTION "TranslationOption"
-/*
- * "DisallowPremature", abbreviated "C3", used to mean that we should not
- * execute a statement prematurely, before SQLExecute() when e.g.
- * SQLPrepare+SQLDescribeCol is called. We never do that anymore.
- *
-#define INI_DISALLOWPREMATURE          "DisallowPremature"
-#define ABBR_DISALLOWPREMATURE         "C3"
-*/
-#define INI_UPDATABLECURSORS "UpdatableCursors"
-#define ABBR_UPDATABLECURSORS "C4"
-#define INI_LFCONVERSION "LFConversion"
-#define ABBR_LFCONVERSION "C5"
-#define INI_TRUEISMINUS1 "TrueIsMinus1"
-#define ABBR_TRUEISMINUS1 "C6"
-#define INI_INT8AS "BI"
-#define INI_NUMERIC_AS "D6"
-#define INI_BYTEAASLONGVARBINARY "ByteaAsLongVarBinary"
-#define ABBR_BYTEAASLONGVARBINARY "C7"
-#define INI_USESERVERSIDEPREPARE "UseServerSidePrepare"
-#define ABBR_USESERVERSIDEPREPARE "C8"
-#define INI_LOWERCASEIDENTIFIER "LowerCaseIdentifier"
-#define ABBR_LOWERCASEIDENTIFIER "C9"
-#define INI_EXTRAOPTIONS "AB"
-#define INI_LOGDIR "Logdir"
-#define INI_KEEPALIVETIME "KeepaliveTime"
-#define ABBR_KEEPALIVETIME "D1"
-#define INI_KEEPALIVEINTERVAL "KeepaliveInterval"
-#define ABBR_KEEPALIVEINTERVAL "D2"
-#define INI_ESOPT "esopt"
-#define ABBR_ESOPT \
-    "D5"  // TODO AE-170: Revise this value / consider removing if it is not
-          // desired
-#define INI_DTCLOG "Dtclog"
-#define ABBR_XAOPT "D4"
+#define DEFAULT_RESPONSE_TIMEOUT 10  // Seconds
+#define DEFAULT_RESPONSE_TIMEOUT_STR "10"
+#define DEFAULT_AUTHTYPE "NONE"
+#define DEFAULT_HOST ""
+#define DEFAULT_PORT ""
+#define DEFAULT_USERNAME ""
+#define DEFAULT_PASSWORD ""
+#define DEFAULT_DRIVERNAME ""
+#define DEFAULT_DESC ""
+#define DEFAULT_DSN ""
+#define DEFAULT_REGION ""
+#define DEFAULT_VERIFY_SERVER 1
 
 #define AUTHTYPE_NONE "NONE"
 #define AUTHTYPE_BASIC "BASIC"
@@ -243,8 +129,7 @@ extern "C" {
 #define DEFAULT_UNKNOWNSASLONGVARCHAR 0
 #define DEFAULT_BOOLSASCHAR 0
 #define DEFAULT_UNIQUEINDEX 1 /* dont recognize */
-#define DEFAULT_COMMLOG 0     /* dont log */
-#define DEFAULT_DEBUG 0
+#define DEFAULT_LOGLEVEL 0
 #define DEFAULT_USE_SSL 0
 #define DEFAULT_TRUST_SELF_SIGNED 0
 #define DEFAULT_AUTH_MODE "NONE"
@@ -308,8 +193,6 @@ BOOL get_DSN_or_Driver(ConnInfo *ci, const char *attribute, const char *value);
 BOOL copyConnAttributes(ConnInfo *ci, const char *attribute, const char *value);
 int getDriverNameFromDSN(const char *dsn, char *driver_name, int namelen);
 UInt4 getExtraOptions(const ConnInfo *);
-BOOL setExtraOptions(ConnInfo *, const char *str, const char *format);
-signed char ci_updatable_cursors_set(ConnInfo *ci);
 void SetAuthenticationVisibility(HWND hdlg, const struct authmode *am);
 const struct authmode *GetCurrentAuthMode(HWND hdlg);
 

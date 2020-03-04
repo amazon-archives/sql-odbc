@@ -31,14 +31,14 @@ const std::string invalid_host = "10.1.1.189";
 const std::string invalid_port = "920";
 const std::string invalid_user = "amin";
 const std::string invalid_pw = "amin";
-runtime_options valid_opt_val = {{valid_host, valid_port, "elasticsearch", "1"},
+runtime_options valid_opt_val = {{valid_host, valid_port, "1"},
                                  {"BASIC", valid_user, valid_pw},
                                  {use_ssl, false, "", "", "", ""}};
 runtime_options invalid_opt_val = {
-    {invalid_host, invalid_port, "elasticsearch", "1"},
+    {invalid_host, invalid_port, "1"},
     {"BASIC", invalid_user, invalid_pw},
     {use_ssl, false, "", "", "", ""}};
-runtime_options missing_opt_val = {{"", "", "elasticsearch", "1"},
+runtime_options missing_opt_val = {{"", "", "1"},
                                    {"BASIC", "", invalid_pw},
                                    {use_ssl, false, "", "", "", ""}};
 

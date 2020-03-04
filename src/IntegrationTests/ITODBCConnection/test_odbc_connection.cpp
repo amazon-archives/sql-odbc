@@ -147,7 +147,7 @@ TEST(TestSqlDriverConnect, SqlDriverNoprompt) {
 // 	std::wstring invalid_driver_conn_string =
 // 		L"Driver=xxxx;DataBase=database_name;"
 // 		L"Server=localhost;port=9200;"
-// 		L"Uid=admin;Pwd=admin;";
+// 		L"username=admin;password=admin;";
 
 // 	SQLRETURN ret;
 // 	ExecuteSqlDriverConnect((SQLTCHAR*)invalid_driver_conn_string.c_str(),
@@ -156,10 +156,17 @@ TEST(TestSqlDriverConnect, SqlDriverNoprompt) {
 // }
 
 TEST(TestSqlDriverConnect, InvalidHost) {
-    std::wstring invalid_host_conn_string =
-        L"Driver={SQL Server};DataBase=database_name;"
-        L"Host=8.8.8.8;Port=9200;"
-        L"Username=admin;Password=admin;AuthenticationMode=BASIC";
+    std::wstring invalid_host_conn_string = 
+    use_ssl ? L"Driver={Elasticsearch ODBC};"
+              L"host=https://8.8.8.8;port=9200;"
+              L"user=admin;password=admin;auth=BASIC;useSSL="
+              L"1;hostnameVerification=0;logLevel=0;logOutput=C:\\;"
+              L"responseTimeout=10;"
+            : L"Driver={Elasticsearch ODBC};"
+              L"host=8.8.8.8;port=9200;"
+              L"user=admin;password=admin;auth=BASIC;useSSL="
+              L"0;hostnameVerification=0;logLevel=0;logOutput=C:\\;"
+              L"responseTimeout=10;";
 
     SQLRETURN ret;
     ExecuteSqlDriverConnect((SQLTCHAR*)invalid_host_conn_string.c_str(),
@@ -169,9 +176,16 @@ TEST(TestSqlDriverConnect, InvalidHost) {
 
 TEST(TestSqlDriverConnect, InvalidPort) {
     std::wstring invalid_port_conn_string =
-        L"Driver={SQL Server};DataBase=database_name;"
-        L"Host=localhost;Port=5432;"
-        L"Username=admin;Password=admin;";
+    use_ssl ? L"Driver={Elasticsearch ODBC};"
+              L"host=https://localhost;port=5432;"
+              L"user=admin;password=admin;auth=BASIC;useSSL="
+              L"1;hostnameVerification=0;logLevel=0;logOutput=C:\\;"
+              L"responseTimeout=10;"
+            : L"Driver={Elasticsearch ODBC};"
+              L"host=localhost;port=5432;"
+              L"user=admin;password=admin;auth=BASIC;useSSL="
+              L"0;hostnameVerification=0;logLevel=0;logOutput=C:\\;"
+              L"responseTimeout=10;";
 
     SQLRETURN ret;
     ExecuteSqlDriverConnect((SQLTCHAR*)invalid_port_conn_string.c_str(),
@@ -184,9 +198,16 @@ TEST(TestSqlDriverConnect, InvalidPort) {
 // string attribute)
 TEST(TestSqlDriverConnect, UnsupportedKeyword) {
     std::wstring unsupported_keyword_conn_string =
-        L"Driver={SQL Server};DataBase=database_name;"
-        L"Host=localhost;Port=5432;"
-        L"Username=admin;Password=admin;extra=1;";
+    use_ssl ? L"Driver={Elasticsearch ODBC};"
+              L"host=https://localhost;port=5432;"
+              L"user=admin;password=admin;auth=BASIC;useSSL="
+              L"1;hostnameVerification=0;logLevel=0;logOutput=C:\\;"
+              L"responseTimeout=10;extra=1"
+            : L"Driver={Elasticsearch ODBC};"
+              L"host=localhost;port=5432;"
+              L"user=admin;password=admin;auth=BASIC;useSSL="
+              L"0;hostnameVerification=0;logLevel=0;logOutput=C:\\;"
+              L"responseTimeout=10;extra=1";
 
     SQLRETURN ret;
     ExecuteSqlDriverConnect((SQLTCHAR*)unsupported_keyword_conn_string.c_str(),
@@ -195,10 +216,17 @@ TEST(TestSqlDriverConnect, UnsupportedKeyword) {
 }
 
 TEST(TestSqlDriverConnect, Timeout1Second) {
-    std::wstring one_second_timeout =
-        L"Driver={SQL Server};DataBase=elasticsearch;"
-        L"Host=8.8.8.8;Port=9200;"
-        L"Username=admin;Password=admin;ResponseTimeout=1;";
+    std::wstring one_second_timeout = 
+    use_ssl ? L"Driver={Elasticsearch ODBC};"
+              L"host=https://8.8.8.8;port=9200;"
+              L"user=admin;password=admin;auth=BASIC;useSSL="
+              L"1;hostnameVerification=0;logLevel=0;logOutput=C:\\;"
+              L"responseTimeout=1;"
+            : L"Driver={Elasticsearch ODBC};"
+              L"host=8.8.8.8;port=9200;"
+              L"user=admin;password=admin;auth=BASIC;useSSL="
+              L"0;hostnameVerification=0;logLevel=0;logOutput=C:\\;"
+              L"responseTimeout=1;";
 
     SQLRETURN ret;
     auto start = std::chrono::steady_clock::now();
@@ -223,10 +251,17 @@ TEST(TestSqlDriverConnect, Timeout1Second) {
 }
 
 TEST(TestSqlDriverConnect, Timeout3Second) {
-    std::wstring one_second_timeout =
-        L"Driver={SQL Server};DataBase=elasticsearch;"
-        L"Host=8.8.8.8;Port=9200;"
-        L"Username=admin;Password=admin;ResponseTimeout=3;";
+    std::wstring one_second_timeout = 
+    use_ssl ? L"Driver={Elasticsearch ODBC};"
+              L"host=https://8.8.8.8;port=9200;"
+              L"user=admin;password=admin;auth=BASIC;useSSL="
+              L"1;hostnameVerification=0;logLevel=0;logOutput=C:\\;"
+              L"responseTimeout=3;"
+            : L"Driver={Elasticsearch ODBC};"
+              L"host=8.8.8.8;port=9200;"
+              L"user=admin;password=admin;auth=BASIC;useSSL="
+              L"0;hostnameVerification=0;logLevel=0;logOutput=C:\\;"
+              L"responseTimeout=3;";
 
     SQLRETURN ret;
     auto start = std::chrono::steady_clock::now();
@@ -251,10 +286,17 @@ TEST(TestSqlDriverConnect, Timeout3Second) {
 }
 
 TEST(TestSqlDriverConnect, Timeout7Second) {
-    std::wstring seven_second_timeout =
-        L"Driver={SQL Server};DataBase=elasticsearch;"
-        L"Host=8.8.8.8;Port=9200;"
-        L"Username=admin;Password=admin;ResponseTimeout=7;";
+    std::wstring seven_second_timeout  = 
+    use_ssl ? L"Driver={Elasticsearch ODBC};"
+              L"host=https://8.8.8.8;port=9200;"
+              L"user=admin;password=admin;auth=BASIC;useSSL="
+              L"1;hostnameVerification=0;logLevel=0;logOutput=C:\\;"
+              L"responseTimeout=7;"
+            : L"Driver={Elasticsearch ODBC};"
+              L"host=8.8.8.8;port=9200;"
+              L"user=admin;password=admin;auth=BASIC;useSSL="
+              L"0;hostnameVerification=0;logLevel=0;logOutput=C:\\;"
+              L"responseTimeout=7;";
 
     SQLRETURN ret;
     auto start = std::chrono::steady_clock::now();

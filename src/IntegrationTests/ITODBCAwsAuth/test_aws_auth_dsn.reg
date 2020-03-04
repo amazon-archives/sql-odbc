@@ -8,14 +8,10 @@ Windows Registry Editor Version 5.00
 "Setup"="<project-root>\\bin64\\Release\\elasticodbc.dll"
 
 [HKEY_LOCAL_MACHINE\SOFTWARE\ODBC\ODBC.INI\ODBC Data Sources]
-"test_dsn"="ElasticsearchODBC"
+"test_aws_auth_dsn"="ElasticsearchODBC"
 
-[HKEY_LOCAL_MACHINE\SOFTWARE\ODBC\ODBC.INI\test_dsn]
-"host"="localhost"
-"port"="9200"
-"user"="admin"
-"password"="admin"
-"auth"="BASIC"
+[HKEY_LOCAL_MACHINE\SOFTWARE\ODBC\ODBC.INI\test_aws_auth_dsn]
+"host"="https://search-sept-cdg-david-test-domain-gouok3seqeupz64smuvfxyddui.eu-west-3.es.amazonaws.com"
+"auth"="AWS_SIGV4"
+"region"="eu-west-3"
 "useSSL"="0"
-"responseTimeout"="10"
-

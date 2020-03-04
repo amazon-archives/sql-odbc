@@ -45,53 +45,6 @@ SQLSMALLINT ansi_to_wtype(const ConnectionClass *self, SQLSMALLINT ansitype) {
 #endif /* UNICODE_SUPPORT */
 }
 
-Int4 getCharColumnSize(const StatementClass *stmt, OID type, int col,
-                       int handle_unknown_size_as);
-
-/*
- * these are the types we support.	all of the estype_ functions should
- * return values for each one of these.
- * Even types not directly supported are handled as character types
- * so all types should work (points, etc.)
- */
-
-/*
- * ALL THESE TYPES ARE NO LONGER REPORTED in SQLGetTypeInfo.  Instead, all
- *	the SQL TYPES are reported and mapped to a corresponding Elasticsearch Type
- */
-
-/*
-OID es_types_defined[][2] = {
-            {ES_TYPE_CHAR, 0}
-            ,{ES_TYPE_CHAR2, 0}
-            ,{ES_TYPE_CHAR4, 0}
-            ,{ES_TYPE_CHAR8, 0}
-            ,{ES_TYPE_CHAR16, 0}
-            ,{ES_TYPE_NAME, 0}
-            ,{ES_TYPE_VARCHAR, 0}
-            ,{ES_TYPE_BPCHAR, 0}
-            ,{ES_TYPE_DATE, 0}
-            ,{ES_TYPE_TIME, 0}
-            ,{ES_TYPE_TIME_WITH_TMZONE, 0}
-            ,{ES_TYPE_DATETIME, 0}
-            ,{ES_TYPE_ABSTIME, 0}
-            ,{ES_TYPE_TIMESTAMP_NO_TMZONE, 0}
-            ,{ES_TYPE_TIMESTAMP, 0}
-            ,{ES_TYPE_TEXT, 0}
-            ,{ES_TYPE_INT2, 0}
-            ,{ES_TYPE_INT4, 0}
-            ,{ES_TYPE_FLOAT4, 0}
-            ,{ES_TYPE_FLOAT8, 0}
-            ,{ES_TYPE_OID, 0}
-            ,{ES_TYPE_MONEY, 0}
-            ,{ES_TYPE_BOOL, 0}
-            ,{ES_TYPE_BYTEA, 0}
-            ,{ES_TYPE_NUMERIC, 0}
-            ,{ES_TYPE_XID, 0}
-            ,{ES_TYPE_LO_UNDEFINED, 0}
-            ,{0, 0} };
-*/
-
 /*	These are NOW the SQL Types reported in SQLGetTypeInfo.  */
 SQLSMALLINT sqlTypes[] = {
     SQL_BIGINT,
@@ -138,105 +91,14 @@ OID es_true_type(const ConnectionClass *conn, OID type, OID basetype) {
 #define MINUTE_BIT (1 << 27)
 #define SECOND_BIT (1 << 28)
 
-#ifdef ES_INTERVAL_AS_SQL_INTERVAL
-static SQLSMALLINT get_interval_type(Int4 atttypmod, const char **name) {
-    MYLOG(0, "entering atttypmod=%x\n", atttypmod);
-    if ((-1) == atttypmod)
-        return 0;
-    if (0 != (YEAR_BIT & atttypmod)) {
-        if (0 != (MONTH_BIT & atttypmod)) {
-            if (name)
-                *name = "interval year to month";
-            return SQL_INTERVAL_YEAR_TO_MONTH;
-        }
-        if (name)
-            *name = "interval year";
-        return SQL_INTERVAL_YEAR;
-    } else if (0 != (MONTH_BIT & atttypmod)) {
-        if (name)
-            *name = "interval month";
-        return SQL_INTERVAL_MONTH;
-    } else if (0 != (DAY_BIT & atttypmod)) {
-        if (0 != (SECOND_BIT & atttypmod)) {
-            if (name)
-                *name = "interval day to second";
-            return SQL_INTERVAL_DAY_TO_SECOND;
-        } else if (0 != (MINUTE_BIT & atttypmod)) {
-            if (name)
-                *name = "interval day to minute";
-            return SQL_INTERVAL_DAY_TO_MINUTE;
-        } else if (0 != (HOUR_BIT & atttypmod)) {
-            if (name)
-                *name = "interval day to hour";
-            return SQL_INTERVAL_DAY_TO_HOUR;
-        }
-        if (name)
-            *name = "interval day";
-        return SQL_INTERVAL_DAY;
-    } else if (0 != (HOUR_BIT & atttypmod)) {
-        if (0 != (SECOND_BIT & atttypmod)) {
-            if (name)
-                *name = "interval hour to second";
-            return SQL_INTERVAL_HOUR_TO_SECOND;
-        } else if (0 != (MINUTE_BIT & atttypmod)) {
-            if (name)
-                *name = "interval hour to minute";
-            return SQL_INTERVAL_HOUR_TO_MINUTE;
-        }
-        if (name)
-            *name = "interval hour";
-        return SQL_INTERVAL_HOUR;
-    } else if (0 != (MINUTE_BIT & atttypmod)) {
-        if (0 != (SECOND_BIT & atttypmod)) {
-            if (name)
-                *name = "interval minute to second";
-            return SQL_INTERVAL_MINUTE_TO_SECOND;
-        }
-        if (name)
-            *name = "interval minute";
-        return SQL_INTERVAL_MINUTE;
-    } else if (0 != (SECOND_BIT & atttypmod)) {
-        if (name)
-            *name = "interval second";
-        return SQL_INTERVAL_SECOND;
-    }
-
-    if (name)
-        *name = "interval";
-    return 0;
-}
-#endif  // ES_INTERVAL_AS_SQL_INTERVAL
-
 static Int4 getCharColumnSizeX(const ConnectionClass *conn, OID type,
                                int atttypmod, int adtsize_or_longestlen,
                                int handle_unknown_size_as) {
     int p = -1, maxsize;
-    const ConnInfo *ci = &(conn->connInfo);
-
     MYLOG(0, "entering type=%d, atttypmod=%d, adtsize_or=%d, unknown = %d\n",
           type, atttypmod, adtsize_or_longestlen, handle_unknown_size_as);
 
-    /* Assign Maximum size based on parameters */
-    switch (type) {
-        case ES_TYPE_TEXT:
-            if (ci->drivers.text_as_longvarchar)
-                maxsize = ci->drivers.max_longvarchar_size;
-            else
-                maxsize = ci->drivers.max_varchar_size;
-            break;
-
-        case ES_TYPE_VARCHAR:
-        case ES_TYPE_BPCHAR:
-            maxsize = ci->drivers.max_varchar_size;
-            break;
-
-        default:
-            if (ci->drivers.unknowns_as_longvarchar)
-                maxsize = ci->drivers.max_longvarchar_size;
-            else
-                maxsize = ci->drivers.max_varchar_size;
-            break;
-    }
+    maxsize = MAX_VARCHAR_SIZE;
 #ifdef UNICODE_SUPPORT
     if (CC_is_in_unicode_driver(conn) && isSqlServr() && maxsize > 4000)
         maxsize = 4000;
@@ -330,21 +192,12 @@ static SQLSMALLINT getNumericDecimalDigitsX(const ConnectionClass *conn,
 static Int4 /* Elasticsearch restritiction */
 getNumericColumnSizeX(const ConnectionClass *conn, OID type, int atttypmod,
                       int adtsize_or_longest, int handle_unknown_size_as) {
+    UNUSED(conn);
     Int4 default_column_size = 28;
-    const ConnInfo *ci = &(conn->connInfo);
-
     MYLOG(0, "entering type=%d, typmod=%d\n", type, atttypmod);
 
     if (atttypmod > -1)
         return (atttypmod >> 16) & 0xffff;
-    switch (ci->numeric_as) {
-        case SQL_VARCHAR:
-            return ci->drivers.max_varchar_size;
-        case SQL_LONGVARCHAR:
-            return ci->drivers.max_longvarchar_size;
-        case SQL_DOUBLE:
-            return ES_DOUBLE_DIGITS;
-    }
     switch (handle_unknown_size_as) {
         case UNKNOWNS_AS_DONTKNOW:
             return SQL_NO_TOTAL;
@@ -387,7 +240,6 @@ SQLSMALLINT
 estype_attr_to_concise_type(const ConnectionClass *conn, OID type,
                             int atttypmod, int adtsize_or_longestlen,
                             int handle_unknown_size_as) {
-    const ConnInfo *ci = &(conn->connInfo);
     EnvironmentClass *env = (EnvironmentClass *)CC_get_env(conn);
 #ifdef ES_INTERVAL_AS_SQL_INTERVAL
     SQLSMALLINT sqltype;
@@ -406,7 +258,7 @@ estype_attr_to_concise_type(const ConnectionClass *conn, OID type,
         case ES_TYPE_VARCHAR:
             if (getCharColumnSizeX(conn, type, atttypmod, adtsize_or_longestlen,
                                    handle_unknown_size_as)
-                > ci->drivers.max_varchar_size)
+                > MAX_VARCHAR_SIZE)
                 bLongVarchar = TRUE;
             else
                 bLongVarchar = FALSE;
@@ -414,23 +266,19 @@ estype_attr_to_concise_type(const ConnectionClass *conn, OID type,
                                            ? SQL_LONGVARCHAR
                                            : (bFixed ? SQL_CHAR : SQL_VARCHAR));
         case ES_TYPE_TEXT:
-            bLongVarchar = ci->drivers.text_as_longvarchar;
+            bLongVarchar = DEFAULT_TEXTASLONGVARCHAR;
             if (bLongVarchar) {
                 int column_size = getCharColumnSizeX(conn, type, atttypmod,
                                                      adtsize_or_longestlen,
                                                      handle_unknown_size_as);
-                if (column_size > 0
-                    && column_size <= ci->drivers.max_varchar_size)
+                if (column_size > 0 && column_size <= MAX_VARCHAR_SIZE)
                     bLongVarchar = FALSE;
             }
             return ansi_to_wtype(conn,
                                  bLongVarchar ? SQL_LONGVARCHAR : SQL_VARCHAR);
 
         case ES_TYPE_BYTEA:
-            if (ci->bytea_as_longvarbinary)
-                return SQL_LONGVARBINARY;
-            else
-                return SQL_VARBINARY;
+            return SQL_VARBINARY;
         case ES_TYPE_LO_UNDEFINED:
             return SQL_LONGVARBINARY;
 
@@ -444,15 +292,11 @@ estype_attr_to_concise_type(const ConnectionClass *conn, OID type,
 
             /* Change this to SQL_BIGINT for ODBC v3 bjm 2001-01-23 */
         case ES_TYPE_INT8:
-            if (ci->int8_as != 0)
-                return ci->int8_as;
             if (conn->ms_jet)
                 return SQL_NUMERIC; /* maybe a little better than SQL_VARCHAR */
             return SQL_BIGINT;
 
         case ES_TYPE_NUMERIC:
-            if (-1 == atttypmod && DEFAULT_NUMERIC_AS != ci->numeric_as)
-                return ci->numeric_as;
             return SQL_NUMERIC;
 
         case ES_TYPE_FLOAT4:
@@ -477,7 +321,7 @@ estype_attr_to_concise_type(const ConnectionClass *conn, OID type,
         case ES_TYPE_MONEY:
             return SQL_FLOAT;
         case ES_TYPE_BOOL:
-            return ci->drivers.bools_as_char ? SQL_VARCHAR : SQL_BIT;
+            return SQL_BIT;
         case ES_TYPE_XML:
             return ansi_to_wtype(conn, SQL_LONGVARCHAR);
         case ES_TYPE_INET:
@@ -505,13 +349,13 @@ estype_attr_to_concise_type(const ConnectionClass *conn, OID type,
             if (type == (OID)conn->lobj_type)
                 return SQL_LONGVARBINARY;
 
-            bLongVarchar = ci->drivers.unknowns_as_longvarchar;
+            bLongVarchar = DEFAULT_UNKNOWNSASLONGVARCHAR;
             if (bLongVarchar) {
                 int column_size = getCharColumnSizeX(conn, type, atttypmod,
                                                      adtsize_or_longestlen,
                                                      handle_unknown_size_as);
                 if (column_size > 0
-                    && column_size <= ci->drivers.max_varchar_size)
+                    && column_size <= MAX_VARCHAR_SIZE)
                     bLongVarchar = FALSE;
             }
 #ifdef EXPERIMENTAL_CURRENTLY
@@ -554,7 +398,6 @@ estype_attr_to_datetime_sub(const ConnectionClass *conn, OID type,
 SQLSMALLINT
 estype_attr_to_ctype(const ConnectionClass *conn, OID type, int atttypmod) {
     UNUSED(atttypmod);
-    const ConnInfo *ci = &(conn->connInfo);
     EnvironmentClass *env = (EnvironmentClass *)CC_get_env(conn);
 #ifdef ES_INTERVAL_AS_SQL_INTERVAL
     SQLSMALLINT ctype;
@@ -596,7 +439,7 @@ estype_attr_to_ctype(const ConnectionClass *conn, OID type, int atttypmod) {
         case ES_TYPE_MONEY:
             return SQL_C_FLOAT;
         case ES_TYPE_BOOL:
-            return ci->drivers.bools_as_char ? SQL_C_CHAR : SQL_C_BIT;
+            return SQL_C_BIT;
 
         case ES_TYPE_BYTEA:
             return SQL_C_BINARY;
@@ -848,12 +691,12 @@ Int4 estype_attr_buffer_length(const ConnectionClass *conn, OID type,
                 return prec * WCLEN;
 #endif /* UNICODE_SUPPORT */
             coef = conn->mb_maxbyte_per_char;
-            if (coef < 2 && (conn->connInfo).lf_conversion)
+            if (coef < 2)
                 /* CR -> CR/LF */
                 coef = 2;
             if (coef == 1)
                 return prec;
-            maxvarc = conn->connInfo.drivers.max_varchar_size;
+            maxvarc = MAX_VARCHAR_SIZE;
             if (prec <= maxvarc && prec * coef > maxvarc)
                 return maxvarc;
             return coef * prec;
@@ -994,12 +837,12 @@ Int4 estype_attr_transfer_octet_length(const ConnectionClass *conn, OID type,
                 return column_size * WCLEN;
 #endif /* UNICODE_SUPPORT */
             coef = conn->mb_maxbyte_per_char;
-            if (coef < 2 && (conn->connInfo).lf_conversion)
+            if (coef < 2)
                 /* CR -> CR/LF */
                 coef = 2;
             if (coef == 1)
                 return column_size;
-            maxvarc = conn->connInfo.drivers.max_varchar_size;
+            maxvarc = MAX_VARCHAR_SIZE;
             if (column_size <= maxvarc && column_size * coef > maxvarc)
                 return maxvarc;
             return coef * column_size;
@@ -1083,10 +926,7 @@ const char *sqltype_to_escast(const ConnectionClass *conn,
 }
 
 OID sqltype_to_estype(const ConnectionClass *conn, SQLSMALLINT fSqlType) {
-    OID esType;
-    const ConnInfo *ci = &(conn->connInfo);
-
-    esType = 0; /* ??? */
+    OID esType = 0; 
     switch (fSqlType) {
         case SQL_BINARY:
             esType = ES_TYPE_BYTEA;
@@ -1130,21 +970,16 @@ OID sqltype_to_estype(const ConnectionClass *conn, SQLSMALLINT fSqlType) {
             break;
 
         case SQL_LONGVARBINARY:
-            if (ci->bytea_as_longvarbinary)
-                esType = ES_TYPE_BYTEA;
-            else
-                esType = conn->lobj_type;
+            esType = conn->lobj_type;
             break;
 
         case SQL_LONGVARCHAR:
-            esType = ci->drivers.text_as_longvarchar ? ES_TYPE_TEXT
-                                                     : ES_TYPE_VARCHAR;
+            esType = ES_TYPE_VARCHAR;
             break;
 
 #ifdef UNICODE_SUPPORT
         case SQL_WLONGVARCHAR:
-            esType = ci->drivers.text_as_longvarchar ? ES_TYPE_TEXT
-                                                     : ES_TYPE_VARCHAR;
+            esType = ES_TYPE_VARCHAR;
             break;
 #endif /* UNICODE_SUPPORT */
 

@@ -246,8 +246,6 @@ static void SC_init_discard_output_params(StatementClass *self) {
     if (!conn)
         return;
     self->discard_output_params = 0;
-    if (!conn->connInfo.use_server_side_prepare)
-        self->discard_output_params = 1;
 }
 
 static void SC_init_parse_method(StatementClass *self) {
@@ -260,8 +258,6 @@ static void SC_init_parse_method(StatementClass *self) {
         return;
     if (self->catalog_result)
         return;
-    if (conn->connInfo.drivers.parse)
-        SC_set_parse_forced(self);
 }
 
 StatementClass *SC_Constructor(ConnectionClass *conn) {

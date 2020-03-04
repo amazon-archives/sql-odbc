@@ -387,7 +387,6 @@ ConnectionClass *CC_Constructor(void);
 char CC_Destructor(ConnectionClass *self);
 RETCODE CC_cleanup(ConnectionClass *self, BOOL keepCommunication);
 BOOL CC_set_autocommit(ConnectionClass *self, BOOL on);
-int CC_set_translation(ConnectionClass *self);
 char CC_add_statement(ConnectionClass *self, StatementClass *stmt);
 char CC_remove_statement(ConnectionClass *self, StatementClass *stmt);
 char CC_add_descriptor(ConnectionClass *self, DescriptorClass *desc);

@@ -113,7 +113,7 @@ RETCODE SQL_API ESAPI_Connect(HDBC hdbc, const SQLCHAR *szDSN,
     /* get the values for the DSN from the registry */
     getDSNinfo(ci, NULL);
 
-    logs_on_off(1, ci->drivers.debug, ci->drivers.commlog);
+    logs_on_off(1, ci->drivers.loglevel, ci->drivers.loglevel);
     /* initialize es_version from connInfo.protocol    */
     CC_initialize_es_version(conn);
 
@@ -186,8 +186,8 @@ RETCODE SQL_API ESAPI_Disconnect(HDBC hdbc) {
         return SQL_ERROR;
     }
 
-    logs_on_off(-1, conn->connInfo.drivers.debug,
-                conn->connInfo.drivers.commlog);
+    logs_on_off(-1, conn->connInfo.drivers.loglevel,
+                conn->connInfo.drivers.loglevel);
     MYLOG(0, "about to CC_cleanup\n");
 
     /* Close the connection and free statements */
@@ -495,43 +495,6 @@ CC_cleanup(ConnectionClass *self, BOOL keepCommunication) {
     return ret;
 }
 
-int CC_set_translation(ConnectionClass *self) {
-    UNUSED(self);
-#ifdef WIN32
-    CSTR func = "CC_set_translation";
-
-    if (self->translation_handle != NULL) {
-        FreeLibrary(self->translation_handle);
-        self->translation_handle = NULL;
-    }
-
-    if (self->connInfo.translation_dll[0] == 0)
-        return TRUE;
-
-    self->translation_option = atoi(self->connInfo.translation_option);
-    self->translation_handle = LoadLibrary(self->connInfo.translation_dll);
-
-    if (self->translation_handle == NULL) {
-        CC_set_error(self, CONN_UNABLE_TO_LOAD_DLL,
-                     "Could not load the translation DLL.", func);
-        return FALSE;
-    }
-
-    self->DataSourceToDriver = (DataSourceToDriverProc)GetProcAddress(
-        self->translation_handle, "SQLDataSourceToDriver");
-
-    self->DriverToDataSource = (DriverToDataSourceProc)GetProcAddress(
-        self->translation_handle, "SQLDriverToDataSource");
-
-    if (self->DataSourceToDriver == NULL || self->DriverToDataSource == NULL) {
-        CC_set_error(self, CONN_UNABLE_TO_LOAD_DLL,
-                     "Could not find translation DLL functions.", func);
-        return FALSE;
-    }
-#endif
-    return TRUE;
-}
-
 #ifndef ES_DIAG_SEVERITY_NONLOCALIZED
 #define ES_DIAG_SEVERITY_NONLOCALIZED 'V'
 #endif
@@ -692,14 +655,8 @@ void CC_log_error(const char *func, const char *desc,
 }
 
 const char *CurrCat(const ConnectionClass *conn) {
-    /*
-     * Returning the database name causes problems in MS Query. It
-     * generates query like: "SELECT DISTINCT a FROM byronnbad3
-     * bad3"
-     */
-    if (isMsQuery()) /* MS Query */
-        return NULL;
-    return conn->connInfo.database;
+    UNUSED(conn);
+    return NULL;
 }
 
 const char *CurrCatString(const ConnectionClass *conn) {

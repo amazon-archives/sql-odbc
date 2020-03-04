@@ -38,7 +38,7 @@ const int EXECUTION_ERROR = -1;
 const int all_columns_flights_count = 25;
 const int some_columns_flights_count = 2;
 runtime_options valid_conn_opt_val = {
-    {valid_host, valid_port, "elasticsearch", "1"},
+    {valid_host, valid_port, "1"},
     {"BASIC", valid_user, valid_pw},
     {use_ssl, false, "", "", "", ""}};
 

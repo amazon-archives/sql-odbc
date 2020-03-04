@@ -74,7 +74,7 @@ RETCODE SQL_API ESAPI_GetInfo(HDBC hdbc, SQLUSMALLINT fInfoType,
             break;
 
         case SQL_ACCESSIBLE_TABLES: /* ODBC 1.0 */
-            p = CC_accessible_only(conn) ? "Y" : "N";
+            p = "N";
             break;
 
         case SQL_ACTIVE_CONNECTIONS: /* ODBC 1.0 */
@@ -167,10 +167,7 @@ RETCODE SQL_API ESAPI_GetInfo(HDBC hdbc, SQLUSMALLINT fInfoType,
 
         case SQL_CURSOR_ROLLBACK_BEHAVIOR: /* ODBC 1.0 */
             len = 2;
-            if (!ci->drivers.use_declarefetch)
-                value = SQL_CB_PRESERVE;
-            else
-                value = SQL_CB_CLOSE;
+            value = SQL_CB_PRESERVE;
             break;
 
         case SQL_DATA_SOURCE_NAME: /* ODBC 1.0 */
@@ -178,7 +175,7 @@ RETCODE SQL_API ESAPI_GetInfo(HDBC hdbc, SQLUSMALLINT fInfoType,
             break;
 
         case SQL_DATA_SOURCE_READ_ONLY: /* ODBC 1.0 */
-            p = CC_is_onlyread(conn) ? "Y" : "N";
+            p = "Y";
             break;
 
         case SQL_DATABASE_NAME: /* Support for old ODBC 1.0 Apps */
@@ -194,28 +191,12 @@ RETCODE SQL_API ESAPI_GetInfo(HDBC hdbc, SQLUSMALLINT fInfoType,
             break;
 
         case SQL_DBMS_NAME: /* ODBC 1.0 */
-            if (CC_fake_mss(conn))
-                p = "Microsoft SQL Server";
-            else
-                p = "Elasticsearch";
+            p = "Elasticsearch";
             break;
 
         case SQL_DBMS_VER: /* ODBC 1.0 */
-
-            /*
-             * The ODBC spec wants ##.##.#### ...whatever... so prepend
-             * the driver
-             */
-            /* version number to the dbms version string */
-            /*
-            SPRINTF_FIXED(tmp, "%s %s", ELASTICDRIVERVERSION, conn->es_version);
-                        tmp[sizeof(tmp) - 1] = '\0'; */
-            if (CC_fake_mss(conn))
-                p = "09.00.1399";
-            else {
-                STRCPY_FIXED(tmp, conn->es_version);
-                p = tmp;
-            }
+            STRCPY_FIXED(tmp, conn->es_version);
+            p = tmp;
             break;
 
         case SQL_DEFAULT_TXN_ISOLATION: /* ODBC 1.0 */
@@ -291,10 +272,7 @@ RETCODE SQL_API ESAPI_GetInfo(HDBC hdbc, SQLUSMALLINT fInfoType,
 
         case SQL_LOCK_TYPES: /* ODBC 2.0 */
             len = 4;
-            value =
-                ci->drivers.lie
-                    ? (SQL_LCK_NO_CHANGE | SQL_LCK_EXCLUSIVE | SQL_LCK_UNLOCK)
-                    : SQL_LCK_NO_CHANGE;
+            value = SQL_LCK_NO_CHANGE;
             break;
 
         case SQL_MAX_BINARY_LITERAL_LEN: /* ODBC 2.0 */
@@ -491,16 +469,11 @@ RETCODE SQL_API ESAPI_GetInfo(HDBC hdbc, SQLUSMALLINT fInfoType,
         case SQL_POS_OPERATIONS: /* ODBC 2.0 */
             len = 4;
             value = (SQL_POS_POSITION | SQL_POS_REFRESH);
-            if (0 != ci->updatable_cursors)
-                value |= (SQL_POS_UPDATE | SQL_POS_DELETE | SQL_POS_ADD);
             break;
 
         case SQL_POSITIONED_STATEMENTS: /* ODBC 2.0 */
             len = 4;
-            value = ci->drivers.lie
-                        ? (SQL_PS_POSITIONED_DELETE | SQL_PS_POSITIONED_UPDATE
-                           | SQL_PS_SELECT_FOR_UPDATE)
-                        : 0;
+            value = 0;
             break;
 
         case SQL_PROCEDURE_TERM: /* ODBC 1.0 */
@@ -520,10 +493,7 @@ RETCODE SQL_API ESAPI_GetInfo(HDBC hdbc, SQLUSMALLINT fInfoType,
             break;
 
         case SQL_QUALIFIER_NAME_SEPARATOR: /* ODBC 1.0 */
-            if (CurrCat(conn))
-                p = ".";
-            else
-                p = NULL_STRING;
+            p = ".";
             break;
 
         case SQL_QUALIFIER_TERM: /* ODBC 1.0 */
@@ -535,10 +505,7 @@ RETCODE SQL_API ESAPI_GetInfo(HDBC hdbc, SQLUSMALLINT fInfoType,
 
         case SQL_QUALIFIER_USAGE: /* ODBC 2.0 */
             len = 4;
-            if (CurrCat(conn))
-                value = SQL_CU_DML_STATEMENTS;
-            else
-                value = 0;
+            value = SQL_CU_DML_STATEMENTS;
             break;
 
         case SQL_QUOTED_IDENTIFIER_CASE: /* ODBC 2.0 */
@@ -553,25 +520,17 @@ RETCODE SQL_API ESAPI_GetInfo(HDBC hdbc, SQLUSMALLINT fInfoType,
              * Driver doesn't support keyset-driven or mixed cursors, so
              * not much point in saying row updates are supported
              */
-            p = (0 != ci->updatable_cursors) ? "Y" : "N";
+            p = "N";
             break;
 
         case SQL_SCROLL_CONCURRENCY: /* ODBC 1.0 */
             len = 4;
             value = SQL_SCCO_READ_ONLY;
-            if (0 != ci->updatable_cursors)
-                value |= SQL_SCCO_OPT_ROWVER;
-            if (ci->drivers.lie)
-                value |= (SQL_SCCO_LOCK | SQL_SCCO_OPT_VALUES);
             break;
 
         case SQL_SCROLL_OPTIONS: /* ODBC 1.0 */
             len = 4;
             value = SQL_SO_FORWARD_ONLY | SQL_SO_STATIC;
-            if (0 != (ci->updatable_cursors & ALLOW_KEYSET_DRIVEN_CURSORS))
-                value |= SQL_SO_KEYSET_DRIVEN;
-            if (ci->drivers.lie)
-                value |= (SQL_SO_DYNAMIC | SQL_SO_MIXED);
             break;
 
         case SQL_SEARCH_PATTERN_ESCAPE: /* ODBC 1.0 */
@@ -589,8 +548,6 @@ RETCODE SQL_API ESAPI_GetInfo(HDBC hdbc, SQLUSMALLINT fInfoType,
         case SQL_STATIC_SENSITIVITY: /* ODBC 2.0 */
             len = 4;
             value = 0;
-            if (0 != ci->updatable_cursors)
-                value |= (SQL_SS_ADDITIONS | SQL_SS_DELETIONS | SQL_SS_UPDATES);
             break;
 
         case SQL_STRING_FUNCTIONS: /* ODBC 1.0 */
@@ -669,47 +626,17 @@ RETCODE SQL_API ESAPI_GetInfo(HDBC hdbc, SQLUSMALLINT fInfoType,
             break;
         case SQL_FORWARD_ONLY_CURSOR_ATTRIBUTES2:
             len = 4;
-            value = SQL_CA2_READ_ONLY_CONCURRENCY;
-            if (!ci->drivers.use_declarefetch || ci->drivers.lie)
-                value |= SQL_CA2_CRC_EXACT;
+            value = SQL_CA2_READ_ONLY_CONCURRENCY | SQL_CA2_CRC_EXACT;
             break;
         case SQL_KEYSET_CURSOR_ATTRIBUTES1:
             len = 4;
             value = SQL_CA1_NEXT | SQL_CA1_ABSOLUTE | SQL_CA1_RELATIVE
                     | SQL_CA1_BOOKMARK | SQL_CA1_LOCK_NO_CHANGE
                     | SQL_CA1_POS_POSITION | SQL_CA1_POS_REFRESH;
-            if (0 != (ci->updatable_cursors & ALLOW_KEYSET_DRIVEN_CURSORS))
-                value |= (SQL_CA1_POS_UPDATE | SQL_CA1_POS_DELETE
-                          | SQL_CA1_BULK_ADD | SQL_CA1_BULK_UPDATE_BY_BOOKMARK
-                          | SQL_CA1_BULK_DELETE_BY_BOOKMARK
-                          | SQL_CA1_BULK_FETCH_BY_BOOKMARK);
-            if (ci->drivers.lie)
-                value |=
-                    (SQL_CA1_LOCK_EXCLUSIVE | SQL_CA1_LOCK_UNLOCK
-                     | SQL_CA1_POSITIONED_UPDATE | SQL_CA1_POSITIONED_DELETE
-                     | SQL_CA1_SELECT_FOR_UPDATE);
             break;
         case SQL_KEYSET_CURSOR_ATTRIBUTES2:
             len = 4;
-            value = SQL_CA2_READ_ONLY_CONCURRENCY;
-            if (0 != (ci->updatable_cursors & ALLOW_KEYSET_DRIVEN_CURSORS))
-                value |= (SQL_CA2_OPT_ROWVER_CONCURRENCY
-                          /*| SQL_CA2_CRC_APPROXIMATE*/
-                );
-            if (0 != (ci->updatable_cursors & SENSE_SELF_OPERATIONS))
-                value |=
-                    (SQL_CA2_SENSITIVITY_DELETIONS | SQL_CA2_SENSITIVITY_UPDATES
-                     | SQL_CA2_SENSITIVITY_ADDITIONS);
-            if (!ci->drivers.use_declarefetch || ci->drivers.lie)
-                value |= SQL_CA2_CRC_EXACT;
-            if (ci->drivers.lie)
-                value |=
-                    (SQL_CA2_LOCK_CONCURRENCY | SQL_CA2_OPT_VALUES_CONCURRENCY
-                     | SQL_CA2_MAX_ROWS_SELECT | SQL_CA2_MAX_ROWS_INSERT
-                     | SQL_CA2_MAX_ROWS_DELETE | SQL_CA2_MAX_ROWS_UPDATE
-                     | SQL_CA2_MAX_ROWS_CATALOG | SQL_CA2_MAX_ROWS_AFFECTS_ALL
-                     | SQL_CA2_SIMULATE_NON_UNIQUE | SQL_CA2_SIMULATE_TRY_UNIQUE
-                     | SQL_CA2_SIMULATE_UNIQUE);
+            value = SQL_CA2_READ_ONLY_CONCURRENCY | SQL_CA2_CRC_EXACT;
             break;
 
         case SQL_STATIC_CURSOR_ATTRIBUTES1:
@@ -717,31 +644,15 @@ RETCODE SQL_API ESAPI_GetInfo(HDBC hdbc, SQLUSMALLINT fInfoType,
             value = SQL_CA1_NEXT | SQL_CA1_ABSOLUTE | SQL_CA1_RELATIVE
                     | SQL_CA1_BOOKMARK | SQL_CA1_LOCK_NO_CHANGE
                     | SQL_CA1_POS_POSITION | SQL_CA1_POS_REFRESH;
-            if (0 != (ci->updatable_cursors & ALLOW_STATIC_CURSORS))
-                value |= (SQL_CA1_POS_UPDATE | SQL_CA1_POS_DELETE);
-            if (0 != (ci->updatable_cursors & ALLOW_BULK_OPERATIONS))
-                value |= (SQL_CA1_BULK_ADD | SQL_CA1_BULK_UPDATE_BY_BOOKMARK
-                          | SQL_CA1_BULK_DELETE_BY_BOOKMARK
-                          | SQL_CA1_BULK_FETCH_BY_BOOKMARK);
             break;
         case SQL_STATIC_CURSOR_ATTRIBUTES2:
             len = 4;
-            value = SQL_CA2_READ_ONLY_CONCURRENCY;
-            if (0 != (ci->updatable_cursors & ALLOW_STATIC_CURSORS))
-                value |= (SQL_CA2_OPT_ROWVER_CONCURRENCY);
-            if (0 != (ci->updatable_cursors & SENSE_SELF_OPERATIONS))
-                value |=
-                    (SQL_CA2_SENSITIVITY_DELETIONS | SQL_CA2_SENSITIVITY_UPDATES
-                     | SQL_CA2_SENSITIVITY_ADDITIONS);
-            if (!ci->drivers.use_declarefetch || ci->drivers.lie)
-                value |= (SQL_CA2_CRC_EXACT);
+            value = SQL_CA2_READ_ONLY_CONCURRENCY | SQL_CA2_CRC_EXACT;
             break;
 
         case SQL_ODBC_INTERFACE_CONFORMANCE:
             len = 4;
             value = SQL_OIC_CORE;
-            if (ci->drivers.lie)
-                value = SQL_OIC_LEVEL2;
             break;
         case SQL_ACTIVE_ENVIRONMENTS:
             len = 2;
@@ -1050,9 +961,7 @@ cleanup:
 
 RETCODE SQL_API ESAPI_GetFunctions(HDBC hdbc, SQLUSMALLINT fFunction,
                                    SQLUSMALLINT *pfExists) {
-    ConnectionClass *conn = (ConnectionClass *)hdbc;
-    ConnInfo *ci = &(conn->connInfo);
-
+    UNUSED(hdbc);
     MYLOG(0, "entering...%u\n", fFunction);
 
     if (fFunction == SQL_API_ALL_FUNCTIONS) {
@@ -1125,176 +1034,169 @@ RETCODE SQL_API ESAPI_GetFunctions(HDBC hdbc, SQLUSMALLINT fFunction,
         pfExists[SQL_API_SQLSETPOS] = TRUE;
         pfExists[SQL_API_SQLSETSCROLLOPTIONS] = TRUE; /* odbc 1.0 */
         pfExists[SQL_API_SQLTABLEPRIVILEGES] = TRUE;
-        if (0 == ci->updatable_cursors)
-            pfExists[SQL_API_SQLBULKOPERATIONS] = FALSE;
-        else
-            pfExists[SQL_API_SQLBULKOPERATIONS] = TRUE;
+        pfExists[SQL_API_SQLBULKOPERATIONS] = FALSE;
     } else {
-        if (ci->drivers.lie)
-            *pfExists = TRUE;
-        else {
-            switch (fFunction) {
-                case SQL_API_SQLBINDCOL:
-                    *pfExists = TRUE;
-                    break;
-                case SQL_API_SQLCANCEL:
-                    *pfExists = TRUE;
-                    break;
-                case SQL_API_SQLCOLATTRIBUTE:
-                    *pfExists = TRUE;
-                    break;
-                case SQL_API_SQLCONNECT:
-                    *pfExists = TRUE;
-                    break;
-                case SQL_API_SQLDESCRIBECOL:
-                    *pfExists = TRUE;
-                    break; /* partial */
-                case SQL_API_SQLDISCONNECT:
-                    *pfExists = TRUE;
-                    break;
-                case SQL_API_SQLEXECDIRECT:
-                    *pfExists = TRUE;
-                    break;
-                case SQL_API_SQLEXECUTE:
-                    *pfExists = TRUE;
-                    break;
-                case SQL_API_SQLFETCH:
-                    *pfExists = TRUE;
-                    break;
-                case SQL_API_SQLFREESTMT:
-                    *pfExists = TRUE;
-                    break;
-                case SQL_API_SQLGETCURSORNAME:
-                    *pfExists = TRUE;
-                    break;
-                case SQL_API_SQLNUMRESULTCOLS:
-                    *pfExists = TRUE;
-                    break;
-                case SQL_API_SQLPREPARE:
-                    *pfExists = TRUE;
-                    break;
-                case SQL_API_SQLROWCOUNT:
-                    *pfExists = TRUE;
-                    break;
-                case SQL_API_SQLSETCURSORNAME:
-                    *pfExists = TRUE;
-                    break;
+        switch (fFunction) {
+            case SQL_API_SQLBINDCOL:
+                *pfExists = TRUE;
+                break;
+            case SQL_API_SQLCANCEL:
+                *pfExists = TRUE;
+                break;
+            case SQL_API_SQLCOLATTRIBUTE:
+                *pfExists = TRUE;
+                break;
+            case SQL_API_SQLCONNECT:
+                *pfExists = TRUE;
+                break;
+            case SQL_API_SQLDESCRIBECOL:
+                *pfExists = TRUE;
+                break; /* partial */
+            case SQL_API_SQLDISCONNECT:
+                *pfExists = TRUE;
+                break;
+            case SQL_API_SQLEXECDIRECT:
+                *pfExists = TRUE;
+                break;
+            case SQL_API_SQLEXECUTE:
+                *pfExists = TRUE;
+                break;
+            case SQL_API_SQLFETCH:
+                *pfExists = TRUE;
+                break;
+            case SQL_API_SQLFREESTMT:
+                *pfExists = TRUE;
+                break;
+            case SQL_API_SQLGETCURSORNAME:
+                *pfExists = TRUE;
+                break;
+            case SQL_API_SQLNUMRESULTCOLS:
+                *pfExists = TRUE;
+                break;
+            case SQL_API_SQLPREPARE:
+                *pfExists = TRUE;
+                break;
+            case SQL_API_SQLROWCOUNT:
+                *pfExists = TRUE;
+                break;
+            case SQL_API_SQLSETCURSORNAME:
+                *pfExists = TRUE;
+                break;
 
-                    /* ODBC level 1 functions */
-                case SQL_API_SQLBINDPARAMETER:
-                    *pfExists = TRUE;
-                    break;
-                case SQL_API_SQLCOLUMNS:
-                    *pfExists = TRUE;
-                    break;
-                case SQL_API_SQLDRIVERCONNECT:
-                    *pfExists = TRUE;
-                    break;
-                case SQL_API_SQLGETDATA:
-                    *pfExists = TRUE;
-                    break;
-                case SQL_API_SQLGETFUNCTIONS:
-                    *pfExists = TRUE;
-                    break;
-                case SQL_API_SQLGETINFO:
-                    *pfExists = TRUE;
-                    break;
-                case SQL_API_SQLGETTYPEINFO:
-                    *pfExists = TRUE;
-                    break;
-                case SQL_API_SQLPARAMDATA:
-                    *pfExists = TRUE;
-                    break;
-                case SQL_API_SQLPUTDATA:
-                    *pfExists = TRUE;
-                    break;
-                case SQL_API_SQLSPECIALCOLUMNS:
-                    *pfExists = TRUE;
-                    break;
-                case SQL_API_SQLSTATISTICS:
-                    *pfExists = TRUE;
-                    break;
-                case SQL_API_SQLTABLES:
-                    *pfExists = TRUE;
-                    break;
+                /* ODBC level 1 functions */
+            case SQL_API_SQLBINDPARAMETER:
+                *pfExists = TRUE;
+                break;
+            case SQL_API_SQLCOLUMNS:
+                *pfExists = TRUE;
+                break;
+            case SQL_API_SQLDRIVERCONNECT:
+                *pfExists = TRUE;
+                break;
+            case SQL_API_SQLGETDATA:
+                *pfExists = TRUE;
+                break;
+            case SQL_API_SQLGETFUNCTIONS:
+                *pfExists = TRUE;
+                break;
+            case SQL_API_SQLGETINFO:
+                *pfExists = TRUE;
+                break;
+            case SQL_API_SQLGETTYPEINFO:
+                *pfExists = TRUE;
+                break;
+            case SQL_API_SQLPARAMDATA:
+                *pfExists = TRUE;
+                break;
+            case SQL_API_SQLPUTDATA:
+                *pfExists = TRUE;
+                break;
+            case SQL_API_SQLSPECIALCOLUMNS:
+                *pfExists = TRUE;
+                break;
+            case SQL_API_SQLSTATISTICS:
+                *pfExists = TRUE;
+                break;
+            case SQL_API_SQLTABLES:
+                *pfExists = TRUE;
+                break;
 
-                    /* ODBC level 2 functions */
-                case SQL_API_SQLBROWSECONNECT:
+                /* ODBC level 2 functions */
+            case SQL_API_SQLBROWSECONNECT:
+                *pfExists = FALSE;
+                break;
+            case SQL_API_SQLCOLUMNPRIVILEGES:
+                *pfExists = FALSE;
+                break;
+            case SQL_API_SQLDATASOURCES:
+                *pfExists = FALSE;
+                break; /* only implemented by DM */
+            case SQL_API_SQLDESCRIBEPARAM:
+                if (SUPPORT_DESCRIBE_PARAM(ci))
+                    *pfExists = TRUE;
+                else
                     *pfExists = FALSE;
-                    break;
-                case SQL_API_SQLCOLUMNPRIVILEGES:
-                    *pfExists = FALSE;
-                    break;
-                case SQL_API_SQLDATASOURCES:
-                    *pfExists = FALSE;
-                    break; /* only implemented by DM */
-                case SQL_API_SQLDESCRIBEPARAM:
-                    if (SUPPORT_DESCRIBE_PARAM(ci))
-                        *pfExists = TRUE;
-                    else
-                        *pfExists = FALSE;
-                    break; /* not properly implemented */
-                case SQL_API_SQLDRIVERS:
-                    *pfExists = FALSE;
-                    break; /* only implemented by DM */
-                case SQL_API_SQLEXTENDEDFETCH:
-                    *pfExists = TRUE;
-                    break;
-                case SQL_API_SQLFOREIGNKEYS:
-                    *pfExists = TRUE;
-                    break;
-                case SQL_API_SQLMORERESULTS:
-                    *pfExists = TRUE;
-                    break;
-                case SQL_API_SQLNATIVESQL:
-                    *pfExists = TRUE;
-                    break;
-                case SQL_API_SQLNUMPARAMS:
-                    *pfExists = TRUE;
-                    break;
-                case SQL_API_SQLPRIMARYKEYS:
-                    *pfExists = TRUE;
-                    break;
-                case SQL_API_SQLPROCEDURECOLUMNS:
-                    *pfExists = TRUE;
-                    break;
-                case SQL_API_SQLPROCEDURES:
-                    *pfExists = TRUE;
-                    break;
-                case SQL_API_SQLSETPOS:
-                    *pfExists = TRUE;
-                    break;
-                case SQL_API_SQLTABLEPRIVILEGES:
-                    *pfExists = TRUE;
-                    break;
-                case SQL_API_SQLBULKOPERATIONS: /* 24 */
-                case SQL_API_SQLALLOCHANDLE:    /* 1001 */
-                case SQL_API_SQLBINDPARAM:      /* 1002 */
-                case SQL_API_SQLCLOSECURSOR:    /* 1003 */
-                case SQL_API_SQLENDTRAN:        /* 1005 */
-                case SQL_API_SQLFETCHSCROLL:    /* 1021 */
-                case SQL_API_SQLFREEHANDLE:     /* 1006 */
-                case SQL_API_SQLGETCONNECTATTR: /* 1007 */
-                case SQL_API_SQLGETDESCFIELD:   /* 1008 */
-                case SQL_API_SQLGETDIAGFIELD:   /* 1010 */
-                case SQL_API_SQLGETDIAGREC:     /* 1011 */
-                case SQL_API_SQLGETENVATTR:     /* 1012 */
-                case SQL_API_SQLGETSTMTATTR:    /* 1014 */
-                case SQL_API_SQLSETCONNECTATTR: /* 1016 */
-                case SQL_API_SQLSETDESCFIELD:   /* 1017 */
-                case SQL_API_SQLSETENVATTR:     /* 1019 */
-                case SQL_API_SQLSETSTMTATTR:    /* 1020 */
-                    *pfExists = TRUE;
-                    break;
-                case SQL_API_SQLGETDESCREC: /* 1009 */
-                case SQL_API_SQLSETDESCREC: /* 1018 */
-                case SQL_API_SQLCOPYDESC:   /* 1004 */
-                    *pfExists = FALSE;
-                    break;
-                default:
-                    *pfExists = FALSE;
-                    break;
-            }
+                break; /* not properly implemented */
+            case SQL_API_SQLDRIVERS:
+                *pfExists = FALSE;
+                break; /* only implemented by DM */
+            case SQL_API_SQLEXTENDEDFETCH:
+                *pfExists = TRUE;
+                break;
+            case SQL_API_SQLFOREIGNKEYS:
+                *pfExists = TRUE;
+                break;
+            case SQL_API_SQLMORERESULTS:
+                *pfExists = TRUE;
+                break;
+            case SQL_API_SQLNATIVESQL:
+                *pfExists = TRUE;
+                break;
+            case SQL_API_SQLNUMPARAMS:
+                *pfExists = TRUE;
+                break;
+            case SQL_API_SQLPRIMARYKEYS:
+                *pfExists = TRUE;
+                break;
+            case SQL_API_SQLPROCEDURECOLUMNS:
+                *pfExists = TRUE;
+                break;
+            case SQL_API_SQLPROCEDURES:
+                *pfExists = TRUE;
+                break;
+            case SQL_API_SQLSETPOS:
+                *pfExists = TRUE;
+                break;
+            case SQL_API_SQLTABLEPRIVILEGES:
+                *pfExists = TRUE;
+                break;
+            case SQL_API_SQLBULKOPERATIONS: /* 24 */
+            case SQL_API_SQLALLOCHANDLE:    /* 1001 */
+            case SQL_API_SQLBINDPARAM:      /* 1002 */
+            case SQL_API_SQLCLOSECURSOR:    /* 1003 */
+            case SQL_API_SQLENDTRAN:        /* 1005 */
+            case SQL_API_SQLFETCHSCROLL:    /* 1021 */
+            case SQL_API_SQLFREEHANDLE:     /* 1006 */
+            case SQL_API_SQLGETCONNECTATTR: /* 1007 */
+            case SQL_API_SQLGETDESCFIELD:   /* 1008 */
+            case SQL_API_SQLGETDIAGFIELD:   /* 1010 */
+            case SQL_API_SQLGETDIAGREC:     /* 1011 */
+            case SQL_API_SQLGETENVATTR:     /* 1012 */
+            case SQL_API_SQLGETSTMTATTR:    /* 1014 */
+            case SQL_API_SQLSETCONNECTATTR: /* 1016 */
+            case SQL_API_SQLSETDESCFIELD:   /* 1017 */
+            case SQL_API_SQLSETENVATTR:     /* 1019 */
+            case SQL_API_SQLSETSTMTATTR:    /* 1020 */
+                *pfExists = TRUE;
+                break;
+            case SQL_API_SQLGETDESCREC: /* 1009 */
+            case SQL_API_SQLSETDESCREC: /* 1018 */
+            case SQL_API_SQLCOPYDESC:   /* 1004 */
+                *pfExists = FALSE;
+                break;
+            default:
+                *pfExists = FALSE;
+                break;
         }
     }
     return SQL_SUCCESS;

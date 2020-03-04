@@ -48,11 +48,6 @@ void AllocConnection(SQLTCHAR* connection_string, SQLHDBC* db_connection,
     SQLTCHAR out_conn_string[1024];
     SQLSMALLINT out_conn_string_length;
 
-    // TODO: Integration tests hanging for tests with no SQL_ERROR test case
-    // (AE-114)
-    SQLDriverConnect(*db_connection, NULL, (SQLTCHAR*)L"", SQL_NTS,
-                     out_conn_string, IT_SIZEOF(out_conn_string),
-                     &out_conn_string_length, SQL_DRIVER_COMPLETE);
     EXECUTION_HANDLER(
         throw_on_error, log_diag, SQL_HANDLE_DBC, *db_connection, ret_code,
         SQLDriverConnect(*db_connection, NULL, connection_string, SQL_NTS,
