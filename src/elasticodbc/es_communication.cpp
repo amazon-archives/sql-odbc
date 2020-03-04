@@ -66,7 +66,7 @@ static const std::string JSON_SCHEMA =
     "}";
 
 void ESCommunication::AwsHttpResponseToString(
-    std::shared_ptr< Aws::Http::HttpResponse >& response, std::string& output) {
+    std::shared_ptr< Aws::Http::HttpResponse > response, std::string& output) {
     // This function has some unconventional stream operations because we need
     // performance over readability here. Equivalent code done in conventional
     // ways (using stringstream operators) takes ~30x longer than this code
@@ -79,6 +79,7 @@ void ESCommunication::AwsHttpResponseToString(
     // Get size of streambuffer and reserver that much space in the output
     size_t avail = static_cast< size_t >(stream_buffer->in_avail());
     std::vector<char> buf(avail, '\0');
+    output.clear();
     output.reserve(avail);
 
     // Directly copy memory from buffer into our string buffer
@@ -341,24 +342,23 @@ bool ESCommunication::EstablishConnection() {
             "The SQL plugin must be installed in order to use this driver. "
             "Received NULL response.";
     } else {
-        std::string response_str;
-        AwsHttpResponseToString(response, response_str);
+        AwsHttpResponseToString(response, m_response_str);
         if (response->GetResponseCode() != Aws::Http::HttpResponseCode::OK) {
             m_error_message =
                 "The SQL plugin must be installed in order to use this driver.";
             if (response->HasClientError())
                 m_error_message += " Client error: '"
                                    + response->GetClientErrorMessage() + "'.";
-            if (!response_str.empty())
-                m_error_message += " Response error: '" + response_str + "'.";
+            if (!m_response_str.empty())
+                m_error_message += " Response error: '" + m_response_str + "'.";
         } else {
-            if (IsSQLPluginInstalled(response_str)) {
+            if (IsSQLPluginInstalled(m_response_str)) {
                 return true;
             } else {
                 m_error_message =
                     "The SQL plugin must be installed in order to use this "
                     "driver. Response body: '"
-                    + response_str + "'";
+                    + m_response_str + "'";
             }
         }
     }
@@ -512,10 +512,9 @@ std::string ESCommunication::GetServerVersion() {
     // Parse server version
     if (response->GetResponseCode() == Aws::Http::HttpResponseCode::OK) {
         try {
-            std::string response_str;
-            AwsHttpResponseToString(response, response_str);
+            AwsHttpResponseToString(response, m_response_str);
             rabbit::document doc;
-            doc.parse(response_str);
+            doc.parse(m_response_str);
             if (doc.has("version") && doc["version"].has("number")) {
                 return doc["version"]["number"].as_string();
             }

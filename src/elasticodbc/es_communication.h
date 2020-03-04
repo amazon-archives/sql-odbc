@@ -74,7 +74,7 @@ class ESCommunication {
                       std::shared_ptr< Aws::Http::HttpResponse >& response);
     void ConstructESResult(ESResult& result);
     void AwsHttpResponseToString(
-    std::shared_ptr< Aws::Http::HttpResponse >& response, std::string& output);
+    std::shared_ptr< Aws::Http::HttpResponse > response, std::string& output);
     void GetJsonSchema(ESResult& es_result);;
     std::string m_error_message;  // TODO: Go through and add error messages on
                                   // exit conditions
@@ -86,6 +86,7 @@ class ESCommunication {
     runtime_options m_rt_opts;
     std::string m_client_encoding;
     Aws::SDKOptions m_options;
+    std::string m_response_str;
     std::shared_ptr< Aws::Http::HttpClient > m_http_client;
 };
 
