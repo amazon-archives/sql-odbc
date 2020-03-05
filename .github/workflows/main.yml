@@ -10,51 +10,47 @@ jobs:
     - name: get-dependencies
       run: brew unlink unixodbc && brew install curl && brew install cmake && brew install libiodbc
     - name: configure
-      run: mkdir build && cd build && cmake ../src && cd .. && mkdir sql-odbc-build
+      run: mkdir build && cd build && cmake ../src && cd ..
     - name: build
       run: cmake --build build
-    - name: upload-build-output
-      if: success()
-      run: |
-        cp ./lib64/*.dylib sql-odbc-builds
-        cp ./bin64/* sql-odbc-builds
     - name: test
       run: | 
         bash ./run_test_runner.sh
-        mkdir -p sql-odbc-builds
+    - name: create-output
+      if: always()
+      run: |
+        mkdir sql-odbc-builds
+        cp ./lib64/*.dylib sql-odbc-builds
+        cp -r ./bin64/ sql-odbc-builds
         cp ./bin64/*.html sql-odbc-builds
     - name: upload-test-output
       if: always()
       uses: actions/upload-artifact@v1
       with:
-        name: sql-odbc-test-output
+        name: create-output
         path: sql-odbc-builds
   build-windows:
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v1
     - name: configure
-      run: mkdir build ; cd build ; cmake ..\\src ; cd .. ; mkdir sql-odbc-build
+      run: mkdir build ; cd build ; cmake ..\\src ; cd ..
     - name: build
       run: cmake --build build --config Release
     - name: test-rabbit
       if: always()
       run: .\\bin64\\Release\\ut_rabbit.exe
-    - name: upload-build-output
-      if: always()
-      run: |
-        cp .\\bin64\\Release\\*.dll sql-odbc-builds
-        cp .\\bin64\\Release\\*.exe sql-odbc-builds
-        cp .\\lib64\\Release\\*.lib sql-odbc-builds
     - name: test
       run: .\run_test_runner.bat
-    - name: create-test-output
+    - name: create-output
       if: always()
       run: |
-        cp .\\bin64\\Release\\*.html sql-odbc-builds
+        mkdir sql-odbc-builds
+        cp .\\bin64\\Release\\*.* sql-odbc-builds
+        cp .\\lib64\\Release\\*.lib sql-odbc-builds
     - name: upload-test-output
       if: always()
       uses: actions/upload-artifact@v1
       with:
-        name: sql-odbc-test-output
+        name: create-output
         path: sql-odbc-builds
