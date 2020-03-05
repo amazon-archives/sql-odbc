@@ -170,10 +170,10 @@ def RunAllTests(test_types, test_suites, exclude_test_list):
         tests = GetTestSuiteExes(_type, test_suites, exclude_test_list)
         print("!! Found tests:", *tests, sep="\n")
         test_outputs = RunTests(tests, _type)
-        print("======== Translating output =========="0)
+        print("======== Translating output ==========")
         final_output[_type] = TranslateTestOutput(_type, test_outputs)
-        print("======== Finished translatiing =========="0)
-    print("======== Finished all translations =========="0)
+        print("======== Finished translatiing ==========")
+    print("======== Finished all translations ==========")
     return final_output
 
 def ParseCommandLineArguments():
