@@ -31,7 +31,7 @@ jobs:
     - name: configure
       run: mkdir build ; cd build ; cmake ../src ; cd ..
     - name: build
-      run: cmake --build build
+      run: cmake --build build --config Release
     - name: test
       run: .\run_test_runner.sh
     - name: create-test-output
