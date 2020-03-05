@@ -265,7 +265,7 @@ LRESULT CALLBACK ConfigDlgProc(HWND hdlg, UINT wMsg, WPARAM wParam,
             /* Hide the driver connect message */
             ShowWindow(GetDlgItem(hdlg, DRV_MSG_LABEL), SW_HIDE);
             LoadString(s_hModule, IDS_ADVANCE_SAVE, strbuf, sizeof(strbuf));
-            SetWindowText(GetDlgItem(hdlg, IDOK), strbuf);
+            //SetWindowText(GetDlgItem(hdlg, IDOK), strbuf);
 
             CheckDlgButton(hdlg, IDC_CHECK1, getGlobalCommlog());
             SetWindowLongPtr(hdlg, DWLP_USER, lParam);
@@ -361,6 +361,13 @@ LRESULT CALLBACK ConfigDlgProc(HWND hdlg, UINT wMsg, WPARAM wParam,
                             }
                             break;
                     }
+                }
+                case ID_ADVANCED_OPTIONS: {
+                    if (DialogBoxParam(s_hModule,
+                                       MAKEINTRESOURCE(DLG_ADVANCED_OPTIONS),
+                                       hdlg, advancedOptionsProc, (LPARAM)lpsetupdlg)
+                        > 0)
+                        EndDialog(hdlg, 0);
                 }
             }
             break;

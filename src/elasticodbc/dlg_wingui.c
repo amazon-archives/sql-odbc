@@ -27,6 +27,7 @@
 #endif /* _HANDLE_ENLIST_IN_DTC_ */
 
 #define AUTHMODE_CNT 3
+extern HINSTANCE s_hModule;
 static const struct authmode authmodes[AUTHMODE_CNT] = {
     {IDS_AUTHTYPE_NONE, AUTHTYPE_IAM},
     {IDS_AUTHTYPE_BASIC, AUTHTYPE_BASIC},
@@ -55,11 +56,28 @@ void SetAuthenticationVisibility(HWND hdlg, const struct authmode *am) {
 
 void SetDlgStuff(HWND hdlg, const ConnInfo *ci) {
     // Connection
+    SetDlgItemText(hdlg, IDC_DSNAME, ci->dsn);
     SetDlgItemText(hdlg, IDC_SERVER, ci->server);
     SetDlgItemText(hdlg, IDC_PORT, ci->port);
     SetDlgItemText(hdlg, IDC_CONNTIMEOUT, ci->response_timeout);
 
     // Authentication
+    int authtype_selection_idx = 0;
+    unsigned int ams_cnt = 0;
+    const struct authmode *ams = GetAuthModes(&ams_cnt);
+    char buff[MEDIUM_REGISTRY_LEN + 1];
+    for (unsigned int i = 0; i < ams_cnt; i++) {
+        LoadString(GetWindowInstance(hdlg), ams[i].authtype_id, buff,
+                   MEDIUM_REGISTRY_LEN);
+        SendDlgItemMessage(hdlg, IDC_AUTHTYPE, CB_ADDSTRING, 0, (WPARAM)buff);
+        if (!stricmp(ci->authtype, ams[i].authtype_str)) {
+            authtype_selection_idx = i;
+        }
+    }
+    SendDlgItemMessage(hdlg, IDC_AUTHTYPE, CB_SETCURSEL,
+                       ams[authtype_selection_idx].authtype_id, (WPARAM)0);
+    //SetAuthenticationVisibility(hdlg, &ams[authtype_selection_idx]);
+
     SetDlgItemText(hdlg, IDC_USER, ci->username);
     SetDlgItemText(hdlg, IDC_PASSWORD, SAFE_NAME(ci->password));
     SetDlgItemText(hdlg, IDC_REGION, ci->region);
@@ -127,5 +145,51 @@ static void getDriversDefaultsOfCi(const ConnInfo *ci, GLOBAL_VALUES *glbv) {
     else
         getDriversDefaults(INVALID_DRIVER, glbv);
 }
+
+LRESULT CALLBACK advancedOptionsProc(HWND hdlg, UINT wMsg, WPARAM wParam,
+                                     LPARAM lParam) {
+    ConnInfo *ci;
+    char strbuf[128];
+
+    // if (WM_INITDIALOG == wMsg || WM_COMMAND == wMsg)
+    // MYLOG(0, "entering wMsg=%d in\n", wMsg);
+    switch (wMsg) {
+        case WM_INITDIALOG:
+            SetWindowLongPtr(hdlg, DWLP_USER, lParam); /* save for OK etc */
+            ci = (ConnInfo *)lParam;
+            if (ci && ci->dsn && ci->dsn[0]) {
+                DWORD cmd;
+                char fbuf[64];
+
+                cmd = LoadString(s_hModule, IDS_ADVANCE_OPTION_DSN1, fbuf,
+                                 sizeof(fbuf));
+                if (cmd <= 0)
+                    STRCPY_FIXED(fbuf, "Advanced Options");
+                SPRINTF_FIXED(strbuf, fbuf, ci->dsn);
+                SetWindowText(hdlg, strbuf);
+            } else {
+                LoadString(s_hModule, IDS_ADVANCE_OPTION_CON1, strbuf,
+                           sizeof(strbuf));
+                SetWindowText(hdlg, strbuf);
+                //ShowWindow(GetDlgItem(hdlg, IDOK), SW_HIDE);
+            }
+            //driver_optionsDraw(hdlg, ci, 1, FALSE);
+            break;
+
+        case WM_COMMAND:
+            ci = (ConnInfo *)GetWindowLongPtr(hdlg, DWLP_USER);
+            switch (GET_WM_COMMAND_ID(wParam, lParam)) {
+                case IDOK:
+                    //driver_options_update(hdlg, ci);
+
+                case IDCANCEL:
+                    EndDialog(hdlg, GET_WM_COMMAND_ID(wParam, lParam) == IDOK);
+                    return TRUE;
+            }
+    }
+
+    return FALSE;
+}
+
 
 #endif /* WIN32 */

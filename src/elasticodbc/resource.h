@@ -22,6 +22,7 @@
 #define DTC_OPT_HEIGHT                  45
 #define DTC_GRP_Y                       60
 #define DTC_GRP_HEIGHT                  100
+#define DLG_OPTIONS_DRV					102
 #define MISC_Y                          145
 #define DTC_OPT_WIDTH                   180
 #define CONNSETTINGS_Y                  185
@@ -95,14 +96,21 @@
 #define IDC_MFCEDITBROWSE1              1120
 #define IDC_REGION                      1121
 #define IDC_REGION_STATIC               1122
+#define IDC_AUTH_STATIC                 1123
+#define ID_ADVANCED_OPTIONS             1124
+#define ID_LOG_OPTIONS                  1125
+#define IDC_DRIVER_VERSION              1126
+#define IDC_AUTH_SETTINGS               1127
+#define IDC_CONN_SETTINGS               1128
+#define DLG_ADVANCED_OPTIONS			1129
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        109
+#define _APS_NEXT_RESOURCE_VALUE        110
 #define _APS_NEXT_COMMAND_VALUE         40001
-#define _APS_NEXT_CONTROL_VALUE         1123
+#define _APS_NEXT_CONTROL_VALUE         1130
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

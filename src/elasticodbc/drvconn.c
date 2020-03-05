@@ -118,7 +118,7 @@ LRESULT CALLBACK dconn_FDriverConnectProc(HWND hdlg, UINT wMsg, WPARAM wParam,
 
             LoadString(s_hModule, IDS_ADVANCE_CONNECTION, strbuf,
                        sizeof(strbuf));
-            SetWindowText(GetDlgItem(hdlg, IDC_DATASOURCE), strbuf);
+            SetWindowText(GetDlgItem(hdlg, ID_ADVANCED_OPTIONS), strbuf);
             CheckDlgButton(hdlg, IDC_CHECK1, getGlobalCommlog());
 
             /* Hide the DSN and description fields */
@@ -194,6 +194,14 @@ LRESULT CALLBACK dconn_FDriverConnectProc(HWND hdlg, UINT wMsg, WPARAM wParam,
                     test_connection(hdlg, &tmp_info, FALSE);
                     CC_conninfo_release(&tmp_info);
                     break;
+                }
+                case ID_ADVANCED_OPTIONS: {
+                    ci = (ConnInfo *)GetWindowLongPtr(hdlg, DWLP_USER);
+                    DialogBoxParam(s_hModule, MAKEINTRESOURCE(DLG_OPTIONS_DRV),
+                                   hdlg, advancedOptionsProc, (LPARAM)ci);
+                    break;
+                }
+                case ID_LOG_OPTIONS: {
                 }
                 case IDC_AUTHTYPE: {
                     ci = (ConnInfo *)GetWindowLongPtr(hdlg, DWLP_USER);
