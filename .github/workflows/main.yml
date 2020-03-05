@@ -17,7 +17,7 @@ jobs:
       if: success()
       run: |
         mkdir -p sql-odbc-builds
-        cp ./bin64/*.dylib sql-odbc-builds
+        cp ./lib64/elasticodbc.dylib sql-odbc-builds
     - name: test
       run: | 
         bash ./run_test_runner.sh
@@ -41,7 +41,8 @@ jobs:
       if: success()
       run: |
         mkdir -p sql-odbc-builds
-        cp .\\bin64\\Release\\*.dll sql-odbc-builds
+        cp .\\bin64\\Release\\elasticodbc.dll sql-odbc-builds
+        cp .\\lib64\\Release\\elasticodbc.lib sql-odbc-builds
     - name: test
       run: .\run_test_runner.bat
     - name: create-test-output
