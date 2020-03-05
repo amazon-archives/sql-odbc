@@ -185,7 +185,7 @@ static void getCiDefaults(ConnInfo *ci) {
     strncpy(ci->response_timeout, DEFAULT_RESPONSE_TIMEOUT_STR, SMALL_REGISTRY_LEN);
     strncpy(ci->authtype, DEFAULT_AUTHTYPE, MEDIUM_REGISTRY_LEN);
     if(ci->password.name != NULL)
-        ci->password.name = _strdup("");
+        ci->password.name = strdup("");
     ci->password.name = NULL;
     strncpy(ci->username, DEFAULT_USERNAME, MEDIUM_REGISTRY_LEN);
     strncpy(ci->region, DEFAULT_REGION, MEDIUM_REGISTRY_LEN);
@@ -471,7 +471,7 @@ void CC_conninfo_init(ConnInfo *conninfo, UInt4 option) {
     strncpy(conninfo->authtype, DEFAULT_AUTHTYPE, MEDIUM_REGISTRY_LEN);
     if(conninfo->password.name != NULL)
         free(conninfo->password.name);
-    conninfo->password.name = _strdup("");
+    conninfo->password.name = strdup("");
     strncpy(conninfo->username, DEFAULT_USERNAME, MEDIUM_REGISTRY_LEN);
     strncpy(conninfo->region, DEFAULT_REGION, MEDIUM_REGISTRY_LEN);
     conninfo->use_ssl = DEFAULT_USE_SSL;
