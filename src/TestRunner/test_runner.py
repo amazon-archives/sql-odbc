@@ -132,7 +132,7 @@ def ParseUnitTestLog(unit_test, log):
             tmp = log.replace("[==========] Running ", "").replace(" test cases.", "").replace(" test case.", "").replace("tests from", "").replace("test from", "")
     if tmp == "":
         print('FAILED TO FIND LOG WITH RUNNING')
-    print("SPLIT: " + str(tmp.split(" ")))
+    print("SPLIT: " + str(tmp.split("  ")))
     log_json["TotalTestCount"] = tmp.split(" ")[0]
     log_json["TotalTestCases"] = tmp.split(" ")[1]
     log_json["TestCases"] = []

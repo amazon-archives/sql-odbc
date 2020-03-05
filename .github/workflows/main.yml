@@ -1,4 +1,4 @@
-name: C/C++ CI
+name: Open Distro for Elasticsearch ODBC Driver 0
 
 on: [push, pull_request]
 
