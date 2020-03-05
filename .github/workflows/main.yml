@@ -29,7 +29,7 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: configure
-      run: mkdir build && cd build && cmake ../src && cd ..
+      run: mkdir build ; cd build ; cmake ../src ; cd ..
     - name: build
       run: cmake --build build
     - name: test
