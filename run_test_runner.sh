@@ -31,4 +31,4 @@ ERROR_CODE=$?
 
 cd ..
 
-exit ERROR_CODE
+exit ${ERROR_CODE}

@@ -396,8 +396,7 @@ class TestSQLBindCol : public testing::Test {
     }
 
     void TearDown() {
-        if (m_hstmt != SQL_NULL_HSTMT)
-            ASSERT_NO_THROW(CloseCursor(&m_hstmt, true, true));
+        ASSERT_NO_THROW(CloseCursor(&m_hstmt, true, true));
     }
 
     ~TestSQLBindCol() {
@@ -902,16 +901,16 @@ TEST_F(TestSQLMoreResults, NoData) {
 }
 
 int main(int argc, char** argv) {
-    // testing::internal::CaptureStdout();
+    testing::internal::CaptureStdout();
     ::testing::InitGoogleTest(&argc, argv);
 
     int failures = RUN_ALL_TESTS();
 
-    // std::string output = testing::internal::GetCapturedStdout();
-    // std::cout << output << std::endl;
+    std::string output = testing::internal::GetCapturedStdout();
+    std::cout << output << std::endl;
     std::cout << (failures ? "Not all tests passed." : "All tests passed")
               << std::endl;
-    // WriteFileIfSpecified(argv, argv + argc, "-fout", output);
+    WriteFileIfSpecified(argv, argv + argc, "-fout", output);
 
     return failures;
 }
