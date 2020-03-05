@@ -223,10 +223,10 @@ def main():
             results_file.write(template.render(data = data))
 
         print(f"== Finished generating results file {outfile} // Opening it in your browser... ==")
-        if sys.platform.startswith("darwin"):
-            os.system(" ".join(["open", os.path.join(os.getcwd(), outfile)]))
-        else:
-            os.system(os.path.join(os.getcwd(), outfile))
+        #if sys.platform.startswith("darwin"):
+        #    os.system(" ".join(["open", os.path.join(os.getcwd(), outfile)]))
+        #else:
+        #    os.system(os.path.join(os.getcwd(), outfile))
 
         sys.exit(total_failures)
 
