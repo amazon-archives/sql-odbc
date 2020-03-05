@@ -215,12 +215,12 @@ def main():
 
         if suites is not None: 
             print(f'== Using suites {suites} ==')
-        with open(os.path.join(os.getcwd(), outfile), 'w+') as results_file:
-            data = RunAllTests([UT_TYPE, IT_TYPE], suites, exclude_test_list)
-            print('== done test running ==')
-            os.chmod(outfile, 0o744)
-            print('== rendering output ==')
-            results_file.write(template.render(data = data))
+        #with open(os.path.join(os.getcwd(), outfile), 'w+') as results_file:
+        data = RunAllTests([UT_TYPE, IT_TYPE], suites, exclude_test_list)
+        print('== done test running ==')
+            #os.chmod(outfile, 0o744)
+        print('== rendering output ==')
+            #results_file.write(template.render(data = data))
 
         print(f"== Finished generating results file {outfile} // Opening it in your browser... ==")
         #if sys.platform.startswith("darwin"):
