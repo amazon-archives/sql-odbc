@@ -7,9 +7,11 @@ jobs:
     runs-on: macos-latest
     steps:
     - uses: actions/checkout@v1
-    - name: Configure
+    - name: get-dependencies
+      run: brew install curl && brew install cmake && brew install libiodbc
+    - name: configure
       run: mkdir build && cd build && cmake ../src && cd ..
-    - name: Build
+    - name: build
       run: cmake --build build
     - name: test
       run: .\run_test_runner.sh
@@ -26,9 +28,9 @@ jobs:
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v1
-    - name: Configure
-      run: mkdir build && cd build && cmake ../src && cd ..
-    - name: Build
+    - name: configure
+      run: mkdir build -and cd build -and cmake ../src -and cd ..
+    - name: build
       run: cmake --build build
     - name: test
       run: .\run_test_runner.sh
