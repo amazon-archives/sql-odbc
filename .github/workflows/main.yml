@@ -17,7 +17,7 @@ jobs:
       if: success()
       run: |
         mkdir -p sql-odbc-builds
-        cp ./lib64/elasticodbc.dylib sql-odbc-builds
+        cp ./lib64/libelasticodbc.dylib sql-odbc-builds
     - name: test
       run: | 
         bash ./run_test_runner.sh
