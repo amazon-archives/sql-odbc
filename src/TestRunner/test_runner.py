@@ -133,8 +133,8 @@ def ParseUnitTestLog(unit_test, log):
     if tmp == "":
         print('FAILED TO FIND LOG WITH RUNNING')
     print("SPLIT: " + str(tmp.split("  ")))
-    log_json["TotalTestCount"] = tmp.split(" ")[0]
-    log_json["TotalTestCases"] = tmp.split(" ")[1]
+    log_json["TotalTestCount"] = tmp.split("  ")[0]
+    log_json["TotalTestCases"] = tmp.split("  ")[1]
     log_json["TestCases"] = []
     test_cases = []
     for _line in log_split:
