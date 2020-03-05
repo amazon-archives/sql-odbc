@@ -128,9 +128,10 @@ TEST(TestESConnDropDBConnection, ValidParameters) {
 }
 
 int main(int argc, char** argv) {
-    //::testing::InitGoogleTest(&argc, argv);
+    std::cout << "InitGoogleTest\n" << std::endl;
+    ::testing::InitGoogleTest(&argc, argv);
     std::cout << "CaptureStdout\n" << std::endl;
-    testing::internal::CaptureStdout();
+    //testing::internal::CaptureStdout();
 
     std::cout << "Starting tests\n" << std::endl;
     // Run test and pipe output to a file
@@ -143,6 +144,8 @@ int main(int argc, char** argv) {
     //std::cout << output << std::endl;
     std::cout << (failures ? "Not all tests passed." : "All tests passed")
               << std::endl;
+    std::string foo = "empty file";
+    WriteFileIfSpecified(argv, argv + argc, "-fout", foo);
     //WriteFileIfSpecified(argv, argv + argc, "-fout", output);
 
     return failures;
