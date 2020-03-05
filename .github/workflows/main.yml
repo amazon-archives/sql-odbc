@@ -14,7 +14,7 @@ jobs:
     - name: build
       run: cmake --build build
     - name: test
-      run: .\run_test_runner.sh
+      run: ./run_test_runner.sh
     - name: create-test-output
       run: |
         mkdir -p sql-odbc-builds
@@ -33,7 +33,7 @@ jobs:
     - name: build
       run: cmake --build build --config Release
     - name: test
-      run: .\run_test_runner.sh
+      run: .\run_test_runner.bat
     - name: create-test-output
       run: |
         mkdir -p sql-odbc-builds
