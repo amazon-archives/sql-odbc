@@ -18,8 +18,10 @@
 #define UNIT_TEST_HELPER
 
 #ifdef WIN32
+/*
 #define VLD_FORCE_ENABLE 1
 #include <vld.h>
+*/
 #endif
 
 #include <string>
