@@ -39,9 +39,9 @@ jobs:
       run: cmake --build build --config Release
     - name: check-output
       if: always()
-      run: .\\bin64\\Release\\ut_conn.exe
+      run: echo "$PWD" ; .\\bin64\\Release\\ut_conn.exe
     - name: upload-build-output
-      if: success()
+      if: always()
       run: |
         mkdir -p sql-odbc-builds
         cp .\\bin64\\Release\\elasticodbc.dll sql-odbc-builds
@@ -49,6 +49,7 @@ jobs:
     - name: test
       run: .\run_test_runner.bat
     - name: create-test-output
+      if: always()
       run: |
         mkdir -p sql-odbc-builds
         cp .\\bin64\\Release\\*.html sql-odbc-builds
