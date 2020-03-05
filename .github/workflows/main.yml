@@ -14,12 +14,15 @@ jobs:
     - name: build
       run: cmake --build build
     - name: test
-      run: bash ./run_test_runner.sh
-    - name: create-test-output
-      run: |
+      run: | 
+        bash ./run_test_runner.sh
         mkdir -p sql-odbc-builds
         cp ./bin64/*.html sql-odbc-builds
+    - name: upload-build-output
+      if: success()
+      run: cp ./bin64/*.dylib sql-odbc-builds
     - name: upload-test-output
+      if: always()
       uses: actions/upload-artifact@v1
       with:
         name: sql-odbc-test-output
@@ -37,8 +40,12 @@ jobs:
     - name: create-test-output
       run: |
         mkdir -p sql-odbc-builds
-        cp ./bin64/*.html sql-odbc-builds
+        cp ./bin64/Release/*.html sql-odbc-builds
+    - name: upload-build-output
+      if: success()
+      run: cp ./bin64/Release*.dll sql-odbc-builds
     - name: upload-test-output
+      if: always()
       uses: actions/upload-artifact@v1
       with:
         name: sql-odbc-test-output

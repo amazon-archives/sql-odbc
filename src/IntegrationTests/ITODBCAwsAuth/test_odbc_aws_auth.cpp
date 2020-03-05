@@ -44,7 +44,7 @@ class TestAwsAuthConnection : public testing::Test {
     TestAwsAuthConnection(){
     }
 
-    void SetUp() {
+    void SetUp() override {
     }
 
     void AllocConnection() {
@@ -53,7 +53,7 @@ class TestAwsAuthConnection : public testing::Test {
         ASSERT_NO_FATAL_FAILURE(SQLAllocHandle(SQL_HANDLE_DBC, m_env, &m_conn));
     }
 
-    void TearDown() {
+    void TearDown() override {
         SQLDisconnect(m_conn);
         SQLFreeHandle(SQL_HANDLE_DBC, m_conn);
         SQLFreeHandle(SQL_HANDLE_ENV,m_env);
