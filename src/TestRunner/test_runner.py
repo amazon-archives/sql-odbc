@@ -170,7 +170,10 @@ def RunAllTests(test_types, test_suites, exclude_test_list):
         tests = GetTestSuiteExes(_type, test_suites, exclude_test_list)
         print("!! Found tests:", *tests, sep="\n")
         test_outputs = RunTests(tests, _type)
+        print("======== Translating output =========="0)
         final_output[_type] = TranslateTestOutput(_type, test_outputs)
+        print("======== Finished translatiing =========="0)
+    print("======== Finished all translations =========="0)
     return final_output
 
 def ParseCommandLineArguments():
@@ -214,7 +217,9 @@ def main():
             print(f'== Using suites {suites} ==')
         with open(os.path.join(os.getcwd(), outfile), 'w+') as results_file:
             data = RunAllTests([UT_TYPE, IT_TYPE], suites, exclude_test_list)
+            print('== done test running ==')
             os.chmod(outfile, 0o744)
+            print('== rendering output ==')
             results_file.write(template.render(data = data))
 
         print(f"== Finished generating results file {outfile} // Opening it in your browser... ==")
