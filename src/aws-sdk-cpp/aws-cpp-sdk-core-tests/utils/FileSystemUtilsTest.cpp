@@ -291,5 +291,8 @@ TEST_F(DirectoryTreeTest, CreateDirectoryIfNotExistedTest)
 #endif
     Aws::String longDirName(longNameLength, 'a');
     // The directory is created under root directory "dir1", "dir1" will be deleted during TearDown().
+    std::cout << "===========================================================================" << std::endl;
+    std::cout << "longDirName: " << longDirName << std::endl;
+    std::cout << "===========================================================================" << std::endl;
     ASSERT_TRUE(FileSystem::CreateDirectoryIfNotExists(FileSystem::Join(FileSystem::Join(dir2, "dir3"), longDirName).c_str(), true/*create all intermediate directories on the path*/));
 }
