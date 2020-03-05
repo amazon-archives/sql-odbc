@@ -131,10 +131,12 @@ def ParseUnitTestLog(unit_test, log):
                 #           [==========] Running 16 tests from 8 test cases.
             tmp = log.replace("[==========] Running ", "").replace(" test cases.", "").replace(" test case.", "").replace("tests from", "").replace("test from", "")
     if tmp == "":
-        print('FAILED TO FIND LOG WITH RUNNING')
-    print("SPLIT: " + str(tmp.split("  ")))
-    log_json["TotalTestCount"] = tmp.split("  ")[0]
-    log_json["TotalTestCases"] = tmp.split("  ")[1]
+        print('!!! FAILED TO FIND LOG WITH RUNNING !!!')
+        log_json["TotalTestCount"] = "0"
+        log_json["TotalTestCases"] = "0"
+    else:
+        log_json["TotalTestCount"] = tmp.split("  ")[0]
+        log_json["TotalTestCases"] = tmp.split("  ")[1]
     log_json["TestCases"] = []
     test_cases = []
     for _line in log_split:
