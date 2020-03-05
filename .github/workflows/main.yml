@@ -1,4 +1,4 @@
-name: Open Distro for Elasticsearch ODBC Driver 0
+name: Open Distro for Elasticsearch ODBC Driver
 
 on: [push, pull_request]
 
@@ -22,7 +22,7 @@ jobs:
         mkdir build
         mkdir test-output
         cp ./lib64/*.dylib build
-        cp !(./bin64/*.*) build
+        cp $(ls -d bin64/* | grep -v "\.") build
         cp ./bin64/*.html test-output
     - name: upload-build
       if: always()
