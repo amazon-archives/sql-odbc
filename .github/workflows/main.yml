@@ -24,6 +24,7 @@ jobs:
         cp ./lib64/*.dylib build
         cp $(ls -d bin64/* | grep -v "\.") build
         cp ./bin64/*.html test-output
+        cp ./bin64/*.log test-output
     - name: upload-build
       if: always()
       uses: actions/upload-artifact@v1
