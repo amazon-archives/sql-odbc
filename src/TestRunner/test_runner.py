@@ -222,6 +222,7 @@ def main():
 
     except:
         print(traceback.format_exc())
+        return 255
 
 if __name__ == "__main__":
     main()
