@@ -19,8 +19,12 @@ set WORKING_DIR=%PROJECT_DIR%\bin64
 
 cd %WORKING_DIR%
 
-pip install mako
+py -m pip install mako
 
 py %TEST_RUNNER_DIR%\test_runner.py -i %TEST_RUNNER_DIR%\mako_template.html -o test_output.html -e %TEST_RUNNER_DIR%\test_exclude_list.txt
 
+set error_level = %ERRORLEVEL%
+
 cd %PROJECT_DIR%
+
+exit %error_level%
