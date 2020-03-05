@@ -38,7 +38,10 @@ jobs:
     - name: build
       run: cmake --build build --config Release
     - name: test
-      run: .\run_test_runner.bat
+      run: |
+        cp .\\libraries\\VisualLeakDetector\\bin64\\*.* .\\bin64\\Release
+        cp .\\libraries\\VisualLeakDetector\\lib64\\*.lib .\\lib64\\Release
+        .\run_test_runner.bat
     - name: create-output
       if: always()
       run: |
