@@ -10,9 +10,9 @@ jobs:
     - name: get-dependencies
       run: brew unlink unixodbc && brew install curl && brew install cmake && brew install libiodbc
     - name: configure
-      run: mkdir build && cd build && cmake ../src && cd ..
-    - name: build
-      run: cmake --build build
+      run: mkdir cmake-build && cd cmake-build && cmake ../src && cd ..
+    - name: cmake-build
+      run: cmake --build cmake-build
     - name: test
       run: | 
         bash ./run_test_runner.sh
@@ -41,9 +41,9 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: configure
-      run: mkdir build ; cd build ; cmake ..\\src ; cd ..
-    - name: build
-      run: cmake --build build --config Release
+      run: mkdir cmake-build ; cd cmake-build ; cmake ..\\src ; cd ..
+    - name: cmake-build
+      run: cmake --build cmake-build --config Release
     - name: test
       run: |
         cp .\\libraries\\VisualLeakDetector\\bin64\\*.* .\\bin64\\Release
