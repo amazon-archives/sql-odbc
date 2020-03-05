@@ -23,8 +23,8 @@ py -m pip install mako
 
 py %TEST_RUNNER_DIR%\test_runner.py -i %TEST_RUNNER_DIR%\mako_template.html -o test_output.html -e %TEST_RUNNER_DIR%\test_exclude_list.txt
 
-set error_level = %ERRORLEVEL%
+set ERROR_CODE = %ERRORLEVEL%
 
 cd %PROJECT_DIR%
 
-exit %error_level%
+EXIT /B %ERROR_CODE%
