@@ -218,11 +218,11 @@ def main():
         else:
             os.system(os.path.join(os.getcwd(), outfile))
 
-        return total_failures
+        sys.exit(total_failures)
 
     except:
         print(traceback.format_exc())
-        return 255
+        sys.exit(255)
 
 if __name__ == "__main__":
     main()
