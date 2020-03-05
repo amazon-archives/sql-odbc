@@ -1,2 +1,8 @@
 ut_aws_sdk_cpp
 itodbc_aws_auth
+itodbc_catalog
+itodbc_execution
+itodbc_descriptors
+itodbc_results
+itodbc_info
+itodbc_tableau_queries
