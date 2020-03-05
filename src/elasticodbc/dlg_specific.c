@@ -22,7 +22,6 @@
 #include "misc.h"
 
 #define NULL_IF_NULL(a) ((a) ? ((const char *)(a)) : "(null)")
-CSTR ENTRY_TEST = " @@@ ";
 
 static void encode(const esNAME, char *out, int outlen);
 static esNAME decode(const char *in);
@@ -33,44 +32,8 @@ static esNAME decode_or_remove_braces(const char *in);
      | BIT_CVT_NULL_DATE | BIT_ACCESSIBLE_ONLY | BIT_IGNORE_ROUND_TRIP_TIME \
      | BIT_DISABLE_KEEPALIVE)
 
-CSTR hex_format = "%x";
-CSTR dec_format = "%u";
-CSTR octal_format = "%o";
-
 #define OPENING_BRACKET '{'
 #define CLOSING_BRACKET '}'
-static const char *makeBracketConnectString(BOOL in_str, char **target,
-                                            esNAME item, const char *optname) {
-    const char *istr, *iptr;
-    char *buf, *optr;
-    int len;
-
-    if (!in_str)
-        return NULL_STRING;
-
-    istr = SAFE_NAME(item);
-    for (iptr = istr, len = 0; *iptr; iptr++) {
-        if (CLOSING_BRACKET == *iptr)
-            len++;
-        len++;
-    }
-    len += 30;
-    if (buf = (char *)malloc(len), buf == NULL)
-        return NULL_STRING;
-    snprintf(buf, len, "%s=%c", optname, OPENING_BRACKET);
-    optr = strchr(buf, '\0');
-    for (iptr = istr; *iptr; iptr++) {
-        if (CLOSING_BRACKET == *iptr)
-            *(optr++) = *iptr;
-        *(optr++) = *iptr;
-    }
-    *(optr++) = CLOSING_BRACKET;
-    *(optr++) = ';';
-    *optr = '\0';
-    *target = buf;
-
-    return buf;
-}
 
 #ifdef __APPLE__
 #pragma clang diagnostic push
