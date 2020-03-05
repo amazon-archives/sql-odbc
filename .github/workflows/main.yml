@@ -37,6 +37,9 @@ jobs:
       run: mkdir build ; cd build ; cmake ..\\src ; cd ..
     - name: build
       run: cmake --build build --config Release
+    - name: check-output
+      if: always()
+      run: .\\bin64\\Release\\ut_conn.exe
     - name: upload-build-output
       if: success()
       run: |

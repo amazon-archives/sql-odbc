@@ -126,8 +126,8 @@ def ParseUnitTestLog(unit_test, log):
         return {}
 
     for log in log_split:
-        if log.startswith("[==========] Running"):
-            tmp = log.replace("[==========] Running ", "").replace(" test cases.", "").replace(" test case.", "")
+        #if log.startswith("[==========] Running"):
+        tmp = log.replace("[==========] Running ", "").replace(" test cases.", "").replace(" test case.", "")
     log_json["TotalTestCount"] = re.split(" tests? from ", tmp)[0]
     log_json["TotalTestCases"] = re.split(" tests? from ", tmp)[1]
     log_json["TestCases"] = []
