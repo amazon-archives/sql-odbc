@@ -140,9 +140,8 @@ BOOL copyConnAttributes(ConnInfo *ci, const char *attribute,
         STRCPY_FIXED(ci->dsn, value);
     else if (stricmp(attribute, "driver") == 0)
         STRCPY_FIXED(ci->drivername, value);
-    else if (stricmp(attribute, INI_SERVER) == 0)
-        STRCPY_FIXED(ci->server, value);
-    else if (stricmp(attribute, INI_HOST) == 0)
+    else if ((stricmp(attribute, INI_HOST) == 0)
+             || (stricmp(attribute, INI_SERVER) == 0))
         STRCPY_FIXED(ci->server, value);
     else if (stricmp(attribute, INI_PORT) == 0)
         STRCPY_FIXED(ci->port, value);
