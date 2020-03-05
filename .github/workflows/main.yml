@@ -19,16 +19,23 @@ jobs:
     - name: create-output
       if: always()
       run: |
-        mkdir sql-odbc-builds
-        cp ./lib64/*.dylib sql-odbc-builds
-        cp -r ./bin64/ sql-odbc-builds
-        cp ./bin64/*.html sql-odbc-builds
-    - name: upload-test-output
+        mkdir build
+        mkdir test-output
+        cp ./lib64/*.dylib build
+        cp !(./bin64/*.*) build
+        cp ./bin64/*.html test-output
+    - name: upload-build
       if: always()
       uses: actions/upload-artifact@v1
       with:
-        name: mac-output
-        path: sql-odbc-builds
+        name: mac-build
+        path: build
+    - name: upload-test-results
+      if: always()
+      uses: actions/upload-artifact@v1
+      with:
+        name: mac-test-results
+        path: test-output
   build-windows:
     runs-on: windows-latest
     steps:
@@ -45,12 +52,22 @@ jobs:
     - name: create-output
       if: always()
       run: |
-        mkdir sql-odbc-builds
-        cp .\\bin64\\Release\\*.* sql-odbc-builds
-        cp .\\lib64\\Release\\*.lib sql-odbc-builds
-    - name: upload-test-output
+        mkdir build
+        mkdir test-output
+        cp .\\bin64\\Release\\*.dll build
+        cp .\\bin64\\Release\\*.exe build
+        cp .\\bin64\\Release\\*.log test-output
+        cp .\\bin64\\Release\\*.html test-output
+        cp .\\lib64\\Release\\*.lib build
+    - name: upload-build
       if: always()
       uses: actions/upload-artifact@v1
       with:
-        name: windows-output
-        path: sql-odbc-builds
+        name: windows-build
+        path: build
+    - name: upload-test-results
+      if: always()
+      uses: actions/upload-artifact@v1
+      with:
+        name: windows-test-results
+        path: test-output
