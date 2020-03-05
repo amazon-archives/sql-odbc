@@ -37,9 +37,6 @@ jobs:
       run: mkdir build ; cd build ; cmake ..\\src ; cd ..
     - name: build
       run: cmake --build build --config Release
-    - name: test-rabbit
-      if: always()
-      run: .\\bin64\\Release\\ut_rabbit.exe
     - name: test
       run: .\run_test_runner.bat
     - name: create-output
