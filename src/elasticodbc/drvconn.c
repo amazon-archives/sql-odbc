@@ -107,7 +107,6 @@ LRESULT CALLBACK dconn_FDriverConnectProc(HWND hdlg, UINT wMsg, WPARAM wParam,
                                           LPARAM lParam) {
     MYLOG(0, "dconn_FDriverConnectProc\n");
     ConnInfo *ci;
-    char strbuf[64];
 
     switch (wMsg) {
         case WM_INITDIALOG:
@@ -116,24 +115,11 @@ LRESULT CALLBACK dconn_FDriverConnectProc(HWND hdlg, UINT wMsg, WPARAM wParam,
             /* Change the caption for the setup dialog */
             SetWindowText(hdlg, "Elasticsearch Connection");
 
-            LoadString(s_hModule, IDS_ADVANCE_CONNECTION, strbuf,
-                       sizeof(strbuf));
-            SetWindowText(GetDlgItem(hdlg, ID_ADVANCED_OPTIONS), strbuf);
             CheckDlgButton(hdlg, IDC_CHECK1, getGlobalCommlog());
 
             /* Hide the DSN and description fields */
             ShowWindow(GetDlgItem(hdlg, IDC_DSNAMETEXT), SW_HIDE);
             ShowWindow(GetDlgItem(hdlg, IDC_DSNAME), SW_HIDE);
-            ShowWindow(GetDlgItem(hdlg, IDC_DESCTEXT), SW_HIDE);
-            ShowWindow(GetDlgItem(hdlg, IDC_DESC), SW_HIDE);
-            ShowWindow(GetDlgItem(hdlg, IDC_DRIVER), SW_HIDE);
-            ShowWindow(GetDlgItem(hdlg, IDC_TEST), SW_HIDE);
-            ShowWindow(GetDlgItem(hdlg, IDC_MANAGEDSN), SW_HIDE);
-            ShowWindow(GetDlgItem(hdlg, IDC_DATASOURCE), SW_HIDE);
-            if ('\0' != ci->server[0])
-                EnableWindow(GetDlgItem(hdlg, IDC_SERVER), FALSE);
-            if ('\0' != ci->port[0])
-                EnableWindow(GetDlgItem(hdlg, IDC_PORT), FALSE);
 
             SetWindowLongPtr(hdlg, DWLP_USER,
                              lParam); /* Save the ConnInfo for the "OK" */
@@ -148,24 +134,7 @@ LRESULT CALLBACK dconn_FDriverConnectProc(HWND hdlg, UINT wMsg, WPARAM wParam,
             else if (ci->region[0] == '\0')
                 SetFocus(GetDlgItem(hdlg, IDC_REGION));
 
-            // Authentication
-            int authtype_selection_idx = 0;
-            unsigned int ams_cnt = 0;
-            const struct authmode *ams = GetAuthModes(&ams_cnt);
-            char buff[MEDIUM_REGISTRY_LEN + 1];
-            for (unsigned int i = 0; i < ams_cnt; i++) {
-                LoadString(GetWindowInstance(hdlg), ams[i].authtype_id, buff,
-                           MEDIUM_REGISTRY_LEN);
-                SendDlgItemMessage(hdlg, IDC_AUTHTYPE, CB_ADDSTRING, 0,
-                                   (WPARAM)buff);
-                if (!stricmp(ci->authtype, ams[i].authtype_str)) {
-                    authtype_selection_idx = i;
-                }
-            }
-            SendDlgItemMessage(hdlg, IDC_AUTHTYPE, CB_SETCURSEL,
-                               ams[authtype_selection_idx].authtype_id,
-                               (WPARAM)0);
-            SetAuthenticationVisibility(hdlg, &ams[authtype_selection_idx]);
+            SendDlgItemMessage(hdlg, IDC_AUTHTYPE, CB_SETCURSEL, 2, (WPARAM)0);
 
             // Encryption
             ci->use_ssl = (IsDlgButtonChecked(hdlg, IDC_USESSL) ? 1 : 0);
@@ -192,13 +161,13 @@ LRESULT CALLBACK dconn_FDriverConnectProc(HWND hdlg, UINT wMsg, WPARAM wParam,
                 }
                 case ID_ADVANCED_OPTIONS: {
                     ci = (ConnInfo *)GetWindowLongPtr(hdlg, DWLP_USER);
-                    DialogBoxParam(s_hModule, MAKEINTRESOURCE(DLG_OPTIONS_DRV),
+                    DialogBoxParam(s_hModule, MAKEINTRESOURCE(DLG_ADVANCED_OPTIONS),
                                    hdlg, advancedOptionsProc, (LPARAM)ci);
                     break;
                 }
                 case ID_LOG_OPTIONS: {
                     ci = (ConnInfo *)GetWindowLongPtr(hdlg, DWLP_USER);
-                    DialogBoxParam(s_hModule, MAKEINTRESOURCE(DLG_OPTIONS_DRV),
+                    DialogBoxParam(s_hModule, MAKEINTRESOURCE(DLG_LOG_OPTIONS),
                                    hdlg, logOptionsProc, (LPARAM)ci);
                     break;
                 }

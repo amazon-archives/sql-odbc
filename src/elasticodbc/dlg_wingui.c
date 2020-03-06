@@ -81,7 +81,6 @@ void SetDlgStuff(HWND hdlg, const ConnInfo *ci) {
     }
     SendDlgItemMessage(hdlg, IDC_AUTHTYPE, CB_SETCURSEL,
                        ams[authtype_selection_idx].authtype_id, (WPARAM)0);
-
     SetDlgItemText(hdlg, IDC_USER, ci->username);
     SetDlgItemText(hdlg, IDC_PASSWORD, SAFE_NAME(ci->password));
     SetDlgItemText(hdlg, IDC_REGION, ci->region);
@@ -152,12 +151,12 @@ LRESULT CALLBACK advancedOptionsProc(HWND hdlg, UINT wMsg, WPARAM wParam,
             lpsetupdlg = (LPSETUPDLG)GetWindowLongPtr(hdlg, DWLP_USER);
             switch (GET_WM_COMMAND_ID(wParam, lParam)) {
                 case IDOK:
-                    /* Retrieve dialog values */
+                    // Retrieve dialog values 
                     if (!lpsetupdlg->fDefault)
                         GetDlgItemText(hdlg, IDC_DSNAME, lpsetupdlg->ci.dsn,
                                        sizeof(lpsetupdlg->ci.dsn));
 
-                    /* Get Dialog Values */
+                    // Get Dialog Values 
                     lpsetupdlg->ci.use_ssl =
                         (IsDlgButtonChecked(hdlg, IDC_USESSL) ? 1 : 0);
                     lpsetupdlg->ci.verify_server =
@@ -165,9 +164,6 @@ LRESULT CALLBACK advancedOptionsProc(HWND hdlg, UINT wMsg, WPARAM wParam,
                     GetDlgItemText(hdlg, IDC_CONNTIMEOUT,
                                    lpsetupdlg->ci.response_timeout,
                                    sizeof(lpsetupdlg->ci.response_timeout));
-
-
-                    //GetDlgStuff(hdlg, &lpsetupdlg->ci);
                     EndDialog(hdlg, FALSE);
                     break;
 
@@ -196,7 +192,6 @@ LRESULT logOptionsProc(HWND hdlg, UINT wMsg, WPARAM wParam, LPARAM lParam) {
             switch (GET_WM_COMMAND_ID(wParam, lParam)) {
                 case IDOK:
 
-                    // GetDlgStuff(hdlg, &lpsetupdlg->ci);
                     EndDialog(hdlg, FALSE);
                     break;
 
