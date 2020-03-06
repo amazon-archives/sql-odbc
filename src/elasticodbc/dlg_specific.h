@@ -183,6 +183,9 @@ const struct authmode *GetAuthModes();
 #ifdef WIN32
 void SetDlgStuff(HWND hdlg, const ConnInfo *ci);
 void GetDlgStuff(HWND hdlg, ConnInfo *ci);
+LRESULT CALLBACK advancedOptionsProc(HWND hdlg, UINT wMsg, WPARAM wParam,
+                                 LPARAM lParam);
+LRESULT CALLBACK logOptionsProc(HWND hdlg, UINT wMsg, WPARAM wParam, LPARAM lParam);
 #endif /* WIN32 */
 
 int write_Ci_Drivers(const char *fileName, const char *sectionName,
