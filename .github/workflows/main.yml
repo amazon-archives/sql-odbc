@@ -71,9 +71,9 @@ jobs:
         mkdir test-output
         cp .\\bin64\\Release\\*.dll build
         cp .\\bin64\\Release\\*.exe build
+        cp .\\lib64\\Release\\*.lib build
     #    cp .\\bin64\\Release\\*.log test-output
     #    cp .\\bin64\\Release\\*.html test-output
-        cp .\\lib64\\Release\\*.lib build
     - name: upload-build
       if: always()
       uses: actions/upload-artifact@v1
