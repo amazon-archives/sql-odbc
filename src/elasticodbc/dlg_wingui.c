@@ -169,7 +169,6 @@ LRESULT CALLBACK advancedOptionsProc(HWND hdlg, UINT wMsg, WPARAM wParam,
                     return TRUE;
             }
     }
-
     return FALSE;
 }
 
@@ -197,7 +196,6 @@ LRESULT logOptionsProc(HWND hdlg, UINT wMsg, WPARAM wParam, LPARAM lParam) {
                     return TRUE;
             }
     }
-
     return FALSE;
 }
 
