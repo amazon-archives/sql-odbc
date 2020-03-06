@@ -128,7 +128,6 @@ def ParseUnitTestLog(unit_test, log):
     tmp = ""
     for log in log_split:
         if log.startswith("[==========] Running"):
-                #           [==========] Running 16 tests from 8 test cases.
             tmp = log.replace("[==========] Running ", "").replace(" test cases.", "").replace(" test case.", "").replace("tests from", "").replace("test from", "")
     if tmp == "":
         print('!!! FAILED TO FIND LOG WITH RUNNING !!!')
@@ -172,10 +171,7 @@ def RunAllTests(test_types, test_suites, exclude_test_list):
         tests = GetTestSuiteExes(_type, test_suites, exclude_test_list)
         print("!! Found tests:", *tests, sep="\n")
         test_outputs = RunTests(tests, _type)
-        print("======== Translating output ==========")
         final_output[_type] = TranslateTestOutput(_type, test_outputs)
-        print("======== Finished translatiing ==========")
-    print("======== Finished all translations ==========")
     return final_output
 
 def ParseCommandLineArguments():
@@ -217,21 +213,17 @@ def main():
 
         if suites is not None: 
             print(f'== Using suites {suites} ==')
-        full_path_outfile = os.path.join(os.getcwd(), outfile)
-        with open(full_path_outfile, 'w+') as results_file:
+        with open(os.path.join(os.getcwd(), outfile), 'w+') as results_file:
             data = RunAllTests([UT_TYPE, IT_TYPE], suites, exclude_test_list)
-            print('== done test running ==')
             os.chmod(outfile, 0o744)
-            print('== rendering output ==')
             results_file.write(template.render(data = data))
 
-        print(f"== Finished generating results file {full_path_outfile} ==")
-
+        print(f"== Finished generating results file {outfile} ==")
         os._exit(total_failures)
 
     except:
         print(traceback.format_exc())
-        sys.exit(255)
+        os._exit(255)
 
 if __name__ == "__main__":
     main()
