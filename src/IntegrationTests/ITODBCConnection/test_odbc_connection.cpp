@@ -215,6 +215,101 @@ TEST(TestSqlDriverConnect, UnsupportedKeyword) {
     EXPECT_EQ(SQL_ERROR, ret);
 }
 
+TEST(TestSqlDriverConnect, ConnStringAbbrevsUID) {
+    std::wstring abbrev_str =
+    use_ssl ? L"Driver={Elasticsearch ODBC};"
+              L"host=https://localhost;port=9200;"
+              L"UID=admin;password=admin;auth=BASIC;useSSL="
+              L"1;hostnameVerification=0;logLevel=0;logOutput=C:\\;"
+              L"responseTimeout=10;"
+            : L"Driver={Elasticsearch ODBC};"
+              L"host=localhost;port=9200;"
+              L"UID=admin;password=admin;auth=BASIC;useSSL="
+              L"0;hostnameVerification=0;logLevel=0;logOutput=C:\\;"
+              L"responseTimeout=10;";
+
+    SQLRETURN ret;
+    ExecuteSqlDriverConnect((SQLTCHAR*)abbrev_str.c_str(),
+                            SQL_DRIVER_NOPROMPT, &ret);
+    EXPECT_TRUE(SQL_SUCCEEDED(ret));
+}
+
+TEST(TestSqlDriverConnect, ConnStringAbbrevsPWD) {
+    std::wstring abbrev_str =
+    use_ssl ? L"Driver={Elasticsearch ODBC};"
+              L"host=https://localhost;port=9200;"
+              L"user=admin;PWD=admin;auth=BASIC;useSSL="
+              L"1;hostnameVerification=0;logLevel=0;logOutput=C:\\;"
+              L"responseTimeout=10;"
+            : L"Driver={Elasticsearch ODBC};"
+              L"host=localhost;port=9200;"
+              L"user=admin;PWD=admin;auth=BASIC;useSSL="
+              L"0;hostnameVerification=0;logLevel=0;logOutput=C:\\;"
+              L"responseTimeout=10;";
+
+    SQLRETURN ret;
+    ExecuteSqlDriverConnect((SQLTCHAR*)abbrev_str.c_str(),
+                            SQL_DRIVER_NOPROMPT, &ret);
+    EXPECT_TRUE(SQL_SUCCEEDED(ret));
+}
+
+TEST(TestSqlDriverConnect, ConnStringAbbrevsUIDPWD) {
+    std::wstring abbrev_str =
+    use_ssl ? L"Driver={Elasticsearch ODBC};"
+              L"host=https://localhost;port=9200;"
+              L"UID=admin;PWD=admin;auth=BASIC;useSSL="
+              L"1;hostnameVerification=0;logLevel=0;logOutput=C:\\;"
+              L"responseTimeout=10;"
+            : L"Driver={Elasticsearch ODBC};"
+              L"host=localhost;port=9200;"
+              L"UID=admin;PWD=admin;auth=BASIC;useSSL="
+              L"0;hostnameVerification=0;logLevel=0;logOutput=C:\\;"
+              L"responseTimeout=10;";
+
+    SQLRETURN ret;
+    ExecuteSqlDriverConnect((SQLTCHAR*)abbrev_str.c_str(),
+                            SQL_DRIVER_NOPROMPT, &ret);
+    EXPECT_TRUE(SQL_SUCCEEDED(ret));
+}
+
+TEST(TestSqlDriverConnect, ConnStringAbbrevsServer) {
+    std::wstring abbrev_str =
+    use_ssl ? L"Driver={Elasticsearch ODBC};"
+              L"server=https://localhost;port=9200;"
+              L"user=admin;password=admin;auth=BASIC;useSSL="
+              L"1;hostnameVerification=0;logLevel=0;logOutput=C:\\;"
+              L"responseTimeout=10;"
+            : L"Driver={Elasticsearch ODBC};"
+              L"server=localhost;port=9200;"
+              L"user=admin;password=admin;auth=BASIC;useSSL="
+              L"0;hostnameVerification=0;logLevel=0;logOutput=C:\\;"
+              L"responseTimeout=10;";
+
+    SQLRETURN ret;
+    ExecuteSqlDriverConnect((SQLTCHAR*)abbrev_str.c_str(),
+                            SQL_DRIVER_NOPROMPT, &ret);
+    EXPECT_TRUE(SQL_SUCCEEDED(ret));
+}
+
+TEST(TestSqlDriverConnect, ConnStringAbbrevsServerUIDPWD) {
+    std::wstring abbrev_str =
+    use_ssl ? L"Driver={Elasticsearch ODBC};"
+              L"server=https://localhost;port=9200;"
+              L"UID=admin;PWD=admin;auth=BASIC;useSSL="
+              L"1;hostnameVerification=0;logLevel=0;logOutput=C:\\;"
+              L"responseTimeout=10;"
+            : L"Driver={Elasticsearch ODBC};"
+              L"server=localhost;port=9200;"
+              L"UID=admin;PWD=admin;auth=BASIC;useSSL="
+              L"0;hostnameVerification=0;logLevel=0;logOutput=C:\\;"
+              L"responseTimeout=10;";
+
+    SQLRETURN ret;
+    ExecuteSqlDriverConnect((SQLTCHAR*)abbrev_str.c_str(),
+                            SQL_DRIVER_NOPROMPT, &ret);
+    EXPECT_TRUE(SQL_SUCCEEDED(ret));
+}
+
 TEST(TestSqlDriverConnect, Timeout1Second) {
     std::wstring one_second_timeout = 
     use_ssl ? L"Driver={Elasticsearch ODBC};"
