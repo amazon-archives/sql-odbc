@@ -22,9 +22,9 @@ jobs:
     - name: cmake-build
       run: |
         cmake --build cmake-build
-    - name: test
-      run: | 
-        bash ./run_test_runner.sh
+    #- name: test
+    #  run: | 
+    #    bash ./run_test_runner.sh
     - name: create-output
       if: always()
       run: |
@@ -32,20 +32,20 @@ jobs:
         mkdir test-output
         cp ./lib64/*.dylib build
         cp $(ls -d bin64/* | grep -v "\.") build
-        cp ./bin64/*.html test-output
-        cp ./bin64/*.log test-output
+    #    cp ./bin64/*.html test-output
+    #    cp ./bin64/*.log test-output
     - name: upload-build
       if: always()
       uses: actions/upload-artifact@v1
       with:
         name: mac-build
         path: build
-    - name: upload-test-results
-      if: always()
-      uses: actions/upload-artifact@v1
-      with:
-        name: mac-test-results
-        path: test-output
+    #- name: upload-test-results
+    #  if: always()
+    #  uses: actions/upload-artifact@v1
+    #  with:
+    #    name: mac-test-results
+    #    path: test-output
   build-windows:
     runs-on: windows-latest
     steps:
@@ -59,11 +59,11 @@ jobs:
     - name: cmake-build
       run: |
         cmake --build cmake-build --config Release
-    - name: test
-      run: |
-        cp .\\libraries\\VisualLeakDetector\\bin64\\*.* .\\bin64\\Release
-        cp .\\libraries\\VisualLeakDetector\\lib64\\*.lib .\\lib64\\Release
-        .\run_test_runner.bat
+    #- name: test
+    #  run: |
+    #    cp .\\libraries\\VisualLeakDetector\\bin64\\*.* .\\bin64\\Release
+    #    cp .\\libraries\\VisualLeakDetector\\lib64\\*.lib .\\lib64\\Release
+    #    .\run_test_runner.bat
     - name: create-output
       if: always()
       run: |
@@ -71,8 +71,8 @@ jobs:
         mkdir test-output
         cp .\\bin64\\Release\\*.dll build
         cp .\\bin64\\Release\\*.exe build
-        cp .\\bin64\\Release\\*.log test-output
-        cp .\\bin64\\Release\\*.html test-output
+    #    cp .\\bin64\\Release\\*.log test-output
+    #    cp .\\bin64\\Release\\*.html test-output
         cp .\\lib64\\Release\\*.lib build
     - name: upload-build
       if: always()
@@ -80,9 +80,9 @@ jobs:
       with:
         name: windows-build
         path: build
-    - name: upload-test-results
-      if: always()
-      uses: actions/upload-artifact@v1
-      with:
-        name: windows-test-results
-        path: test-output
+    #- name: upload-test-results
+    #  if: always()
+    #  uses: actions/upload-artifact@v1
+    #  with:
+    #    name: windows-test-results
+    #    path: test-output

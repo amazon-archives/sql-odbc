@@ -139,5 +139,5 @@ int main(int argc, char** argv) {
               << std::endl;
     WriteFileIfSpecified(argv, argv + argc, "-fout", output);
 
-	return failures;
+    return failures;
 }
