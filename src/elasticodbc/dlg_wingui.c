@@ -187,7 +187,6 @@ LRESULT logOptionsProc(HWND hdlg, UINT wMsg, WPARAM wParam, LPARAM lParam) {
             lpsetupdlg = (LPSETUPDLG)GetWindowLongPtr(hdlg, DWLP_USER);
             switch (GET_WM_COMMAND_ID(wParam, lParam)) {
                 case IDOK:
-
                     EndDialog(hdlg, FALSE);
                     break;
 
