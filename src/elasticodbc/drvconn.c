@@ -197,17 +197,15 @@ LRESULT CALLBACK dconn_FDriverConnectProc(HWND hdlg, UINT wMsg, WPARAM wParam,
                     break;
                 }
                 case ID_LOG_OPTIONS: {
+                    ci = (ConnInfo *)GetWindowLongPtr(hdlg, DWLP_USER);
+                    DialogBoxParam(s_hModule, MAKEINTRESOURCE(DLG_OPTIONS_DRV),
+                                   hdlg, logOptionsProc, (LPARAM)ci);
+                    break;
                 }
                 case IDC_AUTHTYPE: {
                     ci = (ConnInfo *)GetWindowLongPtr(hdlg, DWLP_USER);
                     const struct authmode *am = GetCurrentAuthMode(hdlg);
                     SetAuthenticationVisibility(hdlg, am);
-                    break;
-                }
-                case IDC_USESSL: {
-                    ci = (ConnInfo *)GetWindowLongPtr(hdlg, DWLP_USER);
-                    int use_ssl =
-                        (IsDlgButtonChecked(hdlg, IDC_USESSL) ? 1 : 0);
                     break;
                 }
             }

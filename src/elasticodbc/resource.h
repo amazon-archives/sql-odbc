@@ -109,6 +109,8 @@
 #define DLG_ADVANCED_OPTIONS            1129
 #define IDC_EDIT2                       1130
 #define IDC_CONNTIMEOUT                 1130
+#define DLG_LOG_OPTIONS                 1131
+#define IDC_LOG_LEVEL                   1132
 
 // Next default values for new objects
 // 
@@ -116,7 +118,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        110
 #define _APS_NEXT_COMMAND_VALUE         40001
-#define _APS_NEXT_CONTROL_VALUE         1131
+#define _APS_NEXT_CONTROL_VALUE         1133
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

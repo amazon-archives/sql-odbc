@@ -172,6 +172,35 @@ LRESULT CALLBACK advancedOptionsProc(HWND hdlg, UINT wMsg, WPARAM wParam,
                     break;
 
                 case IDCANCEL:
+                    EndDialog(hdlg, FALSE);
+                    return TRUE;
+            }
+    }
+
+    return FALSE;
+}
+
+LRESULT logOptionsProc(HWND hdlg, UINT wMsg, WPARAM wParam, LPARAM lParam) {
+    LPSETUPDLG lpsetupdlg;
+    ConnInfo *ci;
+
+    switch (wMsg) {
+        case WM_INITDIALOG:
+            SetWindowLongPtr(hdlg, DWLP_USER, lParam);
+            lpsetupdlg = (LPSETUPDLG)lParam;
+            ci = &lpsetupdlg->ci;
+            break;
+
+        case WM_COMMAND:
+            lpsetupdlg = (LPSETUPDLG)GetWindowLongPtr(hdlg, DWLP_USER);
+            switch (GET_WM_COMMAND_ID(wParam, lParam)) {
+                case IDOK:
+
+                    // GetDlgStuff(hdlg, &lpsetupdlg->ci);
+                    EndDialog(hdlg, FALSE);
+                    break;
+
+                case IDCANCEL:
                     EndDialog(hdlg, GET_WM_COMMAND_ID(wParam, lParam) == IDOK);
                     return TRUE;
             }
