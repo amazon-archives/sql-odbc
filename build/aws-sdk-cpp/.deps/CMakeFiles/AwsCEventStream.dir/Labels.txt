@@ -1,0 +1,13 @@
+# Target labels
+ AwsCEventStream
+# Source files and their labels
+/Users/jordanw/Development/Projects/Amazon/ESODBC/build/aws-sdk-cpp/.deps/CMakeFiles/AwsCEventStream
+/Users/jordanw/Development/Projects/Amazon/ESODBC/build/aws-sdk-cpp/.deps/CMakeFiles/AwsCEventStream.rule
+/Users/jordanw/Development/Projects/Amazon/ESODBC/build/aws-sdk-cpp/.deps/CMakeFiles/AwsCEventStream-complete.rule
+/Users/jordanw/Development/Projects/Amazon/ESODBC/build/aws-sdk-cpp/.deps/build/src/AwsCEventStream-stamp/AwsCEventStream-install.rule
+/Users/jordanw/Development/Projects/Amazon/ESODBC/build/aws-sdk-cpp/.deps/build/src/AwsCEventStream-stamp/AwsCEventStream-mkdir.rule
+/Users/jordanw/Development/Projects/Amazon/ESODBC/build/aws-sdk-cpp/.deps/build/src/AwsCEventStream-stamp/AwsCEventStream-download.rule
+/Users/jordanw/Development/Projects/Amazon/ESODBC/build/aws-sdk-cpp/.deps/build/src/AwsCEventStream-stamp/AwsCEventStream-update.rule
+/Users/jordanw/Development/Projects/Amazon/ESODBC/build/aws-sdk-cpp/.deps/build/src/AwsCEventStream-stamp/AwsCEventStream-patch.rule
+/Users/jordanw/Development/Projects/Amazon/ESODBC/build/aws-sdk-cpp/.deps/build/src/AwsCEventStream-stamp/AwsCEventStream-configure.rule
+/Users/jordanw/Development/Projects/Amazon/ESODBC/build/aws-sdk-cpp/.deps/build/src/AwsCEventStream-stamp/AwsCEventStream-build.rule

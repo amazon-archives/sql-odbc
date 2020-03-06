@@ -1,0 +1,13 @@
+# Target labels
+ AwsChecksums
+# Source files and their labels
+/Users/jordanw/Development/Projects/Amazon/ESODBC/build/aws-sdk-cpp/.deps/CMakeFiles/AwsChecksums
+/Users/jordanw/Development/Projects/Amazon/ESODBC/build/aws-sdk-cpp/.deps/CMakeFiles/AwsChecksums.rule
+/Users/jordanw/Development/Projects/Amazon/ESODBC/build/aws-sdk-cpp/.deps/CMakeFiles/AwsChecksums-complete.rule
+/Users/jordanw/Development/Projects/Amazon/ESODBC/build/aws-sdk-cpp/.deps/build/src/AwsChecksums-stamp/AwsChecksums-install.rule
+/Users/jordanw/Development/Projects/Amazon/ESODBC/build/aws-sdk-cpp/.deps/build/src/AwsChecksums-stamp/AwsChecksums-mkdir.rule
+/Users/jordanw/Development/Projects/Amazon/ESODBC/build/aws-sdk-cpp/.deps/build/src/AwsChecksums-stamp/AwsChecksums-download.rule
+/Users/jordanw/Development/Projects/Amazon/ESODBC/build/aws-sdk-cpp/.deps/build/src/AwsChecksums-stamp/AwsChecksums-update.rule
+/Users/jordanw/Development/Projects/Amazon/ESODBC/build/aws-sdk-cpp/.deps/build/src/AwsChecksums-stamp/AwsChecksums-patch.rule
+/Users/jordanw/Development/Projects/Amazon/ESODBC/build/aws-sdk-cpp/.deps/build/src/AwsChecksums-stamp/AwsChecksums-configure.rule
+/Users/jordanw/Development/Projects/Amazon/ESODBC/build/aws-sdk-cpp/.deps/build/src/AwsChecksums-stamp/AwsChecksums-build.rule

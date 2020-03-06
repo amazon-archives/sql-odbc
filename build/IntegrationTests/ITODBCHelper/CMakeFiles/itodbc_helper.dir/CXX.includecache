@@ -1,0 +1,42 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/Users/jordanw/Development/Projects/Amazon/ESODBC/libraries/VisualLeakDetector/include/vld.h
+vld_def.h
+/Users/jordanw/Development/Projects/Amazon/ESODBC/libraries/VisualLeakDetector/include/vld_def.h
+
+/Users/jordanw/Development/Projects/Amazon/ESODBC/libraries/VisualLeakDetector/include/vld_def.h
+wchar.h
+-
+
+/Users/jordanw/Development/Projects/Amazon/ESODBC/src/IntegrationTests/ITODBCHelper/it_odbc_helper.cpp
+it_odbc_helper.h
+/Users/jordanw/Development/Projects/Amazon/ESODBC/src/IntegrationTests/ITODBCHelper/it_odbc_helper.h
+codecvt
+-
+locale
+-
+
+/Users/jordanw/Development/Projects/Amazon/ESODBC/src/IntegrationTests/ITODBCHelper/it_odbc_helper.h
+windows.h
+-
+sql.h
+-
+sqlext.h
+-
+iostream
+-
+unit_test_helper.h
+/Users/jordanw/Development/Projects/Amazon/ESODBC/src/IntegrationTests/ITODBCHelper/unit_test_helper.h
+
+/Users/jordanw/Development/Projects/Amazon/ESODBC/src/UnitTests/UTHelper/unit_test_helper.h
+vld.h
+-
+string
+-
+

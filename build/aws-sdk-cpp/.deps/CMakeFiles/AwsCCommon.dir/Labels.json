@@ -1,0 +1,43 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "/Users/jordanw/Development/Projects/Amazon/ESODBC/build/aws-sdk-cpp/.deps/CMakeFiles/AwsCCommon"
+		},
+		{
+			"file" : "/Users/jordanw/Development/Projects/Amazon/ESODBC/build/aws-sdk-cpp/.deps/CMakeFiles/AwsCCommon.rule"
+		},
+		{
+			"file" : "/Users/jordanw/Development/Projects/Amazon/ESODBC/build/aws-sdk-cpp/.deps/CMakeFiles/AwsCCommon-complete.rule"
+		},
+		{
+			"file" : "/Users/jordanw/Development/Projects/Amazon/ESODBC/build/aws-sdk-cpp/.deps/build/src/AwsCCommon-stamp/AwsCCommon-install.rule"
+		},
+		{
+			"file" : "/Users/jordanw/Development/Projects/Amazon/ESODBC/build/aws-sdk-cpp/.deps/build/src/AwsCCommon-stamp/AwsCCommon-mkdir.rule"
+		},
+		{
+			"file" : "/Users/jordanw/Development/Projects/Amazon/ESODBC/build/aws-sdk-cpp/.deps/build/src/AwsCCommon-stamp/AwsCCommon-download.rule"
+		},
+		{
+			"file" : "/Users/jordanw/Development/Projects/Amazon/ESODBC/build/aws-sdk-cpp/.deps/build/src/AwsCCommon-stamp/AwsCCommon-update.rule"
+		},
+		{
+			"file" : "/Users/jordanw/Development/Projects/Amazon/ESODBC/build/aws-sdk-cpp/.deps/build/src/AwsCCommon-stamp/AwsCCommon-patch.rule"
+		},
+		{
+			"file" : "/Users/jordanw/Development/Projects/Amazon/ESODBC/build/aws-sdk-cpp/.deps/build/src/AwsCCommon-stamp/AwsCCommon-configure.rule"
+		},
+		{
+			"file" : "/Users/jordanw/Development/Projects/Amazon/ESODBC/build/aws-sdk-cpp/.deps/build/src/AwsCCommon-stamp/AwsCCommon-build.rule"
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"AwsCCommon"
+		],
+		"name" : "AwsCCommon"
+	}
+}

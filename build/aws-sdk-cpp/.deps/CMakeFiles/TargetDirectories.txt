@@ -1,0 +1,5 @@
+/Users/jordanw/Development/Projects/Amazon/ESODBC/build/aws-sdk-cpp/.deps/CMakeFiles/rebuild_cache.dir
+/Users/jordanw/Development/Projects/Amazon/ESODBC/build/aws-sdk-cpp/.deps/CMakeFiles/edit_cache.dir
+/Users/jordanw/Development/Projects/Amazon/ESODBC/build/aws-sdk-cpp/.deps/CMakeFiles/AwsCEventStream.dir
+/Users/jordanw/Development/Projects/Amazon/ESODBC/build/aws-sdk-cpp/.deps/CMakeFiles/AwsChecksums.dir
+/Users/jordanw/Development/Projects/Amazon/ESODBC/build/aws-sdk-cpp/.deps/CMakeFiles/AwsCCommon.dir

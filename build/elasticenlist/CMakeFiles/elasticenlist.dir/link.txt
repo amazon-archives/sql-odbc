@@ -1,0 +1,2 @@
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ar qc /Users/jordanw/Development/Projects/Amazon/ESODBC/lib64/libelasticenlist.a  CMakeFiles/elasticenlist.dir/msdtc_enlist.cpp.o
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ranlib /Users/jordanw/Development/Projects/Amazon/ESODBC/lib64/libelasticenlist.a

@@ -1,0 +1,10 @@
+includedir=/usr/local/include
+libdir=/usr/local/lib
+
+Name: aws-cpp-sdk-core
+Description: 
+Version: 1.7.273
+Cflags: -I${includedir} -fno-exceptions -std=c++11 -fPIC
+Libs: -L${libdir} -laws-cpp-sdk-core 
+Libs.private: -laws-c-event-stream -laws-checksums -laws-c-common -lpthread -lcurl
+Requires: 

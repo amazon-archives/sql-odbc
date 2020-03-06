@@ -1,0 +1,30 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/Users/jordanw/Development/Projects/Amazon/ESODBC/libraries/VisualLeakDetector/include/vld.h
+vld_def.h
+/Users/jordanw/Development/Projects/Amazon/ESODBC/libraries/VisualLeakDetector/include/vld_def.h
+
+/Users/jordanw/Development/Projects/Amazon/ESODBC/libraries/VisualLeakDetector/include/vld_def.h
+wchar.h
+-
+
+/Users/jordanw/Development/Projects/Amazon/ESODBC/src/UnitTests/UTHelper/unit_test_helper.cpp
+unit_test_helper.h
+/Users/jordanw/Development/Projects/Amazon/ESODBC/src/UnitTests/UTHelper/unit_test_helper.h
+fstream
+-
+iostream
+-
+
+/Users/jordanw/Development/Projects/Amazon/ESODBC/src/UnitTests/UTHelper/unit_test_helper.h
+vld.h
+-
+string
+-
+

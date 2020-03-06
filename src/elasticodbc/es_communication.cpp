@@ -36,9 +36,9 @@ static const std::string SQL_ENDPOINT_FORMAT_JDBC =
 static const std::string PLUGIN_ENDPOINT_FORMAT_JSON =
     "/_cat/plugins?format=json";
 static const std::string OPENDISTRO_SQL_PLUGIN_NAME = "opendistro_sql";
-static const int HTTP_SUCCESS_OK = 200;
 static const std::string ALLOCATION_TAG = "AWS_SIGV4_AUTH";
 static const std::string SERVICE_NAME = "es";
+static const std::string ESODBC_PROFILE_NAME = "elasticsearchodbc";
 
 ESCommunication::ESCommunication()
 #ifdef __APPLE__
@@ -179,27 +179,6 @@ void ESCommunication::IssueRequest(
             request_type,
             Aws::Utils::Stream::DefaultResponseStreamFactoryMethod);
 
-    // Handle authentication
-    if (m_rt_opts.auth.auth_type == AUTHTYPE_BASIC) {
-        std::string userpw_str =
-            m_rt_opts.auth.username + ":" + m_rt_opts.auth.password;
-        Aws::Utils::Array< unsigned char > userpw_arr(
-            reinterpret_cast< const unsigned char* >(userpw_str.c_str()),
-            userpw_str.length());
-        std::string hashed_userpw =
-            Aws::Utils::HashingUtils::Base64Encode(userpw_arr);
-        request->SetAuthorization("Basic " + hashed_userpw);
-    } else if (m_rt_opts.auth.auth_type == AUTHTYPE_IAM) {
-        std::shared_ptr< Aws::Auth::EnvironmentAWSCredentialsProvider >
-            credential_provider =
-                Aws::MakeShared< Aws::Auth::EnvironmentAWSCredentialsProvider >(
-                    ALLOCATION_TAG.c_str());
-        Aws::Client::AWSAuthV4Signer signer(credential_provider,
-                                            SERVICE_NAME.c_str(),
-                                            m_rt_opts.auth.region.c_str());
-        signer.SignRequest(*request);
-    }
-
     // Set header type
     if (!content_type.empty())
         request->SetHeaderValue(Aws::Http::CONTENT_TYPE_HEADER, ctype);
@@ -213,6 +192,27 @@ void ESCommunication::IssueRequest(
         *aws_ss << std::string(body.str());
         request->AddContentBody(aws_ss);
         request->SetContentLength(std::to_string(body.str().size()));
+    }
+
+    // Handle authentication
+    if (m_rt_opts.auth.auth_type == AUTHTYPE_BASIC) {
+        std::string userpw_str =
+            m_rt_opts.auth.username + ":" + m_rt_opts.auth.password;
+        Aws::Utils::Array< unsigned char > userpw_arr(
+            reinterpret_cast< const unsigned char* >(userpw_str.c_str()),
+            userpw_str.length());
+        std::string hashed_userpw =
+            Aws::Utils::HashingUtils::Base64Encode(userpw_arr);
+        request->SetAuthorization("Basic " + hashed_userpw);
+    } else if (m_rt_opts.auth.auth_type == AUTHTYPE_IAM) {
+        std::shared_ptr< Aws::Auth::ProfileConfigFileAWSCredentialsProvider >
+            credential_provider =
+                Aws::MakeShared< Aws::Auth::ProfileConfigFileAWSCredentialsProvider >(
+                    ALLOCATION_TAG.c_str(), ESODBC_PROFILE_NAME.c_str());
+        Aws::Client::AWSAuthV4Signer signer(credential_provider,
+                                            SERVICE_NAME.c_str(),
+                                            m_rt_opts.auth.region.c_str());
+        signer.SignRequest(*request);
     }
 
     // Issue request

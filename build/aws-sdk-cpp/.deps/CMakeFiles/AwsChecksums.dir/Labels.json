@@ -1,0 +1,43 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "/Users/jordanw/Development/Projects/Amazon/ESODBC/build/aws-sdk-cpp/.deps/CMakeFiles/AwsChecksums"
+		},
+		{
+			"file" : "/Users/jordanw/Development/Projects/Amazon/ESODBC/build/aws-sdk-cpp/.deps/CMakeFiles/AwsChecksums.rule"
+		},
+		{
+			"file" : "/Users/jordanw/Development/Projects/Amazon/ESODBC/build/aws-sdk-cpp/.deps/CMakeFiles/AwsChecksums-complete.rule"
+		},
+		{
+			"file" : "/Users/jordanw/Development/Projects/Amazon/ESODBC/build/aws-sdk-cpp/.deps/build/src/AwsChecksums-stamp/AwsChecksums-install.rule"
+		},
+		{
+			"file" : "/Users/jordanw/Development/Projects/Amazon/ESODBC/build/aws-sdk-cpp/.deps/build/src/AwsChecksums-stamp/AwsChecksums-mkdir.rule"
+		},
+		{
+			"file" : "/Users/jordanw/Development/Projects/Amazon/ESODBC/build/aws-sdk-cpp/.deps/build/src/AwsChecksums-stamp/AwsChecksums-download.rule"
+		},
+		{
+			"file" : "/Users/jordanw/Development/Projects/Amazon/ESODBC/build/aws-sdk-cpp/.deps/build/src/AwsChecksums-stamp/AwsChecksums-update.rule"
+		},
+		{
+			"file" : "/Users/jordanw/Development/Projects/Amazon/ESODBC/build/aws-sdk-cpp/.deps/build/src/AwsChecksums-stamp/AwsChecksums-patch.rule"
+		},
+		{
+			"file" : "/Users/jordanw/Development/Projects/Amazon/ESODBC/build/aws-sdk-cpp/.deps/build/src/AwsChecksums-stamp/AwsChecksums-configure.rule"
+		},
+		{
+			"file" : "/Users/jordanw/Development/Projects/Amazon/ESODBC/build/aws-sdk-cpp/.deps/build/src/AwsChecksums-stamp/AwsChecksums-build.rule"
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"AwsChecksums"
+		],
+		"name" : "AwsChecksums"
+	}
+}

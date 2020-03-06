@@ -1,0 +1,32 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/Users/jordanw/Development/Projects/Amazon/ESODBC/build/aws-sdk-cpp/.deps/build/src/AwsCEventStream/bin/event_stream_write_test_case.c
+aws/event-stream/event_stream.h
+-
+aws/common/encoding.h
+-
+stdio.h
+-
+stdlib.h
+-
+string.h
+-
+
+/Users/jordanw/Development/Projects/Amazon/ESODBC/build/aws-sdk-cpp/.deps/build/src/AwsCEventStream/include/aws/event-stream/event_stream.h
+aws/common/array_list.h
+-
+aws/common/byte_buf.h
+-
+aws/event-stream/event_stream_exports.h
+-
+stdio.h
+-
+
+/Users/jordanw/Development/Projects/Amazon/ESODBC/build/aws-sdk-cpp/.deps/build/src/AwsCEventStream/include/aws/event-stream/event_stream_exports.h
+

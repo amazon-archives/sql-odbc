@@ -1,0 +1,36 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/Users/jordanw/Development/Projects/Amazon/ESODBC/src/elasticenlist/msdtc_enlist.cpp
+XOLEHLP.h
+-
+oleTx2xa.h
+-
+connexp.h
+/Users/jordanw/Development/Projects/Amazon/ESODBC/src/elasticenlist/connexp.h
+ctype.h
+-
+process.h
+-
+stdio.h
+-
+string.h
+-
+map
+-
+errno.h
+-
+sql.h
+-
+mylog.h
+/Users/jordanw/Development/Projects/Amazon/ESODBC/src/elasticenlist/mylog.h
+esenlist.h
+/Users/jordanw/Development/Projects/Amazon/ESODBC/src/elasticenlist/esenlist.h
+xalibname.h
+/Users/jordanw/Development/Projects/Amazon/ESODBC/src/elasticenlist/xalibname.h
+

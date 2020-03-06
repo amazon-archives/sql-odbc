@@ -1,0 +1,14 @@
+# Target labels
+ googletest
+# Source files and their labels
+/Users/jordanw/Development/Projects/Amazon/ESODBC/build/googletest/CMakeFiles/googletest
+/Users/jordanw/Development/Projects/Amazon/ESODBC/build/googletest/CMakeFiles/googletest.rule
+/Users/jordanw/Development/Projects/Amazon/ESODBC/build/googletest/CMakeFiles/googletest-complete.rule
+/Users/jordanw/Development/Projects/Amazon/ESODBC/build/googletest/googletest-prefix/src/googletest-stamp/googletest-install.rule
+/Users/jordanw/Development/Projects/Amazon/ESODBC/build/googletest/googletest-prefix/src/googletest-stamp/googletest-mkdir.rule
+/Users/jordanw/Development/Projects/Amazon/ESODBC/build/googletest/googletest-prefix/src/googletest-stamp/googletest-download.rule
+/Users/jordanw/Development/Projects/Amazon/ESODBC/build/googletest/googletest-prefix/src/googletest-stamp/googletest-update.rule
+/Users/jordanw/Development/Projects/Amazon/ESODBC/build/googletest/googletest-prefix/src/googletest-stamp/googletest-patch.rule
+/Users/jordanw/Development/Projects/Amazon/ESODBC/build/googletest/googletest-prefix/src/googletest-stamp/googletest-configure.rule
+/Users/jordanw/Development/Projects/Amazon/ESODBC/build/googletest/googletest-prefix/src/googletest-stamp/googletest-build.rule
+/Users/jordanw/Development/Projects/Amazon/ESODBC/build/googletest/googletest-prefix/src/googletest-stamp/googletest-test.rule

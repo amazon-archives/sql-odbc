@@ -328,8 +328,6 @@ void CheckData< std::wstring >(const std::wstring& type_name,
                                const SQLLEN data_size) {
     QueryFetch(type_name, data_set, row, hstmt);
     std::vector< SQLTCHAR > val(data_size);
-    const SQLLEN effective_len =
-        data_size - 1;  // Remove 1 for null term character
     bool valid = false;
     for (auto& it : expected_val) {
         std::wstring str;
