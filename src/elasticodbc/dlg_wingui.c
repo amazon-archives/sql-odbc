@@ -44,12 +44,7 @@ const struct authmode *GetCurrentAuthMode(HWND hdlg) {
 }
 
 void SetAuthenticationVisibility(HWND hdlg, const struct authmode *am) {
-    if (strcmp(am->authtype_str, AUTHTYPE_NONE) == 0) {
-        EnableWindow(GetDlgItem(hdlg, IDC_USER), FALSE);
-        EnableWindow(GetDlgItem(hdlg, IDC_PASSWORD), FALSE);
-        EnableWindow(GetDlgItem(hdlg, IDC_REGION), FALSE);
-    }
-    else if (strcmp(am->authtype_str, AUTHTYPE_BASIC) == 0) {
+    if (strcmp(am->authtype_str, AUTHTYPE_BASIC) == 0) {
         EnableWindow(GetDlgItem(hdlg, IDC_USER), TRUE);
         EnableWindow(GetDlgItem(hdlg, IDC_PASSWORD), TRUE);
         EnableWindow(GetDlgItem(hdlg, IDC_REGION), FALSE);
@@ -57,7 +52,11 @@ void SetAuthenticationVisibility(HWND hdlg, const struct authmode *am) {
         EnableWindow(GetDlgItem(hdlg, IDC_USER), FALSE);
         EnableWindow(GetDlgItem(hdlg, IDC_PASSWORD), FALSE);
         EnableWindow(GetDlgItem(hdlg, IDC_REGION), TRUE);
-    }
+    } else {
+        EnableWindow(GetDlgItem(hdlg, IDC_USER), FALSE);
+        EnableWindow(GetDlgItem(hdlg, IDC_PASSWORD), FALSE);
+        EnableWindow(GetDlgItem(hdlg, IDC_REGION), FALSE);
+    } 
 }
 
 void SetDlgStuff(HWND hdlg, const ConnInfo *ci) {
