@@ -169,11 +169,6 @@ LRESULT CALLBACK dconn_FDriverConnectProc(HWND hdlg, UINT wMsg, WPARAM wParam,
 
             // Encryption
             ci->use_ssl = (IsDlgButtonChecked(hdlg, IDC_USESSL) ? 1 : 0);
-            ShowWindow(GetDlgItem(hdlg, IDC_ALLOWSELFSIGNED), ci->use_ssl);
-            ShowWindow(GetDlgItem(hdlg, IDC_CERTIFICATE), ci->use_ssl);
-            ShowWindow(GetDlgItem(hdlg, IDC_CERTIFICATE_STATIC), ci->use_ssl);
-            ShowWindow(GetDlgItem(hdlg, IDC_KEY), ci->use_ssl);
-            ShowWindow(GetDlgItem(hdlg, IDC_KEY_STATIC), ci->use_ssl);
             break;
 
         case WM_COMMAND:
@@ -213,12 +208,6 @@ LRESULT CALLBACK dconn_FDriverConnectProc(HWND hdlg, UINT wMsg, WPARAM wParam,
                     ci = (ConnInfo *)GetWindowLongPtr(hdlg, DWLP_USER);
                     int use_ssl =
                         (IsDlgButtonChecked(hdlg, IDC_USESSL) ? 1 : 0);
-                    ShowWindow(GetDlgItem(hdlg, IDC_ALLOWSELFSIGNED), use_ssl);
-                    ShowWindow(GetDlgItem(hdlg, IDC_CERTIFICATE), use_ssl);
-                    ShowWindow(GetDlgItem(hdlg, IDC_CERTIFICATE_STATIC),
-                               use_ssl);
-                    ShowWindow(GetDlgItem(hdlg, IDC_KEY), use_ssl);
-                    ShowWindow(GetDlgItem(hdlg, IDC_KEY_STATIC), use_ssl);
                     break;
                 }
             }

@@ -265,7 +265,6 @@ LRESULT CALLBACK ConfigDlgProc(HWND hdlg, UINT wMsg, WPARAM wParam,
             /* Hide the driver connect message */
             ShowWindow(GetDlgItem(hdlg, DRV_MSG_LABEL), SW_HIDE);
             LoadString(s_hModule, IDS_ADVANCE_SAVE, strbuf, sizeof(strbuf));
-            //SetWindowText(GetDlgItem(hdlg, IDOK), strbuf);
 
             CheckDlgButton(hdlg, IDC_CHECK1, getGlobalCommlog());
             SetWindowLongPtr(hdlg, DWLP_USER, lParam);
@@ -289,6 +288,9 @@ LRESULT CALLBACK ConfigDlgProc(HWND hdlg, UINT wMsg, WPARAM wParam,
 
             SendDlgItemMessage(hdlg, IDC_DESC, EM_LIMITTEXT,
                                (WPARAM)(MAXDESC - 1), 0L);
+
+            SendDlgItemMessage(hdlg, IDC_AUTHTYPE, CB_SETCURSEL, 2, (WPARAM) 0);
+            
             return TRUE; /* Focus was not set */
 
             /* Process buttons */
@@ -320,7 +322,8 @@ LRESULT CALLBACK ConfigDlgProc(HWND hdlg, UINT wMsg, WPARAM wParam,
                                        sizeof(lpsetupdlg->ci.dsn));
 
                     /* Get Dialog Values */
-                    UINT log_button_checked = (IsDlgButtonChecked(hdlg, IDC_CHECK1) ? 1 : 0);
+                    UINT log_button_checked =
+                        (IsDlgButtonChecked(hdlg, IDC_CHECK1) ? 1 : 0);
                     setGlobalCommlog(log_button_checked);
                     lpsetupdlg->ci.drivers.loglevel = (char)log_button_checked;
                     GetDlgStuff(hdlg, &lpsetupdlg->ci);
@@ -363,11 +366,14 @@ LRESULT CALLBACK ConfigDlgProc(HWND hdlg, UINT wMsg, WPARAM wParam,
                     }
                 }
                 case ID_ADVANCED_OPTIONS: {
-                    if (DialogBoxParam(s_hModule,
-                                       MAKEINTRESOURCE(DLG_ADVANCED_OPTIONS),
-                                       hdlg, advancedOptionsProc, (LPARAM)lpsetupdlg)
+                    if (DialogBoxParam(
+                            s_hModule, MAKEINTRESOURCE(DLG_ADVANCED_OPTIONS),
+                            hdlg, advancedOptionsProc, (LPARAM)lpsetupdlg)
                         > 0)
                         EndDialog(hdlg, 0);
+                }
+                case IDC_AUTHTYPE: {
+                    SetAuthenticationVisibility(hdlg, GetCurrentAuthMode(hdlg));
                 }
             }
             break;

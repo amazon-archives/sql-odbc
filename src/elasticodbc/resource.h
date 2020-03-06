@@ -10,8 +10,11 @@
 #define IDCANCEL2                       4
 #define IDC_TEST                        4
 #define IDC_PASSWORD_STATIC             4
+#define IDC_SSL_STATIC                  4
 #define IDS_ADVANCE_OPTION_DSN1         5
+#define IDC_HOST_VER_STATIC             5
 #define IDS_ADVANCE_OPTION_CON1         6
+#define IDC_HOST_VER_STATIC2            6
 #define IDS_ADVANCE_OPTION_DSN2         7
 #define IDS_ADVANCE_OPTION_CON2         8
 #define IDS_ADVANCE_CONNECTION          9
@@ -22,7 +25,7 @@
 #define DTC_OPT_HEIGHT                  45
 #define DTC_GRP_Y                       60
 #define DTC_GRP_HEIGHT                  100
-#define DLG_OPTIONS_DRV					102
+#define DLG_OPTIONS_DRV                 102
 #define MISC_Y                          145
 #define DTC_OPT_WIDTH                   180
 #define CONNSETTINGS_Y                  185
@@ -79,12 +82,13 @@
 #define DS_DTC_NO_USE                   1097
 #define DS_NUMERIC_AS_NUMERIC           1108
 #define IDC_EDIT1                       1112
-#define IDC_CONNTIMEOUT                 1112
+#define IDC_CONNTIMEOUT_STATIC          1112
 #define IDC_CHECK1                      1113
 #define IDC_CHECK2                      1114
 #define IDC_USESSL                      1114
 #define IDC_COMBO1                      1115
 #define IDC_AUTHTYPE                    1115
+#define IDC_HOST_VER                    1115
 #define IDC_USERNAME_STATIC             1116
 #define IDC_CHECK4                      1117
 #define IDC_ALLOWSELFSIGNED             1117
@@ -102,7 +106,9 @@
 #define IDC_DRIVER_VERSION              1126
 #define IDC_AUTH_SETTINGS               1127
 #define IDC_CONN_SETTINGS               1128
-#define DLG_ADVANCED_OPTIONS			1129
+#define DLG_ADVANCED_OPTIONS            1129
+#define IDC_EDIT2                       1130
+#define IDC_CONNTIMEOUT                 1130
 
 // Next default values for new objects
 // 
@@ -110,7 +116,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        110
 #define _APS_NEXT_COMMAND_VALUE         40001
-#define _APS_NEXT_CONTROL_VALUE         1130
+#define _APS_NEXT_CONTROL_VALUE         1131
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

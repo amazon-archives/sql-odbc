@@ -336,7 +336,7 @@ void writeDSNinfo(const ConnInfo *ci) {
     ITOA_FIXED(temp, ci->verify_server);
     SQLWritePrivateProfileString(DSN, INI_SSL_HOST_VERIFY, temp, ODBC_INI);
     ITOA_FIXED(temp, ci->drivers.loglevel);
-    SQLWritePrivateProfileString(DSN, INI_SSL_HOST_VERIFY, temp, ODBC_INI);
+    SQLWritePrivateProfileString(DSN, INI_LOG_LEVEL, temp, ODBC_INI);
     SQLWritePrivateProfileString(DSN, INI_LOG_OUTPUT, ci->drivers.output_dir, ODBC_INI);
     SQLWritePrivateProfileString(DSN, INI_TIMEOUT, ci->response_timeout,
                                  ODBC_INI);
