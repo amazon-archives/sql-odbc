@@ -31,6 +31,7 @@ jobs:
         mkdir build
         mkdir test-output
         cp ./lib64/*.dylib build
+        cp ./lib64/*.a build
         cp $(ls -d bin64/* | grep -v "\.") build
     #    cp ./bin64/*.html test-output
     #    cp ./bin64/*.log test-output
