@@ -1,7 +1,0 @@
-/usr/local/include/aws/checksums/crc.h
-/usr/local/include/aws/checksums/crc_jni.h
-/usr/local/include/aws/checksums/exports.h
-/usr/local/lib/libaws-checksums.a
-/usr/local/lib/aws-checksums/cmake/static/aws-checksums-targets.cmake
-/usr/local/lib/aws-checksums/cmake/static/aws-checksums-targets-release.cmake
-/usr/local/lib/aws-checksums/cmake/aws-checksums-config.cmake

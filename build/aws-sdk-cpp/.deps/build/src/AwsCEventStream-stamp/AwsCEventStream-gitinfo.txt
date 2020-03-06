@@ -1,3 +1,0 @@
-repository='https://github.com/awslabs/aws-c-event-stream.git'
-module=''
-tag='origin'

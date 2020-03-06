@@ -1,3 +1,0 @@
-/Users/jordanw/Development/Projects/Amazon/ESODBC/build/googletest/CMakeFiles/rebuild_cache.dir
-/Users/jordanw/Development/Projects/Amazon/ESODBC/build/googletest/CMakeFiles/edit_cache.dir
-/Users/jordanw/Development/Projects/Amazon/ESODBC/build/googletest/CMakeFiles/googletest.dir

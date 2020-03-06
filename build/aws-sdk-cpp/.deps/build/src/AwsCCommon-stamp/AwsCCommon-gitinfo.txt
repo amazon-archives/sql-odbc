@@ -1,3 +1,0 @@
-repository='https://github.com/awslabs/aws-c-common.git'
-module=''
-tag='origin'

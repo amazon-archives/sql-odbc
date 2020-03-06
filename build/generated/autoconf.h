@@ -1,2 +1,0 @@
-#define AUTOCONF_ENABLE
-/* #undef AUTOCONF_STRING */

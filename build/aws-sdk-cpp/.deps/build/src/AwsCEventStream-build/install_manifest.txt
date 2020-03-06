@@ -1,6 +1,0 @@
-/usr/local/lib/libaws-c-event-stream.a
-/usr/local/include/aws/event-stream/event_stream.h
-/usr/local/include/aws/event-stream/event_stream_exports.h
-/usr/local/lib/aws-c-event-stream/cmake/static/aws-c-event-stream-targets.cmake
-/usr/local/lib/aws-c-event-stream/cmake/static/aws-c-event-stream-targets-release.cmake
-/usr/local/lib/aws-c-event-stream/cmake/aws-c-event-stream-config.cmake

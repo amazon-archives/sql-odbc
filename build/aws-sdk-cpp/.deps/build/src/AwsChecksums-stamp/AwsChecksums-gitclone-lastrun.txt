@@ -1,3 +1,0 @@
-repository='https://github.com/awslabs/aws-checksums.git'
-module=''
-tag='origin'
