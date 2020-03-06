@@ -19,7 +19,8 @@ project(ut_critical_section)
 set(SOURCE_FILES test_critical_section.cpp)
 include_directories(	${UT_HELPER}
 						${ESODBC_SRC}
-						${VLD_SRC}  )
+						${VLD_SRC}
+						${RABBIT_SRC}  )
 
 # Generate executable
 add_executable(ut_critical_section ${SOURCE_FILES})
