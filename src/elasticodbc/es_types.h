@@ -228,7 +228,15 @@ typedef enum {
 #ifdef __cplusplus
 #include <stdint.h>
 
-#include <rabbit.hpp>
+#ifdef __APPLE__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-parameter"
+#endif // __APPLE__
+#include "rabbit.hpp"
+#ifdef __APPLE__
+#pragma clang diagnostic pop
+#endif // __APPLE__
+
 #include <string>
 #include <vector>
 
