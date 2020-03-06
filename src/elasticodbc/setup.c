@@ -368,16 +368,14 @@ LRESULT CALLBACK ConfigDlgProc(HWND hdlg, UINT wMsg, WPARAM wParam,
                 case ID_ADVANCED_OPTIONS: {
                     if (DialogBoxParam(
                             s_hModule, MAKEINTRESOURCE(DLG_ADVANCED_OPTIONS),
-                            hdlg, advancedOptionsProc, (LPARAM)lpsetupdlg)
-                        > 0)
+                            hdlg, advancedOptionsProc, (LPARAM)lpsetupdlg) > 0)
                         EndDialog(hdlg, 0);
                     break;
                 }
                 case ID_LOG_OPTIONS: {
                     if (DialogBoxParam(
                             s_hModule, MAKEINTRESOURCE(DLG_LOG_OPTIONS),
-                            hdlg, logOptionsProc, (LPARAM)lpsetupdlg)
-                        > 0)
+                            hdlg, logOptionsProc, (LPARAM)lpsetupdlg) > 0)
                         EndDialog(hdlg, 0);
                     break;
                 }

@@ -14,7 +14,6 @@
 #define IDS_ADVANCE_OPTION_DSN1         5
 #define IDC_HOST_VER_STATIC             5
 #define IDS_ADVANCE_OPTION_CON1         6
-#define IDC_HOST_VER_STATIC2            6
 #define IDS_ADVANCE_OPTION_DSN2         7
 #define IDS_ADVANCE_OPTION_CON2         8
 #define IDS_ADVANCE_CONNECTION          9
@@ -25,7 +24,6 @@
 #define DTC_OPT_HEIGHT                  45
 #define DTC_GRP_Y                       60
 #define DTC_GRP_HEIGHT                  100
-#define DLG_OPTIONS_DRV                 102
 #define MISC_Y                          145
 #define DTC_OPT_WIDTH                   180
 #define CONNSETTINGS_Y                  185
@@ -107,7 +105,6 @@
 #define IDC_AUTH_SETTINGS               1127
 #define IDC_CONN_SETTINGS               1128
 #define DLG_ADVANCED_OPTIONS            1129
-#define IDC_EDIT2                       1130
 #define IDC_CONNTIMEOUT                 1130
 #define DLG_LOG_OPTIONS                 1131
 #define IDC_LOG_LEVEL                   1132

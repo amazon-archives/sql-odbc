@@ -157,10 +157,8 @@ LRESULT CALLBACK advancedOptionsProc(HWND hdlg, UINT wMsg, WPARAM wParam,
                                        sizeof(lpsetupdlg->ci.dsn));
 
                     // Get Dialog Values 
-                    lpsetupdlg->ci.use_ssl =
-                        (IsDlgButtonChecked(hdlg, IDC_USESSL) ? 1 : 0);
-                    lpsetupdlg->ci.verify_server =
-                        (IsDlgButtonChecked(hdlg, IDC_HOST_VER) ? 1 : 0);
+                    lpsetupdlg->ci.use_ssl = (IsDlgButtonChecked(hdlg, IDC_USESSL) ? 1 : 0);
+                    lpsetupdlg->ci.verify_server = (IsDlgButtonChecked(hdlg, IDC_HOST_VER) ? 1 : 0);
                     GetDlgItemText(hdlg, IDC_CONNTIMEOUT,
                                    lpsetupdlg->ci.response_timeout,
                                    sizeof(lpsetupdlg->ci.response_timeout));
