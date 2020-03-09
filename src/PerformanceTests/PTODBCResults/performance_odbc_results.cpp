@@ -72,7 +72,7 @@ const std::string sync_end = "%%__PARSE__SYNC__END__%%";
 
 void ReportTime(const std::string test_case, std::vector< long long > data) {
     size_t size = data.size();
-    ASSERT_EQ(size, ITERATION_COUNT);
+    ASSERT_EQ(size, (size_t)ITERATION_COUNT);
 
     // Get max and min
     long long time_max = *std::max_element(data.begin(), data.end());

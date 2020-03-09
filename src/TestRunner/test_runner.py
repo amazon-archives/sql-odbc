@@ -22,6 +22,7 @@ import sys
 import getopt
 import shutil
 from mako.template import Template
+from string import capwords
 
 UT_TYPE = "UT"
 IT_TYPE = "IT"
@@ -106,6 +107,10 @@ def GetAndTranslatePerformanceInfo(test):
             data = line.split(SYNC_SEP)
             if len(data) != 2:
                 raise Exception(f"Unknown log line format: {line}")
+            if data[0].rstrip() == "number":
+                data[0] = "Vversion Number"
+            else:
+                data[0] = capwords(data[0].rstrip().replace("_", " "))
             output[data[0]] = data[1]
         if "Not all tests passed" in line:
             raise Exception("Performance info test failed")
