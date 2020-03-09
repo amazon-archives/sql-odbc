@@ -39,6 +39,67 @@ static const std::string OPENDISTRO_SQL_PLUGIN_NAME = "opendistro_sql";
 static const std::string ALLOCATION_TAG = "AWS_SIGV4_AUTH";
 static const std::string SERVICE_NAME = "es";
 static const std::string ESODBC_PROFILE_NAME = "elasticsearchodbc";
+static const std::string JSON_SCHEMA =
+    "{"  // This was generated from the example elasticsearch data
+    "\"type\": \"object\","
+    "\"properties\": {"
+    "\"schema\": {"
+    "\"type\": \"array\","
+    "\"items\": [{"
+    "\"type\": \"object\","
+    "\"properties\": {"
+    "\"name\": { \"type\": \"string\" },"
+    "\"type\": { \"type\": \"string\" }"
+    "},"
+    "\"required\": [ \"name\", \"type\" ]"
+    "}]"
+    "},"
+    "\"total\": { \"type\": \"integer\" },"
+    "\"datarows\": {"
+    "\"type\": \"array\","
+    "\"items\": {}"
+    "},"
+    "\"size\": { \"type\": \"integer\" },"
+    "\"status\": { \"type\": \"integer\" }"
+    "},"
+    "\"required\": [\"schema\", \"total\", \"datarows\", \"size\", \"status\"]"
+    "}";
+
+void ESCommunication::AwsHttpResponseToString(
+    std::shared_ptr< Aws::Http::HttpResponse > response, std::string& output) {
+    // This function has some unconventional stream operations because we need
+    // performance over readability here. Equivalent code done in conventional
+    // ways (using stringstream operators) takes ~30x longer than this code
+    // below and bottlenecks our query performance
+
+    // Get streambuffer from response and set position to start
+    std::streambuf* stream_buffer = response->GetResponseBody().rdbuf();
+    stream_buffer->pubseekpos(0);
+
+    // Get size of streambuffer and reserver that much space in the output
+    size_t avail = static_cast< size_t >(stream_buffer->in_avail());
+    std::vector<char> buf(avail, '\0');
+    output.clear();
+    output.reserve(avail);
+
+    // Directly copy memory from buffer into our string buffer
+    stream_buffer->sgetn(buf.data(), avail);
+    output.assign(buf.data(), avail);
+}
+
+void ESCommunication::GetJsonSchema(ESResult& es_result) {
+    // Prepare document and validate schema
+    try {
+        es_result.es_result_doc.parse(es_result.result_json, JSON_SCHEMA);
+    } catch (const rabbit::parse_error& e) {
+        // The exception rabbit gives is quite useless - providing the json
+        // will aid debugging for users
+        std::string str = "Exception obtained '" + std::string(e.what())
+                          + "' when parsing json string '"
+                          + es_result.result_json + "'.";
+        throw std::runtime_error(str.c_str());
+    }
+}
 
 ESCommunication::ESCommunication()
 #ifdef __APPLE__
@@ -156,7 +217,8 @@ void ESCommunication::InitializeConnection() {
     long response_timeout =
         static_cast< long >(DEFAULT_RESPONSE_TIMEOUT) * 1000L;
     try {
-        response_timeout = std::stol(m_rt_opts.conn.timeout, nullptr, 10) * 1000L;
+        response_timeout =
+            std::stol(m_rt_opts.conn.timeout, nullptr, 10) * 1000L;
     } catch (...) {
     }
     config.connectTimeoutMs = response_timeout;
@@ -257,7 +319,7 @@ bool ESCommunication::IsSQLPluginInstalled(const std::string& plugin_response) {
         m_error_message =
             "Unknown exception thrown when parsing plugin endpoint response.";
     }
-
+    
     LogMsg(m_error_message.c_str());
     return false;
 }
@@ -280,24 +342,23 @@ bool ESCommunication::EstablishConnection() {
             "The SQL plugin must be installed in order to use this driver. "
             "Received NULL response.";
     } else {
-        std::stringstream ss;
-        ss << response->GetResponseBody().rdbuf();
+        AwsHttpResponseToString(response, m_response_str);
         if (response->GetResponseCode() != Aws::Http::HttpResponseCode::OK) {
             m_error_message =
                 "The SQL plugin must be installed in order to use this driver.";
             if (response->HasClientError())
                 m_error_message += " Client error: '"
                                    + response->GetClientErrorMessage() + "'.";
-            if (!ss.str().empty())
-                m_error_message += " Response error: '" + ss.str() + "'.";
+            if (!m_response_str.empty())
+                m_error_message += " Response error: '" + m_response_str + "'.";
         } else {
-            if (IsSQLPluginInstalled(ss.str())) {
+            if (IsSQLPluginInstalled(m_response_str)) {
                 return true;
             } else {
                 m_error_message =
                     "The SQL plugin must be installed in order to use this "
                     "driver. Response body: '"
-                    + ss.str() + "'";
+                    + m_response_str + "'";
             }
         }
     }
@@ -335,9 +396,8 @@ int ESCommunication::ExecDirect(const char* query) {
     }
 
     // Convert body from Aws IOStream to string
-    std::stringstream ss;
-    ss << response->GetResponseBody().rdbuf();
-    std::string body(ss.str());
+    ESResult* result = new ESResult;
+    AwsHttpResponseToString(response, result->result_json);
 
     // If response was not valid, set error
     if (response->GetResponseCode() != Aws::Http::HttpResponseCode::OK) {
@@ -348,25 +408,32 @@ int ESCommunication::ExecDirect(const char* query) {
         if (response->HasClientError())
             m_error_message +=
                 " Client error: '" + response->GetClientErrorMessage() + "'.";
-        if (!body.empty()) {
-            m_error_message += " Response error: '" + body + "'.";
+        if (!result->result_json.empty()) {
+            m_error_message +=
+                " Response error: '" + result->result_json + "'.";
         }
+        delete result;
         return -1;
     }
 
     // Add to result queue and return
-    ESResult* result = new ESResult;
-    ConstructESResult(body, *result);
+    try {
+        ConstructESResult(*result);
+    } catch (std::runtime_error& e) {
+        m_error_message =
+            "Received runtime exception: " + std::string(e.what());
+        if (!result->result_json.empty())
+            m_error_message += " Result body: " + result->result_json;
+        delete result;
+        return -1;
+    }
     m_result_queue.push(std::unique_ptr< ESResult >(result));
     return 0;
 }
 
-void ESCommunication::ConstructESResult(std::string& query_result_json,
-                                        ESResult& result) {
-    rabbit::document doc;
-    doc.parse(query_result_json);
-
-    rabbit::array schema_array = doc["schema"];
+void ESCommunication::ConstructESResult(ESResult& result) {
+    GetJsonSchema(result);
+    rabbit::array schema_array = result.es_result_doc["schema"];
     for (rabbit::array::iterator it = schema_array.begin();
          it != schema_array.end(); ++it) {
         std::string column_name = it->at("name").as_string();
@@ -385,7 +452,6 @@ void ESCommunication::ConstructESResult(std::string& query_result_json,
 
     result.command_type = "SELECT";
     result.num_fields = (uint16_t)schema_array.size();
-    result.result_json = query_result_json;
 }
 
 inline void ESCommunication::LogMsg(const char* msg) {
@@ -446,10 +512,9 @@ std::string ESCommunication::GetServerVersion() {
     // Parse server version
     if (response->GetResponseCode() == Aws::Http::HttpResponseCode::OK) {
         try {
-            std::stringstream ss;
-            ss << response->GetResponseBody().rdbuf();
+            AwsHttpResponseToString(response, m_response_str);
             rabbit::document doc;
-            doc.parse(ss.str());
+            doc.parse(m_response_str);
             if (doc.has("version") && doc["version"].has("number")) {
                 return doc["version"]["number"].as_string();
             }
