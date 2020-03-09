@@ -90,16 +90,19 @@ void makeConnectString(char *connect_string, const ConnInfo *ci, UWORD len) {
     encode(ci->password, encoded_item, sizeof(encoded_item));
     /* fundamental info */
     nlen = MAX_CONNECT_STRING;
-    olen = snprintf(connect_string, nlen,
-             "%s=%s;" INI_HOST "=%s;" INI_PORT "=%s;" INI_USERNAME
-             "=%s;" INI_PASSWORD "=%s;" INI_AUTH_MODE "=%s;" INI_REGION
-             "=%s;" INI_SSL_USE "=%d;" INI_SSL_HOST_VERIFY "=%d;" INI_LOG_LEVEL
-             "=%d;" INI_LOG_OUTPUT "=%s;" INI_TIMEOUT "=%s;",
-             got_dsn ? "DSN" : "DRIVER", got_dsn ? ci->dsn : ci->drivername,
-             ci->server, ci->port, ci->username, encoded_item, ci->authtype,
-             ci->region, (int)ci->use_ssl, (int)ci->verify_server,
-             (int)ci->drivers.loglevel, ci->drivers.output_dir,
-             ci->response_timeout);
+    olen = snprintf(
+        connect_string, nlen,
+        "%s=%s;" INI_SERVER
+        "=%s;"
+        "database=elasticsearch;" INI_PORT "=%s;" INI_USERNAME_ABBR
+        "=%s;" INI_PASSWORD_ABBR "=%s;" INI_AUTH_MODE "=%s;" INI_REGION
+        "=%s;" INI_SSL_USE "=%d;" INI_SSL_HOST_VERIFY "=%d;" INI_LOG_LEVEL
+        "=%d;" INI_LOG_OUTPUT "=%s;" INI_TIMEOUT "=%s;",
+        got_dsn ? "DSN" : "DRIVER", got_dsn ? ci->dsn : ci->drivername,
+        ci->server, ci->port, ci->username, encoded_item, ci->authtype,
+        ci->region, (int)ci->use_ssl, (int)ci->verify_server,
+        (int)ci->drivers.loglevel, ci->drivers.output_dir,
+        ci->response_timeout);
     if (olen < 0 || olen >= nlen) {
         connect_string[0] = '\0';
         return;

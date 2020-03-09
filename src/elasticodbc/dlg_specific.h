@@ -73,7 +73,7 @@ extern "C" {
 #define DEFAULT_PORT ""
 #define DEFAULT_USERNAME ""
 #define DEFAULT_PASSWORD ""
-#define DEFAULT_DRIVERNAME ""
+#define DEFAULT_DRIVERNAME "elasticsearchodbc"
 #define DEFAULT_DESC ""
 #define DEFAULT_DSN ""
 #define DEFAULT_REGION ""
