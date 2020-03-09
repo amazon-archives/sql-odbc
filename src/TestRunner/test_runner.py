@@ -25,12 +25,22 @@ from mako.template import Template
 
 UT_TYPE = "UT"
 IT_TYPE = "IT"
+PERFORMANCE_TYPE = "performance"
+PERFORMANCE_INFO = "performance_info"
+PERFORMANCE_RESULTS = "performance_results"
 EXCLUDE_EXTENSION_LIST = (".log", ".pdb", ".dll")
 total_failures = 0
+SYNC_START = "%%__PARSE__SYNC__START__%%"
+SYNC_SEP = "%%__SEP__%%"
+SYNC_END = "%%__PARSE__SYNC__END__%%"
+SYNC_QUERY = "%%__QUERY__%%";
+SYNC_CASE = "%%__CASE__%%";
+SYNC_MIN = "%%__MIN__%%";
+SYNC_MAX = "%%__MAX__%%";
+SYNC_MEAN = "%%__MEAN__%%";
+SYNC_MEDIAN = "%%__MEDIAN__%%";
 
 def GetTestSuiteExes(test_type, test_suites, exclude_tests_list):
-    if test_type != UT_TYPE and test_type != IT_TYPE:
-        return []
     test_exes = []
     for root, dirs, files in os.walk(os.getcwd()):
         for name in dirs:
@@ -40,7 +50,6 @@ def GetTestSuiteExes(test_type, test_suites, exclude_tests_list):
             if file_name.endswith(EXCLUDE_EXTENSION_LIST):
                 continue
             if file_name.startswith(tuple(exclude_tests_list)):
-                print(f"Skipping test {file_name}, because it is in test exclude list.")
                 continue
             if test_suites is None and file_name.startswith(test_type.lower()):
                 print(f"Found {test_type} file: {file_name}")
@@ -74,6 +83,67 @@ def FindBetween(s, f, l):
         return s[start:end]
     except ValueError:
         return ""
+
+def GetAndTranslatePerformanceInfo(test):
+    global total_failures
+    output_path = test.replace(".exe", "") + ".log"
+    total_failures += subprocess.call([test, "-fout", output_path, "--gtest_color=no"])
+    output = None
+    with open(output_path, "r+") as f:
+        log = f.readlines()
+    if log == None:
+        raise Exception("Failed to read in performance info test results")
+    reading = False
+    output = {}
+    for line in log:
+        if SYNC_START in line:
+            reading = True
+            continue
+        if SYNC_END in line:
+            reading = False
+            continue
+        if reading:
+            data = line.split(SYNC_SEP)
+            if len(data) != 2:
+                raise Exception(f"Unknown log line format: {line}")
+            output[data[0]] = data[1]
+        if "Not all tests passed" in line:
+            raise Exception("Performance info test failed")
+    if output == {}:
+        raise Exception("Failed to get any information out of performance info log")
+    return output
+
+def GetAndTranslatePerformanceResults(test):
+    global total_failures
+    output_path = test.replace(".exe", "") + ".log"
+    total_failures += subprocess.call([test, "-fout", output_path, "--gtest_color=no"])
+    output = None
+    with open(output_path, "r+") as f:
+        log = f.readlines()
+    if log == None:
+        raise Exception("Failed to read in performance info test results")
+    reading = False
+    output = []
+    single_case = {}
+    sync_items_line = [SYNC_QUERY, SYNC_CASE, SYNC_MIN, SYNC_MAX, SYNC_MEAN, SYNC_MEDIAN]
+    sync_items_readable = [item.replace("%%","").replace("__","").capitalize() for item in sync_items_line]
+    for line in log:
+        if SYNC_START in line:
+            single_case = {}
+            reading = True
+            continue
+        if SYNC_END in line:
+            if set(sync_items_readable) != set(single_case.keys()):
+                info = f'Missing data in test case: {single_case}. Items {sync_items_readable}. Keys {single_case.keys()}'
+                raise Exception(info)
+            output.append(single_case)
+            reading = False
+            continue
+        if reading:
+            for sync_item in sync_items_line:
+                if sync_item in line:
+                    single_case[sync_item.replace("%%","").replace("__","").capitalize()] = line.replace(sync_item,"").rstrip()
+    return output
 
 def ParseUnitTestCase(log_lines, test_case):
     start_tag = test_case + "." 
@@ -125,11 +195,17 @@ def ParseUnitTestLog(unit_test, log):
     if len(log) < 8:
         return {}
 
+    tmp = ""
     for log in log_split:
         if log.startswith("[==========] Running"):
-            tmp = log.replace("[==========] Running ", "").replace(" test cases.", "").replace(" test case.", "")
-    log_json["TotalTestCount"] = re.split(" tests? from ", tmp)[0]
-    log_json["TotalTestCases"] = re.split(" tests? from ", tmp)[1]
+            tmp = log.replace("[==========] Running ", "").replace(" test cases.", "").replace(" test case.", "").replace("tests from", "").replace("test from", "")
+    if tmp == "":
+        print('!!! FAILED TO FIND LOG WITH RUNNING !!!')
+        log_json["TotalTestCount"] = "0"
+        log_json["TotalTestCases"] = "0"
+    else:
+        log_json["TotalTestCount"] = tmp.split("  ")[0]
+        log_json["TotalTestCases"] = tmp.split("  ")[1]
     log_json["TestCases"] = []
     test_cases = []
     for _line in log_split:
@@ -164,8 +240,16 @@ def RunAllTests(test_types, test_suites, exclude_test_list):
     for _type in test_types:
         tests = GetTestSuiteExes(_type, test_suites, exclude_test_list)
         print("!! Found tests:", *tests, sep="\n")
-        test_outputs = RunTests(tests, _type)
-        final_output[_type] = TranslateTestOutput(_type, test_outputs)
+        if PERFORMANCE_TYPE == _type:
+            final_output[PERFORMANCE_TYPE] = {}
+            for test in tests:
+                if test.replace(".exe", "").endswith(PERFORMANCE_INFO):
+                    final_output[PERFORMANCE_TYPE]["Info"] = GetAndTranslatePerformanceInfo(test)
+                elif test.replace(".exe", "").endswith(PERFORMANCE_RESULTS):
+                    final_output[PERFORMANCE_TYPE]["Results"] = GetAndTranslatePerformanceResults(test)
+        else:
+            test_outputs = RunTests(tests, _type)
+            final_output[_type] = TranslateTestOutput(_type, test_outputs)
     return final_output
 
 def ParseCommandLineArguments():
@@ -192,6 +276,8 @@ def main():
             print("Usage: -i <infile> -o <outfile> [-s <test_suites> -e <efile>]")
             sys.exit(1)
         exclude_test_list = []
+        global total_failures
+        total_failures = 0
         if efile is not None:
             with open(efile) as ef:
                 exclude_test_list = ef.readlines()
@@ -208,20 +294,16 @@ def main():
         if suites is not None: 
             print(f'== Using suites {suites} ==')
         with open(os.path.join(os.getcwd(), outfile), 'w+') as results_file:
-            data = RunAllTests([UT_TYPE, IT_TYPE], suites, exclude_test_list)
+            data = RunAllTests([UT_TYPE, IT_TYPE, PERFORMANCE_TYPE], suites, exclude_test_list)
             os.chmod(outfile, 0o744)
             results_file.write(template.render(data = data))
 
-        print(f"== Finished generating results file {outfile} // Opening it in your browser... ==")
-        if sys.platform.startswith("darwin"):
-            os.system(" ".join(["open", os.path.join(os.getcwd(), outfile)]))
-        else:
-            os.system(os.path.join(os.getcwd(), outfile))
-
-        return total_failures
+        print(f"== Finished generating results file {outfile} ==")
+        os._exit(total_failures)
 
     except:
         print(traceback.format_exc())
+        os._exit(255)
 
 if __name__ == "__main__":
     main()

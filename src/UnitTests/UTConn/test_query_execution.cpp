@@ -25,6 +25,7 @@ const std::string valid_host = (use_ssl ? "https://localhost" : "localhost");
 const std::string valid_port = "9200";
 const std::string valid_user = "admin";
 const std::string valid_pw = "admin";
+const std::string valid_region = "us-west-3";
 const std::string query =
     "SELECT Origin FROM kibana_sample_data_flights LIMIT 5";
 const std::string all_columns_flights_query =
@@ -39,7 +40,7 @@ const int all_columns_flights_count = 25;
 const int some_columns_flights_count = 2;
 runtime_options valid_conn_opt_val = {
     {valid_host, valid_port, "1"},
-    {"BASIC", valid_user, valid_pw},
+    {"BASIC", valid_user, valid_pw, valid_region},
     {use_ssl, false, "", "", "", ""}};
 
 TEST(TestESExecDirect, ValidQuery) {

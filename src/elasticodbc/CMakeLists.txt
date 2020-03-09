@@ -36,7 +36,7 @@ set(					HEADER_FILES
 							convert.h				descriptor.h			dlg_specific.h		drvconn.h
 							environ.h				es_apifunc.h			es_communication.h	es_parse_result.h
 							es_connection.h			es_driver_connect.h		es_helper.h			es_info.h			
-							es_statement.h 			es_types.h 				export_def.h 		loadlib.h 		
+							es_statement.h 			es_types.h 				loadlib.h 		
 							misc.h					multibyte.h				mylog.h				es_utility.h
 							resource.h				statement.h				tuple.h				unicode_support.h
 							es_apifunc.h			es_odbc.h				qresult.h			version.h
@@ -66,7 +66,7 @@ if(WIN32)
 	target_link_libraries(elasticodbc wsock32 ws2_32 msvcrt winmm user32 gdi32 legacy_stdio_definitions aws-cpp-sdk-core kernel32 advapi32 secur32 XOleHlp Wldap32 crypt32 Normaliz odbccp32 odbc32)
 elseif(APPLE)
 	# Apple specific
-	target_link_libraries(elasticodbc iodbc iodbcinst)
+	target_link_libraries(elasticodbc iodbc iodbcinst aws-cpp-sdk-core )
 elseif(UNIX)
 	# Unix specific
 	include_directories(/usr/src/linux-headers-5.0.0-27/include)

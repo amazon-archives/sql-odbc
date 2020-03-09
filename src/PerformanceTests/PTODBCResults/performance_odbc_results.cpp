@@ -19,6 +19,8 @@
 #include "unit_test_helper.h"
 #include "it_odbc_helper.h"
 #include "chrono"
+#include <vector>
+#include <numeric>
 // clang-format on
 
 #define BIND_SIZE 255
@@ -34,8 +36,8 @@ typedef SQLULEN SQLTRANSID;
 typedef SQLLEN SQLROWOFFSET;
 #endif
 
-const char16_t* const m_query =
-    u"SELECT * FROM kibana_sample_data_flights limit 10000";
+const wchar_t* const m_query =
+    L"SELECT * FROM kibana_sample_data_flights limit 10000";
 
 typedef struct Col {
     SQLLEN data_len;
@@ -59,55 +61,106 @@ class TestPerformance : public testing::Test {
     SQLHSTMT m_hstmt = SQL_NULL_HSTMT;
 };
 
-TEST_F(TestPerformance, Time_Execute) {
-    auto start = std::chrono::steady_clock::now();
-    SQLRETURN ret = SQLExecDirect(m_hstmt, (SQLTCHAR*)m_query, SQL_NTS);
-    auto end = std::chrono::steady_clock::now();
+const std::string sync_start = "%%__PARSE__SYNC__START__%%";
+const std::string sync_query = "%%__QUERY__%%";
+const std::string sync_case = "%%__CASE__%%";
+const std::string sync_min = "%%__MIN__%%";
+const std::string sync_max = "%%__MAX__%%";
+const std::string sync_mean = "%%__MEAN__%%";
+const std::string sync_median = "%%__MEDIAN__%%";
+const std::string sync_end = "%%__PARSE__SYNC__END__%%";
 
+void ReportTime(const std::string test_case, std::vector< long long > data) {
+    size_t size = data.size();
+    ASSERT_EQ(size, ITERATION_COUNT);
+
+    // Get max and min
+    long long time_max = *std::max_element(data.begin(), data.end());
+    long long time_min = *std::min_element(data.begin(), data.end());
+
+    // Get median
+    long long time_mean =
+        std::accumulate(std::begin(data), std::end(data), 0ll) / data.size();
+
+    // Get median
+    std::sort(data.begin(), data.end());
+    long long time_median = (size % 2)
+                                ? data[size / 2]
+                                : ((data[(size / 2) - 1] + data[size / 2]) / 2);
+
+    // Output results
+    std::cout << sync_start << std::endl;
+    std::cout << sync_query;
+    std::wcout << std::wstring(m_query) << std::endl;
+    std::cout << sync_case << test_case << std::endl;
+    std::cout << sync_min << time_min << " ms" << std::endl;
+    std::cout << sync_max << time_max << " ms" << std::endl;
+    std::cout << sync_mean << time_mean << " ms" << std::endl;
+    std::cout << sync_median << time_median << " ms" << std::endl;
+    std::cout << sync_end << std::endl;
+
+    std::cout << "Time dump: ";
+    for(size_t i = 0; i < data.size(); i++) {
+        std::cout << data[i] << " ms";
+        if(i != (data.size() -1 ))
+            std::cout << ", ";
+    }
+    std::cout << std::endl;
+}
+
+TEST_F(TestPerformance, Time_Execute) {
+    // Execute a query just to wake the server up in case it has been sleeping
+    // for a while
+    SQLRETURN ret = SQLExecDirect(m_hstmt, (SQLTCHAR*)m_query, SQL_NTS);
     ASSERT_TRUE(SQL_SUCCEEDED(ret));
-    std::cout << "Time required for execution: "
-              << std::chrono::duration_cast< std::chrono::milliseconds >(
-                     end - start)
-                     .count()
-              << " ms" << std::endl
-              << "_____________________________________________________________"
-                 "________________"
-              << std::endl;
+    ASSERT_TRUE(SQL_SUCCEEDED(SQLCloseCursor(m_hstmt)));
+
+    std::vector< long long > times;
+    for (size_t iter = 0; iter < ITERATION_COUNT; iter++) {
+        auto start = std::chrono::steady_clock::now();
+        ret = SQLExecDirect(m_hstmt, (SQLTCHAR*)m_query, SQL_NTS);
+        auto end = std::chrono::steady_clock::now();
+        LogAnyDiagnostics(SQL_HANDLE_STMT, m_hstmt, ret);
+        ASSERT_TRUE(SQL_SUCCEEDED(ret));
+        ASSERT_TRUE(SQL_SUCCEEDED(SQLCloseCursor(m_hstmt)));
+        times.push_back(
+            std::chrono::duration_cast< std::chrono::milliseconds >(end - start)
+                .count());
+    }
+    ReportTime("Execute Query", times);
 }
 
 TEST_F(TestPerformance, Time_BindColumn_FetchSingleRow) {
     SQLSMALLINT total_columns = 0;
     int row_count = 0;
 
-    SQLRETURN ret = SQLExecDirect(m_hstmt, (SQLTCHAR*)m_query, SQL_NTS);
-    ASSERT_TRUE(SQL_SUCCEEDED(ret));
+    std::vector< long long > times;
+    for (size_t iter = 0; iter < ITERATION_COUNT; iter++) {
+        // Execute query
+        SQLRETURN ret = SQLExecDirect(m_hstmt, (SQLTCHAR*)m_query, SQL_NTS);
+        ASSERT_TRUE(SQL_SUCCEEDED(ret));
 
-    SQLNumResultCols(m_hstmt, &total_columns);
+        // Get column count
+        SQLNumResultCols(m_hstmt, &total_columns);
+        std::vector< std::vector< Col > > cols(total_columns);
+        for (size_t i = 0; i < cols.size(); i++)
+            cols[i].resize(SINGLE_ROW);
 
-    std::vector< std::vector< Col > > cols(total_columns);
-    for (size_t i = 0; i < cols.size(); i++)
-        cols[i].resize(SINGLE_ROW);
-
-    auto start = std::chrono::steady_clock::now();
-    for (size_t i = 0; i < cols.size(); i++)
-        ret = SQLBindCol(m_hstmt, (SQLUSMALLINT)i + 1, SQL_C_CHAR,
-                         (SQLPOINTER)&cols[i][0].data_dat[i], 255,
-                         &cols[i][0].data_len);
-
-    while (SQLFetch(m_hstmt) == SQL_SUCCESS)
-        row_count++;
-
-    auto end = std::chrono::steady_clock::now();
-    std::cout << "Time required for bind and fetch: "
-              << std::chrono::duration_cast< std::chrono::milliseconds >(
-                     end - start)
-                     .count()
-              << " ms" << std::endl
-              << "Number of rows retrieved : " << row_count << std::endl
-              << "Number of columns retrieved: " << total_columns << std::endl
-              << "_____________________________________________________________"
-                 "________________"
-              << std::endl;
+        // Bind and fetch
+        auto start = std::chrono::steady_clock::now();
+        for (size_t i = 0; i < cols.size(); i++)
+            ret = SQLBindCol(m_hstmt, (SQLUSMALLINT)i + 1, SQL_C_CHAR,
+                             (SQLPOINTER)&cols[i][0].data_dat[i], 255,
+                             &cols[i][0].data_len);
+        while (SQLFetch(m_hstmt) == SQL_SUCCESS)
+            row_count++;
+        auto end = std::chrono::steady_clock::now();
+        ASSERT_TRUE(SQL_SUCCEEDED(SQLCloseCursor(m_hstmt)));
+        times.push_back(
+            std::chrono::duration_cast< std::chrono::milliseconds >(end - start)
+                .count());
+    }
+    ReportTime("Bind and (1 row) Fetch", times);
 }
 
 TEST_F(TestPerformance, Time_BindColumn_Fetch5Rows) {
@@ -117,40 +170,38 @@ TEST_F(TestPerformance, Time_BindColumn_Fetch5Rows) {
     SQLUSMALLINT row_status[ROWSET_SIZE_5];
     SQLSetStmtAttr(m_hstmt, SQL_ROWSET_SIZE, (void*)ROWSET_SIZE_5, 0);
 
-    SQLRETURN ret = SQLExecDirect(m_hstmt, (SQLTCHAR*)m_query, SQL_NTS);
-    ASSERT_TRUE(SQL_SUCCEEDED(ret));
+    std::vector< long long > times;
+    for (size_t iter = 0; iter < ITERATION_COUNT; iter++) {
+        // Execute query
+        SQLRETURN ret = SQLExecDirect(m_hstmt, (SQLTCHAR*)m_query, SQL_NTS);
+        ASSERT_TRUE(SQL_SUCCEEDED(ret));
 
-    SQLNumResultCols(m_hstmt, &total_columns);
+        // Get column count
+        SQLNumResultCols(m_hstmt, &total_columns);
+        std::vector< std::vector< Col > > cols(total_columns);
+        for (size_t i = 0; i < cols.size(); i++)
+            cols[i].resize(ROWSET_SIZE_5);
 
-    std::vector< std::vector< Col > > cols(total_columns);
-    for (size_t i = 0; i < cols.size(); i++)
-        cols[i].resize(ROWSET_SIZE_5);
-
-    auto start = std::chrono::steady_clock::now();
-    for (size_t i = 0; i < cols.size(); i++)
-        ret = SQLBindCol(m_hstmt, (SQLUSMALLINT)i + 1, SQL_C_CHAR,
-                         (SQLPOINTER)&cols[i][0].data_dat[i], BIND_SIZE,
-                         &cols[i][0].data_len);
-
-    while (
-        SQLExtendedFetch(m_hstmt, SQL_FETCH_NEXT, 0, &rows_fetched, row_status)
-        == SQL_SUCCESS) {
-        row_count += rows_fetched;
-        if (rows_fetched < ROWSET_SIZE_5)
-            break;
+        // Bind and fetch
+        auto start = std::chrono::steady_clock::now();
+        for (size_t i = 0; i < cols.size(); i++)
+            ret = SQLBindCol(m_hstmt, (SQLUSMALLINT)i + 1, SQL_C_CHAR,
+                             (SQLPOINTER)&cols[i][0].data_dat[i], BIND_SIZE,
+                             &cols[i][0].data_len);
+        while (SQLExtendedFetch(m_hstmt, SQL_FETCH_NEXT, 0, &rows_fetched,
+                                row_status)
+               == SQL_SUCCESS) {
+            row_count += rows_fetched;
+            if (rows_fetched < ROWSET_SIZE_5)
+                break;
+        }
+        auto end = std::chrono::steady_clock::now();
+        ASSERT_TRUE(SQL_SUCCEEDED(SQLCloseCursor(m_hstmt)));
+        times.push_back(
+            std::chrono::duration_cast< std::chrono::milliseconds >(end - start)
+                .count());
     }
-
-    auto end = std::chrono::steady_clock::now();
-    std::cout << "Time required for bind and fetch multiple rows at a time: "
-              << std::chrono::duration_cast< std::chrono::milliseconds >(
-                     end - start)
-                     .count()
-              << " ms" << std::endl
-              << "Number of rows retrieved : " << row_count << std::endl
-              << "Number of columns retrieved: " << total_columns << std::endl
-              << "_____________________________________________________________"
-                 "________________"
-              << std::endl;
+    ReportTime("Bind and (5 row) Fetch", times);
 }
 
 TEST_F(TestPerformance, Time_BindColumn_Fetch50Rows) {
@@ -160,191 +211,24 @@ TEST_F(TestPerformance, Time_BindColumn_Fetch50Rows) {
     SQLUSMALLINT row_status[ROWSET_SIZE_50];
     SQLSetStmtAttr(m_hstmt, SQL_ROWSET_SIZE, (void*)ROWSET_SIZE_50, 0);
 
-    SQLRETURN ret = SQLExecDirect(m_hstmt, (SQLTCHAR*)m_query, SQL_NTS);
-    ASSERT_TRUE(SQL_SUCCEEDED(ret));
-
-    SQLNumResultCols(m_hstmt, &total_columns);
-
-    std::vector< std::vector< Col > > cols(total_columns);
-    for (size_t i = 0; i < cols.size(); i++)
-        cols[i].resize(ROWSET_SIZE_50);
-
-    auto start = std::chrono::steady_clock::now();
-    for (size_t i = 0; i < cols.size(); i++)
-        ret = SQLBindCol(m_hstmt, (SQLUSMALLINT)i + 1, SQL_C_CHAR,
-                         (SQLPOINTER)&cols[i][0].data_dat[i], BIND_SIZE,
-                         &cols[i][0].data_len);
-
-    while (
-        SQLExtendedFetch(m_hstmt, SQL_FETCH_NEXT, 0, &rows_fetched, row_status)
-        == SQL_SUCCESS) {
-        row_count += rows_fetched;
-        if (rows_fetched < ROWSET_SIZE_50)
-            break;
-    }
-
-    auto end = std::chrono::steady_clock::now();
-    std::cout << "Time required for bind and fetch multiple rows at a time: "
-              << std::chrono::duration_cast< std::chrono::milliseconds >(
-                     end - start)
-                     .count()
-              << " ms" << std::endl
-              << "Number of rows retrieved : " << row_count << std::endl
-              << "Number of columns retrieved: " << total_columns << std::endl
-              << "_____________________________________________________________"
-                 "________________"
-              << std::endl;
-}
-
-TEST_F(TestPerformance, Time_Execute_FetchSingleRow) {
-    SQLSMALLINT total_columns = 0;
-    int row_count = 0;
-
-    auto start = std::chrono::steady_clock::now();
-
-    SQLRETURN ret = SQLExecDirect(m_hstmt, (SQLTCHAR*)m_query, SQL_NTS);
-    ASSERT_TRUE(SQL_SUCCEEDED(ret));
-
-    SQLNumResultCols(m_hstmt, &total_columns);
-
-    std::vector< std::vector< Col > > cols(total_columns);
-    for (size_t i = 0; i < cols.size(); i++)
-        cols[i].resize(SINGLE_ROW);
-
-    for (size_t i = 0; i < cols.size(); i++)
-        ret = SQLBindCol(m_hstmt, (SQLUSMALLINT)i + 1, SQL_C_CHAR,
-                         (SQLPOINTER)&cols[i][0].data_dat[i], BIND_SIZE,
-                         &cols[i][0].data_len);
-
-    while (SQLFetch(m_hstmt) == SQL_SUCCESS)
-        row_count++;
-
-    auto end = std::chrono::steady_clock::now();
-    std::cout << "Time required to excute a query and retrieve results: "
-              << std::chrono::duration_cast< std::chrono::milliseconds >(
-                     end - start)
-                     .count()
-              << " ms" << std::endl
-              << "Number of rows retrieved : " << row_count << std::endl
-              << "Number of columns retrieved: " << total_columns << std::endl
-              << "_____________________________________________________________"
-                 "________________"
-              << std::endl;
-}
-
-TEST_F(TestPerformance, Time_Execute_FetchSingleRow_10Times) {
-    int row_count = 0;
-    SQLSMALLINT total_columns = 0;
-
-    auto start = std::chrono::steady_clock::now();
-
-    for (int repeat = 0; repeat < 10; repeat++) {
+    std::vector< long long > times;
+    for (size_t iter = 0; iter < ITERATION_COUNT; iter++) {
+        // Execute query
         SQLRETURN ret = SQLExecDirect(m_hstmt, (SQLTCHAR*)m_query, SQL_NTS);
         ASSERT_TRUE(SQL_SUCCEEDED(ret));
 
+        // Get column count
         SQLNumResultCols(m_hstmt, &total_columns);
-
-        std::vector< std::vector< Col > > cols(total_columns);
-        for (size_t i = 0; i < cols.size(); i++)
-            cols[i].resize(SINGLE_ROW);
-
-        for (size_t i = 0; i < cols.size(); i++)
-            ret = SQLBindCol(m_hstmt, (SQLUSMALLINT)i + 1, SQL_C_CHAR,
-                             (SQLPOINTER)&cols[i][0].data_dat[i], BIND_SIZE,
-                             &cols[i][0].data_len);
-
-        while (SQLFetch(m_hstmt) == SQL_SUCCESS)
-            row_count++;
-
-        SQLCloseCursor(m_hstmt);
-    }
-
-    auto end = std::chrono::steady_clock::now();
-    std::cout << "Time required to excute a query and retrieve results: "
-              << std::chrono::duration_cast< std::chrono::milliseconds >(
-                     end - start)
-                     .count()
-              << " ms" << std::endl
-              << "Number of rows retrieved : " << row_count << std::endl
-              << "Number of columns retrieved: " << total_columns << std::endl
-              << "_____________________________________________________________"
-                 "________________"
-              << std::endl;
-}
-
-TEST_F(TestPerformance, Time_Execute_Fetch5Rows_10Times) {
-    SQLROWSETSIZE row_count = 0;
-    SQLSMALLINT total_columns = 0;
-    SQLROWSETSIZE rows_fetched = 0;
-    SQLUSMALLINT row_status[ROWSET_SIZE_5];
-
-    SQLSetStmtAttr(m_hstmt, SQL_ROWSET_SIZE, (void*)ROWSET_SIZE_5, 0);
-
-    auto start = std::chrono::steady_clock::now();
-
-    for (int repeat = 0; repeat < 10; repeat++) {
-        SQLRETURN ret = SQLExecDirect(m_hstmt, (SQLTCHAR*)m_query, SQL_NTS);
-        ASSERT_TRUE(SQL_SUCCEEDED(ret));
-
-        SQLNumResultCols(m_hstmt, &total_columns);
-
-        std::vector< std::vector< Col > > cols(total_columns);
-        for (size_t i = 0; i < cols.size(); i++)
-            cols[i].resize(ROWSET_SIZE_5);
-
-        for (size_t i = 0; i < cols.size(); i++)
-            ret = SQLBindCol(m_hstmt, (SQLUSMALLINT)i + 1, SQL_C_CHAR,
-                             (SQLPOINTER)&cols[i][0].data_dat[i], BIND_SIZE,
-                             &cols[i][0].data_len);
-
-        while (SQLExtendedFetch(m_hstmt, SQL_FETCH_NEXT, 0, &rows_fetched,
-                                row_status)
-               == SQL_SUCCESS) {
-            row_count += rows_fetched;
-            if (rows_fetched < ROWSET_SIZE_5)
-                break;
-        }
-
-        SQLCloseCursor(m_hstmt);
-    }
-
-    auto end = std::chrono::steady_clock::now();
-    std::cout << "Time required for excute a query and retrieve results : "
-              << std::chrono::duration_cast< std::chrono::milliseconds >(
-                     end - start)
-                     .count()
-              << " ms" << std::endl
-              << "Number of rows retrieved : " << row_count << std::endl
-              << "Number of columns retrieved: " << total_columns << std::endl
-              << "_____________________________________________________________"
-                 "________________"
-              << std::endl;
-}
-
-TEST_F(TestPerformance, Time_Execute_Fetch50Rows_10Times) {
-    SQLROWSETSIZE row_count = 0;
-    SQLSMALLINT total_columns = 0;
-    SQLROWSETSIZE rows_fetched = 0;
-    SQLUSMALLINT row_status[ROWSET_SIZE_50];
-
-    SQLSetStmtAttr(m_hstmt, SQL_ROWSET_SIZE, (void*)ROWSET_SIZE_50, 0);
-
-    auto start = std::chrono::steady_clock::now();
-    for (int repeat = 0; repeat < 10; repeat++) {
-        SQLRETURN ret = SQLExecDirect(m_hstmt, (SQLTCHAR*)m_query, SQL_NTS);
-        ASSERT_TRUE(SQL_SUCCEEDED(ret));
-
-        SQLNumResultCols(m_hstmt, &total_columns);
-
         std::vector< std::vector< Col > > cols(total_columns);
         for (size_t i = 0; i < cols.size(); i++)
             cols[i].resize(ROWSET_SIZE_50);
 
+        // Bind and fetch
+        auto start = std::chrono::steady_clock::now();
         for (size_t i = 0; i < cols.size(); i++)
             ret = SQLBindCol(m_hstmt, (SQLUSMALLINT)i + 1, SQL_C_CHAR,
                              (SQLPOINTER)&cols[i][0].data_dat[i], BIND_SIZE,
                              &cols[i][0].data_len);
-
         while (SQLExtendedFetch(m_hstmt, SQL_FETCH_NEXT, 0, &rows_fetched,
                                 row_status)
                == SQL_SUCCESS) {
@@ -353,27 +237,60 @@ TEST_F(TestPerformance, Time_Execute_Fetch50Rows_10Times) {
                 break;
         }
 
-        SQLCloseCursor(m_hstmt);
+        auto end = std::chrono::steady_clock::now();
+        ASSERT_TRUE(SQL_SUCCEEDED(SQLCloseCursor(m_hstmt)));
+        times.push_back(
+            std::chrono::duration_cast< std::chrono::milliseconds >(end - start)
+                .count());
     }
-    auto end = std::chrono::steady_clock::now();
+    ReportTime("Bind and (50 row) Fetch", times);
+}
 
-    std::cout << "Time required for excute a query and retrieve results : "
-              << std::chrono::duration_cast< std::chrono::milliseconds >(
-                     end - start)
-                     .count()
-              << " ms" << std::endl
-              << "Number of rows retrieved : " << row_count << std::endl
-              << "Number of columns retrieved: " << total_columns << std::endl
-              << "_____________________________________________________________"
-                 "________________"
-              << std::endl;
+TEST_F(TestPerformance, Time_Execute_FetchSingleRow) {
+    SQLSMALLINT total_columns = 0;
+    int row_count = 0;
+
+    std::vector< long long > times;
+    for (size_t iter = 0; iter < ITERATION_COUNT; iter++) {
+        // Execute query
+        auto start = std::chrono::steady_clock::now();
+        SQLRETURN ret = SQLExecDirect(m_hstmt, (SQLTCHAR*)m_query, SQL_NTS);
+        ASSERT_TRUE(SQL_SUCCEEDED(ret));
+
+        // Get column count
+        SQLNumResultCols(m_hstmt, &total_columns);
+        std::vector< std::vector< Col > > cols(total_columns);
+        for (size_t i = 0; i < cols.size(); i++)
+            cols[i].resize(SINGLE_ROW);
+
+        // Bind and fetch
+        for (size_t i = 0; i < cols.size(); i++)
+            ret = SQLBindCol(m_hstmt, (SQLUSMALLINT)i + 1, SQL_C_CHAR,
+                             (SQLPOINTER)&cols[i][0].data_dat[i], BIND_SIZE,
+                             &cols[i][0].data_len);
+        while (SQLFetch(m_hstmt) == SQL_SUCCESS)
+            row_count++;
+
+        auto end = std::chrono::steady_clock::now();
+        ASSERT_TRUE(SQL_SUCCEEDED(SQLCloseCursor(m_hstmt)));
+        times.push_back(
+            std::chrono::duration_cast< std::chrono::milliseconds >(end - start)
+                .count());
+    }
+    ReportTime("Execute Query, Bind and (1 row) Fetch", times);
 }
 
 int main(int argc, char** argv) {
+    testing::internal::CaptureStdout();
     ::testing::InitGoogleTest(&argc, argv);
-    int failures = 0;
-    for (size_t iteration = 0; iteration < ITERATION_COUNT; iteration++)
-        failures += RUN_ALL_TESTS();
+
+    int failures = RUN_ALL_TESTS();
+
+    std::string output = testing::internal::GetCapturedStdout();
+    std::cout << output << std::endl;
     std::cout << (failures ? "Not all tests passed." : "All tests passed")
               << std::endl;
+    WriteFileIfSpecified(argv, argv + argc, "-fout", output);
+
+    return failures;
 }

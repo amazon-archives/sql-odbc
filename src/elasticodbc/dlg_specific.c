@@ -22,7 +22,6 @@
 #include "misc.h"
 
 #define NULL_IF_NULL(a) ((a) ? ((const char *)(a)) : "(null)")
-CSTR ENTRY_TEST = " @@@ ";
 
 static void encode(const esNAME, char *out, int outlen);
 static esNAME decode(const char *in);
@@ -33,44 +32,8 @@ static esNAME decode_or_remove_braces(const char *in);
      | BIT_CVT_NULL_DATE | BIT_ACCESSIBLE_ONLY | BIT_IGNORE_ROUND_TRIP_TIME \
      | BIT_DISABLE_KEEPALIVE)
 
-CSTR hex_format = "%x";
-CSTR dec_format = "%u";
-CSTR octal_format = "%o";
-
 #define OPENING_BRACKET '{'
 #define CLOSING_BRACKET '}'
-static const char *makeBracketConnectString(BOOL in_str, char **target,
-                                            esNAME item, const char *optname) {
-    const char *istr, *iptr;
-    char *buf, *optr;
-    int len;
-
-    if (!in_str)
-        return NULL_STRING;
-
-    istr = SAFE_NAME(item);
-    for (iptr = istr, len = 0; *iptr; iptr++) {
-        if (CLOSING_BRACKET == *iptr)
-            len++;
-        len++;
-    }
-    len += 30;
-    if (buf = (char *)malloc(len), buf == NULL)
-        return NULL_STRING;
-    snprintf(buf, len, "%s=%c", optname, OPENING_BRACKET);
-    optr = strchr(buf, '\0');
-    for (iptr = istr; *iptr; iptr++) {
-        if (CLOSING_BRACKET == *iptr)
-            *(optr++) = *iptr;
-        *(optr++) = *iptr;
-    }
-    *(optr++) = CLOSING_BRACKET;
-    *(optr++) = ';';
-    *optr = '\0';
-    *target = buf;
-
-    return buf;
-}
 
 #ifdef __APPLE__
 #pragma clang diagnostic push
@@ -91,7 +54,7 @@ void makeConnectString(char *connect_string, const ConnInfo *ci, UWORD len) {
     /* fundamental info */
     nlen = MAX_CONNECT_STRING;
     olen = snprintf(connect_string, nlen,
-             "%s=%s;" INI_SERVER "=%s;" INI_PORT "=%s;" INI_USERNAME
+             "%s=%s;" INI_HOST "=%s;" INI_PORT "=%s;" INI_USERNAME
              "=%s;" INI_PASSWORD "=%s;" INI_AUTH_MODE "=%s;" INI_REGION
              "=%s;" INI_SSL_USE "=%d;" INI_SSL_HOST_VERIFY "=%d;" INI_LOG_LEVEL
              "=%d;" INI_LOG_OUTPUT "=%s;" INI_TIMEOUT "=%s;",
@@ -140,13 +103,16 @@ BOOL copyConnAttributes(ConnInfo *ci, const char *attribute,
         STRCPY_FIXED(ci->dsn, value);
     else if (stricmp(attribute, "driver") == 0)
         STRCPY_FIXED(ci->drivername, value);
-    else if (stricmp(attribute, INI_SERVER) == 0)
+    else if ((stricmp(attribute, INI_HOST) == 0)
+             || (stricmp(attribute, INI_SERVER) == 0))
         STRCPY_FIXED(ci->server, value);
     else if (stricmp(attribute, INI_PORT) == 0)
         STRCPY_FIXED(ci->port, value);
-    else if (stricmp(attribute, INI_USERNAME) == 0)
+    else if ((stricmp(attribute, INI_USERNAME) == 0)
+             || (stricmp(attribute, INI_USERNAME_ABBR) == 0))
         STRCPY_FIXED(ci->username, value);
-    else if (stricmp(attribute, INI_PASSWORD) == 0) {
+    else if ((stricmp(attribute, INI_PASSWORD) == 0)
+             || (stricmp(attribute, INI_PASSWORD_ABBR) == 0)) {
         ci->password = decode_or_remove_braces(value);
 #ifndef FORCE_PASSWORDE_DISPLAY
         MYLOG(0, "key='%s' value='xxxxxxxx'\n", attribute);
@@ -185,7 +151,7 @@ static void getCiDefaults(ConnInfo *ci) {
     strncpy(ci->response_timeout, DEFAULT_RESPONSE_TIMEOUT_STR, SMALL_REGISTRY_LEN);
     strncpy(ci->authtype, DEFAULT_AUTHTYPE, MEDIUM_REGISTRY_LEN);
     if(ci->password.name != NULL)
-        ci->password.name = _strdup("");
+        ci->password.name = strdup("");
     ci->password.name = NULL;
     strncpy(ci->username, DEFAULT_USERNAME, MEDIUM_REGISTRY_LEN);
     strncpy(ci->region, DEFAULT_REGION, MEDIUM_REGISTRY_LEN);
@@ -261,6 +227,10 @@ void getDSNinfo(ConnInfo *ci, const char *configDrvrname) {
                                    sizeof(temp), ODBC_INI)
         > 0)
         STRCPY_FIXED(ci->server, temp);
+    if (SQLGetPrivateProfileString(DSN, INI_HOST, NULL_STRING, temp,
+                                   sizeof(temp), ODBC_INI)
+        > 0)
+        STRCPY_FIXED(ci->server, temp);
     if (SQLGetPrivateProfileString(DSN, INI_PORT, NULL_STRING, temp,
                                    sizeof(temp), ODBC_INI)
         > 0)
@@ -269,7 +239,15 @@ void getDSNinfo(ConnInfo *ci, const char *configDrvrname) {
                                    sizeof(temp), ODBC_INI)
         > 0)
         STRCPY_FIXED(ci->username, temp);
+    if (SQLGetPrivateProfileString(DSN, INI_USERNAME_ABBR, NULL_STRING, temp,
+                                   sizeof(temp), ODBC_INI)
+        > 0)
+        STRCPY_FIXED(ci->username, temp);
     if (SQLGetPrivateProfileString(DSN, INI_PASSWORD, NULL_STRING, temp,
+                                   sizeof(temp), ODBC_INI)
+        > 0)
+        ci->password = decode(temp);
+    if (SQLGetPrivateProfileString(DSN, INI_PASSWORD_ABBR, NULL_STRING, temp,
                                    sizeof(temp), ODBC_INI)
         > 0)
         ci->password = decode(temp);
@@ -324,7 +302,7 @@ void writeDSNinfo(const ConnInfo *ci) {
     const char *DSN = ci->dsn;
     char encoded_item[MEDIUM_REGISTRY_LEN], temp[SMALL_REGISTRY_LEN];
     
-    SQLWritePrivateProfileString(DSN, INI_SERVER, ci->server, ODBC_INI);
+    SQLWritePrivateProfileString(DSN, INI_HOST, ci->server, ODBC_INI);
     SQLWritePrivateProfileString(DSN, INI_PORT, ci->port, ODBC_INI);
     SQLWritePrivateProfileString(DSN, INI_USERNAME, ci->username, ODBC_INI);
     encode(ci->password, encoded_item, sizeof(encoded_item));
@@ -471,7 +449,7 @@ void CC_conninfo_init(ConnInfo *conninfo, UInt4 option) {
     strncpy(conninfo->authtype, DEFAULT_AUTHTYPE, MEDIUM_REGISTRY_LEN);
     if(conninfo->password.name != NULL)
         free(conninfo->password.name);
-    conninfo->password.name = _strdup("");
+    conninfo->password.name = strdup("");
     strncpy(conninfo->username, DEFAULT_USERNAME, MEDIUM_REGISTRY_LEN);
     strncpy(conninfo->region, DEFAULT_REGION, MEDIUM_REGISTRY_LEN);
     conninfo->use_ssl = DEFAULT_USE_SSL;
