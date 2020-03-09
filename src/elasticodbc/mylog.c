@@ -156,7 +156,7 @@ const char *GetExeProgramName() {
 
 static void *qlog_cs, *mylog_cs;
 
-static enum ESLogLevel mylog_on = ES_Warning, qlog_on = ES_Warning;
+static int mylog_on = ES_Warning, qlog_on = ES_Warning;
 
 #define INIT_QLOG_CS XPlatformInitializeCriticalSection(&qlog_cs)
 #define ENTER_QLOG_CS XPlatformEnterCriticalSection(qlog_cs)
@@ -181,10 +181,10 @@ static enum ESLogLevel mylog_on = ES_Warning, qlog_on = ES_Warning;
 #define QLOGDIR "c:"
 #endif /* WIN32 */
 
-enum ESLogLevel get_mylog(void) {
+int get_mylog(void) {
     return mylog_on;
 }
-enum ESLogLevel get_qlog(void) {
+int get_qlog(void) {
     return qlog_on;
 }
 
