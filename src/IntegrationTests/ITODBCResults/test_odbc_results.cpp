@@ -379,7 +379,7 @@ void CheckData< TIMESTAMP_STRUCT >(
                       &m_hstmt, m_single_column_ordinal_position,       \
                       (SQLUSMALLINT)c_type, val_array, sz);             \
             if (i != (data_cnt - 1))                                    \
-                CloseCursor(&m_hstmt, true, true);                      \
+                ASSERT_NO_THROW(CloseCursor(&m_hstmt, true, true));     \
         }                                                               \
     }
 
@@ -389,12 +389,12 @@ class TestSQLBindCol : public testing::Test {
     }
 
     void SetUp() {
-        AllocStatement((SQLTCHAR*)conn_string.c_str(), &m_conn, &m_hstmt, true,
-                       true);
+        ASSERT_NO_THROW(AllocStatement((SQLTCHAR*)conn_string.c_str(), &m_conn,
+                                       &m_hstmt, true, true));
     }
 
     void TearDown() {
-        CloseCursor(&m_hstmt, true, true);
+        ASSERT_NO_THROW(CloseCursor(&m_hstmt, true, true));
     }
 
     ~TestSQLBindCol() {
@@ -411,12 +411,13 @@ class TestSQLFetch : public testing::Test {
     }
 
     void SetUp() {
-        AllocStatement((SQLTCHAR*)conn_string.c_str(), &m_conn, &m_hstmt, true,
-                       true);
+        ASSERT_NO_THROW(AllocStatement((SQLTCHAR*)conn_string.c_str(), &m_conn,
+                                       &m_hstmt, true, true));
     }
 
     void TearDown() {
-        CloseCursor(&m_hstmt, true, true);
+        if (m_hstmt != SQL_NULL_HSTMT)
+            ASSERT_NO_THROW(CloseCursor(&m_hstmt, true, true));
     }
 
     ~TestSQLFetch() {
@@ -433,12 +434,13 @@ class TestSQLExtendedFetch : public testing::Test {
     }
 
     void SetUp() {
-        AllocStatement((SQLTCHAR*)conn_string.c_str(), &m_conn, &m_hstmt, true,
-                       true);
+        ASSERT_NO_THROW(AllocStatement((SQLTCHAR*)conn_string.c_str(), &m_conn,
+                                       &m_hstmt, true, true));
     }
 
     void TearDown() {
-        CloseCursor(&m_hstmt, true, true);
+        if (m_hstmt != SQL_NULL_HSTMT)
+            ASSERT_NO_THROW(CloseCursor(&m_hstmt, true, true));
     }
 
     ~TestSQLExtendedFetch() {
@@ -455,11 +457,12 @@ class TestSQLGetData : public testing::Test {
     }
 
     void SetUp() {
-        AllocStatement((SQLTCHAR*)conn_string.c_str(), &m_conn, &m_hstmt, true,
-                       true);
+        ASSERT_NO_THROW(AllocStatement((SQLTCHAR*)conn_string.c_str(), &m_conn,
+                                       &m_hstmt, true, true));
     }
     void TearDown() {
-        CloseCursor(&m_hstmt, true, true);
+        if (m_hstmt != SQL_NULL_HSTMT)
+            ASSERT_NO_THROW(CloseCursor(&m_hstmt, true, true));
     }
 
     ~TestSQLGetData() {
@@ -482,12 +485,13 @@ class TestSQLNumResultCols : public testing::Test {
     }
 
     void SetUp() {
-        AllocStatement((SQLTCHAR*)conn_string.c_str(), &m_conn, &m_hstmt, true,
-                       true);
+        ASSERT_NO_THROW(AllocStatement((SQLTCHAR*)conn_string.c_str(), &m_conn,
+                                       &m_hstmt, true, true));
     }
 
     void TearDown() {
-        CloseCursor(&m_hstmt, true, true);
+        if (m_hstmt != SQL_NULL_HSTMT)
+            ASSERT_NO_THROW(CloseCursor(&m_hstmt, true, true));
     }
 
     ~TestSQLNumResultCols() {
@@ -510,7 +514,8 @@ class TestSQLMoreResults : public testing::Test {
     }
 
     void TearDown() {
-        CloseCursor(&m_hstmt, true, true);
+        if (m_hstmt != SQL_NULL_HSTMT)
+            ASSERT_NO_THROW(CloseCursor(&m_hstmt, true, true));
     }
 
     ~TestSQLMoreResults() {
@@ -527,12 +532,13 @@ class TestSQLDescribeCol : public testing::Test {
     }
 
     void SetUp() {
-        AllocStatement((SQLTCHAR*)conn_string.c_str(), &m_conn, &m_hstmt, true,
-                       true);
+        ASSERT_NO_THROW(AllocStatement((SQLTCHAR*)conn_string.c_str(), &m_conn,
+                                       &m_hstmt, true, true));
     }
 
     void TearDown() {
-        CloseCursor(&m_hstmt, true, true);
+        if (m_hstmt != SQL_NULL_HSTMT)
+            ASSERT_NO_THROW(CloseCursor(&m_hstmt, true, true));
     }
 
     ~TestSQLDescribeCol() {
@@ -723,7 +729,7 @@ TEST_F(TestSQLGetData, GetBitData) {
     EXPECT_FALSE(data_false);
 
     // Send another query
-    CloseCursor(&m_hstmt, true, true);
+    ASSERT_NO_THROW(CloseCursor(&m_hstmt, true, true));
     QueryFetch(single_bit_col, flight_data_set, single_row_offset_3, &m_hstmt);
 
     bool data_true = false;

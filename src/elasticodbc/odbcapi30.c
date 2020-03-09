@@ -85,6 +85,9 @@ RETCODE SQL_API SQLBindParam(HSTMT StatementHandle,
 /*	New function */
 RETCODE SQL_API SQLCloseCursor(HSTMT StatementHandle) {
     StatementClass *stmt = (StatementClass *)StatementHandle;
+    if(stmt == NULL)
+        return SQL_ERROR;
+
     RETCODE ret;
 
     MYLOG(0, "Entering\n");

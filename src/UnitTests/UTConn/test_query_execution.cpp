@@ -25,7 +25,7 @@ const std::string valid_host = (use_ssl ? "https://localhost" : "localhost");
 const std::string valid_port = "9200";
 const std::string valid_user = "admin";
 const std::string valid_pw = "admin";
-const std::string valid_region = "eu-west-3";
+const std::string valid_region = "us-west-3";
 const std::string query =
     "SELECT Origin FROM kibana_sample_data_flights LIMIT 5";
 const std::string all_columns_flights_query =

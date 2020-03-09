@@ -27,7 +27,7 @@ const std::string valid_host = (use_ssl ? "https://localhost" : "localhost");
 const std::string valid_port = "9200";
 const std::string valid_user = "admin";
 const std::string valid_pw = "admin";
-const std::string valid_region = "eu-west-3";
+const std::string valid_region = "us-west-3";
 const std::string invalid_host = "10.1.1.189";
 const std::string invalid_port = "920";
 const std::string invalid_user = "amin";
@@ -38,10 +38,10 @@ runtime_options valid_opt_val = {{valid_host, valid_port, "1"},
                                  {use_ssl, false, "", "", "", ""}};
 runtime_options invalid_opt_val = {
     {invalid_host, invalid_port, "1"},
-    {"BASIC", invalid_user, invalid_pw, invalid_region},
+    {"BASIC", invalid_user, invalid_pw, valid_region},
     {use_ssl, false, "", "", "", ""}};
 runtime_options missing_opt_val = {{"", "", "1"},
-                                   {"BASIC", "", invalid_pw, ""},
+                                   {"BASIC", "", invalid_pw, valid_region},
                                    {use_ssl, false, "", "", "", ""}};
 
 TEST(TestESConnConnectionOptions, ValidParameters) {
@@ -129,11 +129,9 @@ TEST(TestESConnDropDBConnection, ValidParameters) {
 }
 
 int main(int argc, char** argv) {
-    ::testing::InitGoogleTest(&argc, argv);
     testing::internal::CaptureStdout();
-
-    // Run test and pipe output to a file
     ::testing::InitGoogleTest(&argc, argv);
+
     int failures = RUN_ALL_TESTS();
 
     std::string output = testing::internal::GetCapturedStdout();

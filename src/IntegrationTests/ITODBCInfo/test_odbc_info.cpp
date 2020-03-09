@@ -110,7 +110,7 @@ int Ver1GEVer2(std::wstring ver_1_str, std::wstring ver_2_str) {
         SQLSMALLINT string_length_ptr;                                    \
         SQLRETURN ret =                                                   \
             SQLGetInfo(m_conn, info_type, &info_value_ptr,                \
-                       IT_SIZEOF(&info_value_ptr), &string_length_ptr);   \
+                       sizeof(info_value_ptr), &string_length_ptr);   \
         LogAnyDiagnostics(SQL_HANDLE_DBC, m_conn, ret);                   \
         EXPECT_EQ((size_t)info_value_ptr, (size_t)expected_value);        \
     }
@@ -122,7 +122,7 @@ int Ver1GEVer2(std::wstring ver_1_str, std::wstring ver_2_str) {
         SQLSMALLINT string_length_ptr;                                  \
         SQLRETURN ret =                                                 \
             SQLGetInfo(m_conn, info_type, &info_value_ptr,              \
-                       IT_SIZEOF(&info_value_ptr), &string_length_ptr); \
+                       sizeof(info_value_ptr), &string_length_ptr); \
         LogAnyDiagnostics(SQL_HANDLE_DBC, m_conn, ret);                 \
         EXPECT_EQ(info_value_ptr, expected_value);                      \
     }
