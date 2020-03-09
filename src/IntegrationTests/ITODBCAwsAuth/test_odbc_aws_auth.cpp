@@ -22,22 +22,22 @@
 std::wstring dsn_name = L"test_aws_auth_dsn";
 std::wstring aws_auth_conn_string =
     L"Driver={Elasticsearch};DataBase=database_name;"
-    L"Server=https://"
+    L"Host=https://"
     L"search-sept-cdg-david-test-domain-gouok3seqeupz64smuvfxyddui.eu-west-3."
     L"es.amazonaws.com;"
-    L"AuthenticationMode=AWS_SIGV4;Region=eu-west-3";
+    L"Auth=AWS_SIGV4;Region=eu-west-3;LogLevel=1";
 std::wstring aws_auth_conn_string_invalid_region =
     L"Driver={Elasticsearch};DataBase=database_name;"
-    L"Server=https://"
+    L"Host=https://"
     L"search-sept-cdg-david-test-domain-gouok3seqeupz64smuvfxyddui.eu-west-3."
     L"es.amazonaws.com;"
-    L"AuthenticationMode=AWS_SIGV4;Region=us-west-3";
+    L"Auth=AWS_SIGV4;Region=us-west-3;LogLevel=1";
 std::wstring aws_auth_conn_string_invalid_authtype =
     L"Driver={Elasticsearch};DataBase=database_name;"
-    L"Server=https://"
+    L"Host=https://"
     L"search-sept-cdg-david-test-domain-gouok3seqeupz64smuvfxyddui.eu-west-3."
     L"es.amazonaws.com;"
-    L"AuthenticationMode=AWS;Region=eu-west-3";
+    L"Auth=AWS;Region=eu-west-3;LogLevel=1";
 
 class TestAwsAuthConnection : public testing::Test {
    public:
