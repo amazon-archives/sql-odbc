@@ -22,7 +22,6 @@
 #include "misc.h"
 
 #define NULL_IF_NULL(a) ((a) ? ((const char *)(a)) : "(null)")
-CSTR ENTRY_TEST = " @@@ ";
 
 static void encode(const esNAME, char *out, int outlen);
 static esNAME decode(const char *in);
@@ -33,44 +32,8 @@ static esNAME decode_or_remove_braces(const char *in);
      | BIT_CVT_NULL_DATE | BIT_ACCESSIBLE_ONLY | BIT_IGNORE_ROUND_TRIP_TIME \
      | BIT_DISABLE_KEEPALIVE)
 
-CSTR hex_format = "%x";
-CSTR dec_format = "%u";
-CSTR octal_format = "%o";
-
 #define OPENING_BRACKET '{'
 #define CLOSING_BRACKET '}'
-static const char *makeBracketConnectString(BOOL in_str, char **target,
-                                            esNAME item, const char *optname) {
-    const char *istr, *iptr;
-    char *buf, *optr;
-    int len;
-
-    if (!in_str)
-        return NULL_STRING;
-
-    istr = SAFE_NAME(item);
-    for (iptr = istr, len = 0; *iptr; iptr++) {
-        if (CLOSING_BRACKET == *iptr)
-            len++;
-        len++;
-    }
-    len += 30;
-    if (buf = (char *)malloc(len), buf == NULL)
-        return NULL_STRING;
-    snprintf(buf, len, "%s=%c", optname, OPENING_BRACKET);
-    optr = strchr(buf, '\0');
-    for (iptr = istr; *iptr; iptr++) {
-        if (CLOSING_BRACKET == *iptr)
-            *(optr++) = *iptr;
-        *(optr++) = *iptr;
-    }
-    *(optr++) = CLOSING_BRACKET;
-    *(optr++) = ';';
-    *optr = '\0';
-    *target = buf;
-
-    return buf;
-}
 
 #ifdef __APPLE__
 #pragma clang diagnostic push
@@ -90,16 +53,19 @@ void makeConnectString(char *connect_string, const ConnInfo *ci, UWORD len) {
     encode(ci->password, encoded_item, sizeof(encoded_item));
     /* fundamental info */
     nlen = MAX_CONNECT_STRING;
-    olen = snprintf(connect_string, nlen,
-             "%s=%s;" INI_HOST "=%s;" INI_PORT "=%s;" INI_USERNAME
-             "=%s;" INI_PASSWORD "=%s;" INI_AUTH_MODE "=%s;" INI_REGION
-             "=%s;" INI_SSL_USE "=%d;" INI_SSL_HOST_VERIFY "=%d;" INI_LOG_LEVEL
-             "=%d;" INI_LOG_OUTPUT "=%s;" INI_TIMEOUT "=%s;",
-             got_dsn ? "DSN" : "DRIVER", got_dsn ? ci->dsn : ci->drivername,
-             ci->server, ci->port, ci->username, encoded_item, ci->authtype,
-             ci->region, (int)ci->use_ssl, (int)ci->verify_server,
-             (int)ci->drivers.loglevel, ci->drivers.output_dir,
-             ci->response_timeout);
+    olen = snprintf(
+        connect_string, nlen,
+        "%s=%s;" INI_SERVER
+        "=%s;"
+        "database=elasticsearch;" INI_PORT "=%s;" INI_USERNAME_ABBR
+        "=%s;" INI_PASSWORD_ABBR "=%s;" INI_AUTH_MODE "=%s;" INI_REGION
+        "=%s;" INI_SSL_USE "=%d;" INI_SSL_HOST_VERIFY "=%d;" INI_LOG_LEVEL
+        "=%d;" INI_LOG_OUTPUT "=%s;" INI_TIMEOUT "=%s;",
+        got_dsn ? "DSN" : "DRIVER", got_dsn ? ci->dsn : ci->drivername,
+        ci->server, ci->port, ci->username, encoded_item, ci->authtype,
+        ci->region, (int)ci->use_ssl, (int)ci->verify_server,
+        (int)ci->drivers.loglevel, ci->drivers.output_dir,
+        ci->response_timeout);
     if (olen < 0 || olen >= nlen) {
         connect_string[0] = '\0';
         return;
@@ -188,7 +154,7 @@ static void getCiDefaults(ConnInfo *ci) {
     strncpy(ci->response_timeout, DEFAULT_RESPONSE_TIMEOUT_STR, SMALL_REGISTRY_LEN);
     strncpy(ci->authtype, DEFAULT_AUTHTYPE, MEDIUM_REGISTRY_LEN);
     if(ci->password.name != NULL)
-        ci->password.name = _strdup("");
+        ci->password.name = strdup("");
     ci->password.name = NULL;
     strncpy(ci->username, DEFAULT_USERNAME, MEDIUM_REGISTRY_LEN);
     strncpy(ci->region, DEFAULT_REGION, MEDIUM_REGISTRY_LEN);
@@ -486,7 +452,7 @@ void CC_conninfo_init(ConnInfo *conninfo, UInt4 option) {
     strncpy(conninfo->authtype, DEFAULT_AUTHTYPE, MEDIUM_REGISTRY_LEN);
     if(conninfo->password.name != NULL)
         free(conninfo->password.name);
-    conninfo->password.name = _strdup("");
+    conninfo->password.name = strdup("");
     strncpy(conninfo->username, DEFAULT_USERNAME, MEDIUM_REGISTRY_LEN);
     strncpy(conninfo->region, DEFAULT_REGION, MEDIUM_REGISTRY_LEN);
     conninfo->use_ssl = DEFAULT_USE_SSL;

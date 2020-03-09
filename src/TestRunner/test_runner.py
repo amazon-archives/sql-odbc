@@ -125,11 +125,17 @@ def ParseUnitTestLog(unit_test, log):
     if len(log) < 8:
         return {}
 
+    tmp = ""
     for log in log_split:
         if log.startswith("[==========] Running"):
-            tmp = log.replace("[==========] Running ", "").replace(" test cases.", "").replace(" test case.", "")
-    log_json["TotalTestCount"] = re.split(" tests? from ", tmp)[0]
-    log_json["TotalTestCases"] = re.split(" tests? from ", tmp)[1]
+            tmp = log.replace("[==========] Running ", "").replace(" test cases.", "").replace(" test case.", "").replace("tests from", "").replace("test from", "")
+    if tmp == "":
+        print('!!! FAILED TO FIND LOG WITH RUNNING !!!')
+        log_json["TotalTestCount"] = "0"
+        log_json["TotalTestCases"] = "0"
+    else:
+        log_json["TotalTestCount"] = tmp.split("  ")[0]
+        log_json["TotalTestCases"] = tmp.split("  ")[1]
     log_json["TestCases"] = []
     test_cases = []
     for _line in log_split:
@@ -212,16 +218,12 @@ def main():
             os.chmod(outfile, 0o744)
             results_file.write(template.render(data = data))
 
-        print(f"== Finished generating results file {outfile} // Opening it in your browser... ==")
-        if sys.platform.startswith("darwin"):
-            os.system(" ".join(["open", os.path.join(os.getcwd(), outfile)]))
-        else:
-            os.system(os.path.join(os.getcwd(), outfile))
-
-        return total_failures
+        print(f"== Finished generating results file {outfile} ==")
+        os._exit(total_failures)
 
     except:
         print(traceback.format_exc())
+        os._exit(255)
 
 if __name__ == "__main__":
     main()

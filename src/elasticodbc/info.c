@@ -630,13 +630,11 @@ RETCODE SQL_API ESAPI_GetInfo(HDBC hdbc, SQLUSMALLINT fInfoType,
             break;
         case SQL_KEYSET_CURSOR_ATTRIBUTES1:
             len = 4;
-            value = SQL_CA1_NEXT | SQL_CA1_ABSOLUTE | SQL_CA1_RELATIVE
-                    | SQL_CA1_BOOKMARK | SQL_CA1_LOCK_NO_CHANGE
-                    | SQL_CA1_POS_POSITION | SQL_CA1_POS_REFRESH;
+            value = 0;
             break;
         case SQL_KEYSET_CURSOR_ATTRIBUTES2:
             len = 4;
-            value = SQL_CA2_READ_ONLY_CONCURRENCY | SQL_CA2_CRC_EXACT;
+            value = 0;
             break;
 
         case SQL_STATIC_CURSOR_ATTRIBUTES1:

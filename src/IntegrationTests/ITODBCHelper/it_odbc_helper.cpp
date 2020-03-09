@@ -68,6 +68,11 @@ void AllocStatement(SQLTCHAR* connection_string, SQLHDBC* db_connection,
 
 void LogAnyDiagnostics(SQLSMALLINT handle_type, SQLHANDLE handle, SQLRETURN ret,
                        SQLTCHAR* msg_return, const SQLSMALLINT sz) {
+    if (handle == NULL) {
+        printf("Failed to log diagnostics, handle is NULL\n");
+        return;
+    }
+
     // Only log diagnostics when there's something to log.
     switch (ret) {
         case SQL_SUCCESS_WITH_INFO:
