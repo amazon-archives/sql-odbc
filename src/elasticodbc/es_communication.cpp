@@ -124,9 +124,9 @@ ESCommunication::~ESCommunication() {
     Aws::ShutdownAPI(m_options);
 }
 
-const char* ESCommunication::GetErrorMessage() {
+std::string ESCommunication::GetErrorMessage() {
     // TODO: Check if they expect NULL or "" when there is no error.
-    return m_error_message == "" ? NULL : m_error_message.c_str();
+    return m_error_message;
 }
 
 bool ESCommunication::ConnectionOptions(runtime_options& rt_opts,

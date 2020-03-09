@@ -52,8 +52,7 @@ ConnStatusType ESStatus(void* es_conn) {
                : ConnStatusType::CONNECTION_BAD;
 }
 
-// TODO: Come up with a better error strategy, this is obviously not thread safe
-const char* GetErrorMsg(void* es_conn) {
+std::string GetErrorMsg(void* es_conn) {
     return es_conn ? static_cast< ESCommunication* >(es_conn)->GetErrorMessage()
                    : NULL;
 }
