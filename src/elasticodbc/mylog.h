@@ -75,19 +75,19 @@ const char *po_basename(const char *path);
      MYPRINTF(level, (fmt), ##__VA_ARGS__))
 #elif defined WIN32 /* && _MSC_VER > 1800 */
 #define MYLOG(level, fmt, ...)                               \
-    ((int)level < get_mylog()                                \
+    ((int)level <= get_mylog()                               \
          ? mylog(PREPEND_FMT fmt PREPEND_ITEMS, __VA_ARGS__) \
          : (printf || printf((fmt), __VA_ARGS__)))
-#define MYPRINTF(level, fmt, ...)                          \
-    ((int)level < get_mylog() ? myprintf(fmt, __VA_ARGS__) \
-                              : (printf || printf((fmt), __VA_ARGS__)))
-#define QLOG(level, fmt, ...)                                          \
-    (((int)level < get_qlog() ? qlog((fmt), __VA_ARGS__)               \
-                              : (printf || printf(fmt, __VA_ARGS__))), \
+#define MYPRINTF(level, fmt, ...)                           \
+    ((int)level <= get_mylog() ? myprintf(fmt, __VA_ARGS__) \
+                               : (printf || printf((fmt), __VA_ARGS__)))
+#define QLOG(level, fmt, ...)                                           \
+    (((int)level <= get_qlog() ? qlog((fmt), __VA_ARGS__)               \
+                               : (printf || printf(fmt, __VA_ARGS__))), \
      MYLOG(level, QLOG_MARK fmt, __VA_ARGS__))
-#define QPRINTF(level, fmt, ...)                                         \
-    (((int)level < get_qlog() ? qprintf(fmt, __VA_ARGS__)                \
-                              : (printf || printf((fmt), __VA_ARGS__))), \
+#define QPRINTF(level, fmt, ...)                                          \
+    (((int)level <= get_qlog() ? qprintf(fmt, __VA_ARGS__)                \
+                               : (printf || printf((fmt), __VA_ARGS__))), \
      MYPRINTF(level, (fmt), __VA_ARGS__))
 #else
 #define MYLOG(level, ...)                                                \
