@@ -75,7 +75,7 @@ class ESCommunication {
     void ConstructESResult(ESResult& result);
     void AwsHttpResponseToString(
     std::shared_ptr< Aws::Http::HttpResponse > response, std::string& output);
-    void GetJsonSchema(ESResult& es_result);;
+    void GetJsonSchema(ESResult& es_result);
     std::string m_error_message;  // TODO: Go through and add error messages on
                                   // exit conditions
     const std::vector< std::string > m_supported_client_encodings = {"UTF8"};

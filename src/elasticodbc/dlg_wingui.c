@@ -27,6 +27,7 @@
 #endif /* _HANDLE_ENLIST_IN_DTC_ */
 
 #define AUTHMODE_CNT 3
+extern HINSTANCE s_hModule;
 static const struct authmode authmodes[AUTHMODE_CNT] = {
     {IDS_AUTHTYPE_NONE, AUTHTYPE_IAM},
     {IDS_AUTHTYPE_BASIC, AUTHTYPE_BASIC},
@@ -43,34 +44,45 @@ const struct authmode *GetCurrentAuthMode(HWND hdlg) {
 }
 
 void SetAuthenticationVisibility(HWND hdlg, const struct authmode *am) {
-    int show_basic = (strcmp(am->authtype_str, AUTHTYPE_BASIC) == 0);
-    ShowWindow(GetDlgItem(hdlg, IDC_USER), show_basic);
-    ShowWindow(GetDlgItem(hdlg, IDC_PASSWORD), show_basic);
-    ShowWindow(GetDlgItem(hdlg, IDC_PASSWORD_STATIC), show_basic);
-    ShowWindow(GetDlgItem(hdlg, IDC_USERNAME_STATIC), show_basic);
-    int show_iam = (strcmp(am->authtype_str, AUTHTYPE_IAM) == 0);
-    ShowWindow(GetDlgItem(hdlg, IDC_REGION), show_iam);
-    ShowWindow(GetDlgItem(hdlg, IDC_REGION_STATIC), show_iam);
+    if (strcmp(am->authtype_str, AUTHTYPE_BASIC) == 0) {
+        EnableWindow(GetDlgItem(hdlg, IDC_USER), TRUE);
+        EnableWindow(GetDlgItem(hdlg, IDC_PASSWORD), TRUE);
+        EnableWindow(GetDlgItem(hdlg, IDC_REGION), FALSE);
+    } else if (strcmp(am->authtype_str, AUTHTYPE_IAM) == 0) {
+        EnableWindow(GetDlgItem(hdlg, IDC_USER), FALSE);
+        EnableWindow(GetDlgItem(hdlg, IDC_PASSWORD), FALSE);
+        EnableWindow(GetDlgItem(hdlg, IDC_REGION), TRUE);
+    } else {
+        EnableWindow(GetDlgItem(hdlg, IDC_USER), FALSE);
+        EnableWindow(GetDlgItem(hdlg, IDC_PASSWORD), FALSE);
+        EnableWindow(GetDlgItem(hdlg, IDC_REGION), FALSE);
+    } 
 }
 
 void SetDlgStuff(HWND hdlg, const ConnInfo *ci) {
     // Connection
+    SetDlgItemText(hdlg, IDC_DSNAME, ci->dsn);
     SetDlgItemText(hdlg, IDC_SERVER, ci->server);
     SetDlgItemText(hdlg, IDC_PORT, ci->port);
-    SetDlgItemText(hdlg, IDC_CONNTIMEOUT, ci->response_timeout);
 
     // Authentication
+    int authtype_selection_idx = 0;
+    unsigned int ams_cnt = 0;
+    const struct authmode *ams = GetAuthModes(&ams_cnt);
+    char buff[MEDIUM_REGISTRY_LEN + 1];
+    for (unsigned int i = 0; i < ams_cnt; i++) {
+        LoadString(GetWindowInstance(hdlg), ams[i].authtype_id, buff,
+                   MEDIUM_REGISTRY_LEN);
+        SendDlgItemMessage(hdlg, IDC_AUTHTYPE, CB_ADDSTRING, 0, (WPARAM)buff);
+        if (!stricmp(ci->authtype, ams[i].authtype_str)) {
+            authtype_selection_idx = i;
+        }
+    }
+    SendDlgItemMessage(hdlg, IDC_AUTHTYPE, CB_SETCURSEL,
+                       ams[authtype_selection_idx].authtype_id, (WPARAM)0);
     SetDlgItemText(hdlg, IDC_USER, ci->username);
     SetDlgItemText(hdlg, IDC_PASSWORD, SAFE_NAME(ci->password));
     SetDlgItemText(hdlg, IDC_REGION, ci->region);
-
-    // Encryption
-    int use_ssl = (IsDlgButtonChecked(hdlg, IDC_USESSL) ? 1 : 0);
-    ShowWindow(GetDlgItem(hdlg, IDC_ALLOWSELFSIGNED), use_ssl);
-    ShowWindow(GetDlgItem(hdlg, IDC_CERTIFICATE), use_ssl);
-    ShowWindow(GetDlgItem(hdlg, IDC_CERTIFICATE_STATIC), use_ssl);
-    ShowWindow(GetDlgItem(hdlg, IDC_KEY), use_ssl);
-    ShowWindow(GetDlgItem(hdlg, IDC_KEY_STATIC), use_ssl);
 
     // Misc
     UINT log_button_checked = ci->drivers.loglevel;
@@ -87,8 +99,6 @@ void GetDlgStuff(HWND hdlg, ConnInfo *ci) {
     // Connection
     GetDlgItemText(hdlg, IDC_DESC, ci->desc, sizeof(ci->desc));
     GetDlgItemText(hdlg, IDC_SERVER, ci->server, sizeof(ci->server));
-    GetDlgItemText(hdlg, IDC_CONNTIMEOUT, ci->response_timeout,
-                   sizeof(ci->response_timeout));
     GetDlgItemText(hdlg, IDC_PORT, ci->port, sizeof(ci->port));
 
     // Authentication
@@ -98,13 +108,6 @@ void GetDlgStuff(HWND hdlg, ConnInfo *ci) {
     const struct authmode *am = GetCurrentAuthMode(hdlg);
     SetAuthenticationVisibility(hdlg, am);
     STRCPY_FIXED(ci->authtype, am->authtype_str);
-
-    // Encryption
-    ci->use_ssl = (IsDlgButtonChecked(hdlg, IDC_USESSL) ? 1 : 0);
-    ShowWindow(GetDlgItem(hdlg, IDC_ALLOWSELFSIGNED), ci->use_ssl);
-    ShowWindow(GetDlgItem(hdlg, IDC_CERTIFICATE), ci->use_ssl);
-    ShowWindow(GetDlgItem(hdlg, IDC_CERTIFICATE_STATIC), ci->use_ssl);
-    ShowWindow(GetDlgItem(hdlg, IDC_CERTIFICATENOTE_STATIC), ci->use_ssl);
 
     // Misc
     ci->drivers.loglevel = (IsDlgButtonChecked(hdlg, IDC_CHECK1) ? 1 : 0);
@@ -127,5 +130,73 @@ static void getDriversDefaultsOfCi(const ConnInfo *ci, GLOBAL_VALUES *glbv) {
     else
         getDriversDefaults(INVALID_DRIVER, glbv);
 }
+
+LRESULT CALLBACK advancedOptionsProc(HWND hdlg, UINT wMsg, WPARAM wParam,
+                                     LPARAM lParam) {
+    LPSETUPDLG lpsetupdlg;
+    ConnInfo *ci;
+
+    switch (wMsg) {
+        case WM_INITDIALOG:
+            SetWindowLongPtr(hdlg, DWLP_USER, lParam);
+            lpsetupdlg = (LPSETUPDLG)lParam;
+            ci = &lpsetupdlg->ci;
+            CheckDlgButton(hdlg, IDC_USESSL, ci->use_ssl);
+            CheckDlgButton(hdlg, IDC_HOST_VER, ci->verify_server);
+            SetDlgItemText(hdlg, IDC_CONNTIMEOUT, ci->response_timeout);
+            break;
+
+        case WM_COMMAND:
+            lpsetupdlg = (LPSETUPDLG)GetWindowLongPtr(hdlg, DWLP_USER);
+            switch (GET_WM_COMMAND_ID(wParam, lParam)) {
+                case IDOK:
+                    // Retrieve dialog values 
+                    if (!lpsetupdlg->fDefault)
+                        GetDlgItemText(hdlg, IDC_DSNAME, lpsetupdlg->ci.dsn,
+                                       sizeof(lpsetupdlg->ci.dsn));
+
+                    // Get Dialog Values 
+                    lpsetupdlg->ci.use_ssl = (IsDlgButtonChecked(hdlg, IDC_USESSL) ? 1 : 0);
+                    lpsetupdlg->ci.verify_server = (IsDlgButtonChecked(hdlg, IDC_HOST_VER) ? 1 : 0);
+                    GetDlgItemText(hdlg, IDC_CONNTIMEOUT,
+                                   lpsetupdlg->ci.response_timeout,
+                                   sizeof(lpsetupdlg->ci.response_timeout));
+                    EndDialog(hdlg, FALSE);
+                    break;
+
+                case IDCANCEL:
+                    EndDialog(hdlg, FALSE);
+                    return TRUE;
+            }
+    }
+    return FALSE;
+}
+
+LRESULT logOptionsProc(HWND hdlg, UINT wMsg, WPARAM wParam, LPARAM lParam) {
+    LPSETUPDLG lpsetupdlg;
+    ConnInfo *ci;
+
+    switch (wMsg) {
+        case WM_INITDIALOG:
+            SetWindowLongPtr(hdlg, DWLP_USER, lParam);
+            lpsetupdlg = (LPSETUPDLG)lParam;
+            ci = &lpsetupdlg->ci;
+            break;
+
+        case WM_COMMAND:
+            lpsetupdlg = (LPSETUPDLG)GetWindowLongPtr(hdlg, DWLP_USER);
+            switch (GET_WM_COMMAND_ID(wParam, lParam)) {
+                case IDOK:
+                    EndDialog(hdlg, FALSE);
+                    break;
+
+                case IDCANCEL:
+                    EndDialog(hdlg, GET_WM_COMMAND_ID(wParam, lParam) == IDOK);
+                    return TRUE;
+            }
+    }
+    return FALSE;
+}
+
 
 #endif /* WIN32 */
