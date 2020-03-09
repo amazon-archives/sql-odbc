@@ -108,9 +108,10 @@ def GetAndTranslatePerformanceInfo(test):
             if len(data) != 2:
                 raise Exception(f"Unknown log line format: {line}")
             if data[0].rstrip() == "number":
-                data[0] = "Vversion Number"
+                data[0] = "Version Number"
             else:
                 data[0] = capwords(data[0].rstrip().replace("_", " "))
+            data[0].replace("Uuid", "UUID")
             output[data[0]] = data[1]
         if "Not all tests passed" in line:
             raise Exception("Performance info test failed")
