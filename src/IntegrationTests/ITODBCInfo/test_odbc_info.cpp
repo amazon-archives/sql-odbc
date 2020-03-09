@@ -67,7 +67,7 @@ int Ver1GEVer2(std::wstring ver_1_str, std::wstring ver_2_str) {
     if ((ver_1.size() == 0) || (ver_2.size() == 0))
         return -1;
 
-    size_t cnt = std::min(ver_1.size(), ver_2.size());
+    size_t cnt = ((ver_1.size() < ver_2.size()) ? ver_1.size() : ver_2.size());
     for (size_t i = 0; i < cnt; i++) {
         if (ver_1[i] != ver_2[i])
             return (ver_1[i] >= ver_2[i]) ? 1 : 0;
