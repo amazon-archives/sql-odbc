@@ -152,8 +152,8 @@
                 <th style="background-color: #022140; width: 15%">Errors</th>
             </tr>
             <colgroup>
-                <col span="1" style="background-color:#034f84" ; width: 60%" />
-                <col span="1" style="background-color:#034f84" ; width: 20%" />
+                <col span="1" style="background-color:#034f84; width: 60%" />
+                <col span="1" style="background-color:#034f84; width: 20%" />
                 <col span="1" style="width: 20%" />
             </colgroup>
             % for unit_test in data["UT"]:
@@ -193,8 +193,8 @@
                         <th style="background-color: #022140; width: 15%">Result</th>
                     </tr>
                     <colgroup>
-                        <col span="1" style="background-color:#034f84" ; width: 60%" />
-                        <col span="1" style="background-color:#034f84" ; width: 20%" />
+                        <col span="1" style="background-color:#034f84; width: 60%" />
+                        <col span="1" style="background-color:#034f84; width: 20%" />
                         <col span="1" style="width: 20%" />
                     </colgroup>
                     % for test_result in test_case["TestResults"]:
@@ -226,8 +226,8 @@
                 <th style="background-color: #022140; width: 15%">Errors</th>
             </tr>
             <colgroup>
-                <col span="1" style="background-color:#034f84" ; width: 60%" />
-                <col span="1" style="background-color:#034f84" ; width: 20%" />
+                <col span="1" style="background-color:#034f84; width: 60%" />
+                <col span="1" style="background-color:#034f84; width: 20%" />
                 <col span="1" style="width: 20%" />
             </colgroup>
             % for integration_test in data["IT"]:
@@ -267,8 +267,8 @@
                         <th style="background-color: #022140; width: 15%">Result</th>
                     </tr>
                     <colgroup>
-                        <col span="1" style="background-color:#034f84" ; width: 60%" />
-                        <col span="1" style="background-color:#034f84" ; width: 20%" />
+                        <col span="1" style="background-color:#034f84; width: 60%" />
+                        <col span="1" style="background-color:#034f84; width: 20%" />
                         <col span="1" style="width: 20%" />
                     </colgroup>
                     % for test_result in test_case["TestResults"]:
@@ -288,6 +288,93 @@
     </div>
     % endfor
     % endfor
+    <!-- Integration Tests -->
+    <header>
+        <h2 style="margin-left: 2%">Integration Tests</h2>
+    </header>
+    <div id="info-div-table">
+        <table id="tests-table">
+            <tr>
+                <th style="background-color: #022140; width: 70%">Unit Test</th>
+                <th style="background-color: #022140; width: 15%">Cases</th>
+                <th style="background-color: #022140; width: 15%">Errors</th>
+            </tr>
+            <colgroup>
+                <col span="1" style="background-color:#034f84; width: 60%" />
+                <col span="1" style="background-color:#034f84; width: 20%" />
+                <col span="1" style="width: 20%" />
+            </colgroup>
+            % for integration_test in data["IT"]:
+            <tr>
+                <td>${integration_test["UnitTest"]}</td>
+                <td>${integration_test["TotalTestCases"]}</td>
+                <td style="background-color:dark${'green' if integration_test['TotalTestCases'] == integration_test['CasePassCount'] else 'red' }">${str(int(integration_test['TotalTestCases']) - int(integration_test['CasePassCount']))}</td>
+            </tr>
+            % endfor
+        </table>
+    </div>
+    % if "performance" in data.keys():
+    % if "Info" in data["performance"].keys():
+    <!-- Performance Tests -->
+    <header>
+        <h2 style="margin-left: 2%">Performance Info</h2>
+    </header>
+    <div id="info-div-table">
+        <table id="tests-table">
+            <tr>
+                <th style="background-color: #022140; width: 50%">Info</th>
+                <th style="background-color: #022140; width: 50%">Data</th>
+            </tr>
+            <colgroup>
+                <col span="1" style="background-color:#034f84; width: 50%" />
+                <col span="1" style="background-color:#034f84; width: 50%" />
+            </colgroup>
+            % for k,v in data["performance"]["Info"].items():
+            <tr>
+                <td>${k}</td>
+                <td>${v.rstrip()}</td>
+            </tr>
+            % endfor
+        </table>
+    </div>
+    % endif
+    % if "Results" in data["performance"].keys():
+    <!-- Performance Tests -->
+    <header>
+        <h2 style="margin-left: 2%">Performance Results</h2>
+    </header>
+    <div id="info-div-table">
+        <table id="tests-table">
+            <tr>
+                <th style="background-color: #022140; width: 25%">Test Case</th>
+                <th style="background-color: #022140; width: 25%">Query</th>
+                <th style="background-color: #022140; width: 12.5%">Min</th>
+                <th style="background-color: #022140; width: 12.5%">Max</th>
+                <th style="background-color: #022140; width: 12.5%">Mean</th>
+                <th style="background-color: #022140; width: 12.5%">Median</th>
+            </tr>
+            <colgroup>
+                <col span="1" style="background-color:#034f84; width: 25%" />
+                <col span="1" style="background-color:#034f84; width: 25%" />
+                <col span="1" style="background-color:#034f84; width: 12.5%" />
+                <col span="1" style="background-color:#034f84; width: 12.5%" />
+                <col span="1" style="background-color:#034f84; width: 12.5%" />
+                <col span="1" style="background-color:#034f84; width: 12.5%" />
+            </colgroup>
+            % for test_vector in data["performance"]["Results"]:
+            <tr>
+                <td>${test_vector["Case"]}</td>
+                <td>${test_vector["Query"]}</td>
+                <td>${test_vector["Min"]}</td>
+                <td>${test_vector["Max"]}</td>
+                <td>${test_vector["Mean"]}</td>
+                <td>${test_vector["Median"]}</td>
+            </tr>
+            % endfor
+        </table>
+    </div>
+    % endif
+    % endif
 </body>
 <script>
 var coll = document.getElementsByClassName("collapsible");
