@@ -139,7 +139,11 @@ class TestSQLSetDescField : public testing::Test {
 #pragma warning(push)
 // This warning detects an attempt to assign a 32-bit value to a 64-bit pointer type
 #pragma warning(disable : 4312)
-#endif
+#elif defined(__APPLE__)
+// This warning detects casts from integer types to void*.
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wint-to-void-pointer-cast"
+#endif // WIN32
 
 // Descriptor Header Fields Tests
 
@@ -570,6 +574,8 @@ TEST_SQL_GET_DESC_FIELD(Test_SQL_DESC_UPDATABLE, SQL_DESC_UPDATABLE, 255, 1,
                         , SQL_SUCCESS, m_ird_hdesc, 0, 0, 0);
 #ifdef WIN32
 #pragma warning(pop)
+#elif __APPLE__
+#pragma clang diagnostic pop
 #endif
 
 int main(int argc, char** argv) {

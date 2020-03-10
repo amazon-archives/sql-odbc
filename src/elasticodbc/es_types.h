@@ -17,8 +17,8 @@
 #ifndef ES_TYPES
 #define ES_TYPES
 
-#include "es_odbc.h"
 #include "dlg_specific.h"
+#include "es_odbc.h"
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -228,6 +228,15 @@ typedef enum {
 #ifdef __cplusplus
 #include <stdint.h>
 
+#ifdef __APPLE__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-parameter"
+#endif // __APPLE__
+#include "rabbit.hpp"
+#ifdef __APPLE__
+#pragma clang diagnostic pop
+#endif // __APPLE__
+
 #include <string>
 #include <vector>
 
@@ -295,6 +304,7 @@ typedef struct ESResult {
     std::vector< ColumnInfo > column_info;
     std::string result_json;
     std::string command_type;  // SELECT / FETCH / etc
+    rabbit::document es_result_doc;
     ESResult() {
         ref_count = 0;
         num_fields = 0;

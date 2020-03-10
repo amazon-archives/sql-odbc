@@ -13,19 +13,20 @@
 #   permissions and limitations under the License.
 #
 
-project(ut_critical_section)
+project(performance_info)
 
 # Source, headers, and include dirs
-set(SOURCE_FILES test_critical_section.cpp)
+set(SOURCE_FILES performance_odbc_info.cpp)
 include_directories(	${UT_HELPER}
+						${IT_HELPER}
 						${ESODBC_SRC}
-						${RAPIDJSON_SRC}
-						${VLD_SRC}
-						${RABBIT_SRC}  )
+						${VLD_SRC}  
+						${RABBIT_SRC}
+						${RAPIDJSON_SRC})
 
 # Generate executable
-add_executable(ut_critical_section ${SOURCE_FILES})
+add_executable(performance_info ${SOURCE_FILES})
 
 # Library dependencies
-target_link_libraries(ut_critical_section elasticodbc ut_helper gtest_main)
-target_compile_definitions(ut_critical_section PUBLIC _UNICODE UNICODE)
+target_link_libraries(performance_info elasticodbc itodbc_helper ut_helper gtest_main)
+target_compile_definitions(performance_info PUBLIC _UNICODE UNICODE)

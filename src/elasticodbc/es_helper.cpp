@@ -52,8 +52,7 @@ ConnStatusType ESStatus(void* es_conn) {
                : ConnStatusType::CONNECTION_BAD;
 }
 
-// TODO: Come up with a better error strategy, this is obviously not thread safe
-const char* GetErrorMsg(void* es_conn) {
+std::string GetErrorMsg(void* es_conn) {
     return es_conn ? static_cast< ESCommunication* >(es_conn)->GetErrorMessage()
                    : NULL;
 }
@@ -136,7 +135,7 @@ class CriticalSectionHelper {
 #pragma warning(disable : 4551)  // MYLOG complains 'function call missing
                                  // argument list' on Windows, which is isn't
 #endif
-                MYLOG(0, "%s\n",
+                MYLOG(ES_ERROR, "%s\n",
                       "CRITICAL WARNING: ExitCritical section called when lock "
                       "count was already 0!");
 #ifdef WIN32
@@ -154,7 +153,7 @@ class CriticalSectionHelper {
 #pragma warning(disable : 4551)  // MYLOG complains 'function call missing
                                  // argument list' on Windows, which is isn't
 #endif
-            MYLOG(0, "%s\n",
+            MYLOG(ES_ERROR, "%s\n",
                   "CRITICAL WARNING: ExitCritical section called by thread "
                   "that does not own the lock!");
 #ifdef WIN32
