@@ -83,7 +83,7 @@ RETCODE
 dconn_DoDialog(HWND hwnd, ConnInfo *ci) {
     LRESULT dialog_result;
 
-    MYLOG(0, "entering ci = %p\n", ci);
+    MYLOG(ES_TRACE, "entering ci = %p\n", ci);
 
     if (hwnd) {
         dialog_result =
@@ -91,7 +91,7 @@ dconn_DoDialog(HWND hwnd, ConnInfo *ci) {
                            dconn_FDriverConnectProc, (LPARAM)ci);
         if (-1 == dialog_result) {
             int errc = GetLastError();
-            MYLOG(0, " LastError=%d\n", errc);
+            MYLOG(ES_DEBUG, " LastError=%d\n", errc);
         }
         if (!dialog_result || (dialog_result == -1))
             return SQL_NO_DATA_FOUND;
@@ -99,13 +99,13 @@ dconn_DoDialog(HWND hwnd, ConnInfo *ci) {
             return SQL_SUCCESS;
     }
 
-    MYLOG(0, " No window specified\n");
+    MYLOG(ES_DEBUG, " No window specified\n");
     return SQL_ERROR;
 }
 
 LRESULT CALLBACK dconn_FDriverConnectProc(HWND hdlg, UINT wMsg, WPARAM wParam,
                                           LPARAM lParam) {
-    MYLOG(0, "dconn_FDriverConnectProc\n");
+    MYLOG(ES_DEBUG, "dconn_FDriverConnectProc\n");
     ConnInfo *ci;
 
     switch (wMsg) {
@@ -214,12 +214,12 @@ BOOL dconn_get_attributes(copyfunc func, const char *connect_string,
     strtok_arg = our_connect_string;
 
 #ifdef FORCE_PASSWORD_DISPLAY
-    MYLOG(0, "our_connect_string = '%s'\n", our_connect_string);
+    MYLOG(ES_DEBUG, "our_connect_string = '%s'\n", our_connect_string);
 #else
     if (get_mylog()) {
         char *hide_str = hide_password(our_connect_string);
 
-        MYLOG(0, "our_connect_string = '%s'\n", hide_str);
+        MYLOG(ES_DEBUG, "our_connect_string = '%s'\n", hide_str);
         free(hide_str);
     }
 #endif /* FORCE_PASSWORD_DISPLAY */
@@ -272,14 +272,14 @@ BOOL dconn_get_attributes(copyfunc func, const char *connect_string,
                     if (NULL == closep) {
                         if (!delp) /* error */
                         {
-                            MYLOG(0, "closing bracket doesn't exist 1\n");
+                            MYLOG(ES_DEBUG, "closing bracket doesn't exist 1\n");
                             ret = FALSE;
                             goto cleanup;
                         }
                         closep = strchr(delp + 1, CLOSING_BRACKET);
                         if (!closep) /* error */
                         {
-                            MYLOG(0, "closing bracket doesn't exist 2\n");
+                            MYLOG(ES_DEBUG, "closing bracket doesn't exist 2\n");
                             ret = FALSE;
                             goto cleanup;
                         }
@@ -304,7 +304,7 @@ BOOL dconn_get_attributes(copyfunc func, const char *connect_string,
                             eoftok = TRUE;
                         break;
                     }
-                    MYLOG(0,
+                    MYLOG(ES_DEBUG,
                           "subsequent char to the closing bracket is %c "
                           "value=%s\n",
                           closep[1], value);

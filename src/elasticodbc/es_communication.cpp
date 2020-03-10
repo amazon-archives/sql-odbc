@@ -78,7 +78,7 @@ void ESCommunication::AwsHttpResponseToString(
 
     // Get size of streambuffer and reserver that much space in the output
     size_t avail = static_cast< size_t >(stream_buffer->in_avail());
-    std::vector<char> buf(avail, '\0');
+    std::vector< char > buf(avail, '\0');
     output.clear();
     output.reserve(avail);
 
@@ -90,6 +90,7 @@ void ESCommunication::AwsHttpResponseToString(
 void ESCommunication::GetJsonSchema(ESResult& es_result) {
     // Prepare document and validate schema
     try {
+        LogMsg(ES_DEBUG, "Parsing result JSON with schema.");
         es_result.es_result_doc.parse(es_result.result_json, JSON_SCHEMA);
     } catch (const rabbit::parse_error& e) {
         // The exception rabbit gives is quite useless - providing the json
@@ -114,16 +115,18 @@ ESCommunication::ESCommunication()
 #pragma clang diagnostic pop
 #endif  // __APPLE__
 {
+    LogMsg(ES_ALL, "Initializing Aws API.");
     Aws::InitAPI(m_options);
 }
 
 ESCommunication::~ESCommunication() {
+    LogMsg(ES_ALL, "Shutting down Aws API.");
     Aws::ShutdownAPI(m_options);
 }
 
-const char* ESCommunication::GetErrorMessage() {
+std::string ESCommunication::GetErrorMessage() {
     // TODO: Check if they expect NULL or "" when there is no error.
-    return m_error_message == "" ? NULL : m_error_message.c_str();
+    return m_error_message;
 }
 
 bool ESCommunication::ConnectionOptions(runtime_options& rt_opts,
@@ -141,12 +144,12 @@ bool ESCommunication::ConnectionOptions2() {
 }
 
 bool ESCommunication::ConnectDBStart() {
-    LogMsg("Starting DB connection.");
+    LogMsg(ES_ALL, "Starting DB connection.");
     m_status = ConnStatusType::CONNECTION_BAD;
     if (!m_valid_connection_options) {
         m_error_message =
             "Invalid connection options, unable to connect to DB.";
-        LogMsg(m_error_message.c_str());
+        LogMsg(ES_ERROR, m_error_message.c_str());
         DropDBConnection();
         return false;
     }
@@ -154,12 +157,12 @@ bool ESCommunication::ConnectDBStart() {
     m_status = ConnStatusType::CONNECTION_NEEDED;
     if (!EstablishConnection()) {
         m_error_message = "Failed to establish connection to DB.";
-        LogMsg(m_error_message.c_str());
+        LogMsg(ES_ERROR, m_error_message.c_str());
         DropDBConnection();
         return false;
     }
 
-    LogMsg("Connection established.");
+    LogMsg(ES_DEBUG, "Connection established.");
     m_status = ConnStatusType::CONNECTION_OK;
     return true;
 }
@@ -169,7 +172,7 @@ ConnStatusType ESCommunication::GetConnectionStatus() {
 }
 
 void ESCommunication::DropDBConnection() {
-    LogMsg("Dropping DB connection.");
+    LogMsg(ES_ALL, "Dropping DB connection.");
     if (m_http_client) {
         m_http_client.reset();
     }
@@ -180,7 +183,7 @@ void ESCommunication::DropDBConnection() {
 }
 
 bool ESCommunication::CheckConnectionOptions() {
-    LogMsg("Verifying connection options.");
+    LogMsg(ES_ALL, "Verifying connection options.");
     m_error_message = "";
     if (m_rt_opts.auth.auth_type != AUTHTYPE_NONE
         && m_rt_opts.auth.auth_type != AUTHTYPE_IAM) {
@@ -199,11 +202,11 @@ bool ESCommunication::CheckConnectionOptions() {
     }
 
     if (m_error_message != "") {
-        LogMsg(m_error_message.c_str());
+        LogMsg(ES_ERROR, m_error_message.c_str());
         m_valid_connection_options = false;
         return false;
     } else {
-        LogMsg("Required connection option are valid.");
+        LogMsg(ES_DEBUG, "Required connection option are valid.");
         m_valid_connection_options = true;
     }
     return m_valid_connection_options;
@@ -293,9 +296,9 @@ bool ESCommunication::IsSQLPluginInstalled(const std::string& plugin_response) {
                 if (!plugin_name.compare(OPENDISTRO_SQL_PLUGIN_NAME)) {
                     std::string sql_plugin_version =
                         it.at("version").as_string();
-                    LogMsg(std::string("Found SQL plugin version '"
-                                       + sql_plugin_version + "'.")
-                               .c_str());
+                    LogMsg(ES_ERROR, std::string("Found SQL plugin version '"
+                                                 + sql_plugin_version + "'.")
+                                         .c_str());
                     return true;
                 }
             } else {
@@ -319,21 +322,21 @@ bool ESCommunication::IsSQLPluginInstalled(const std::string& plugin_response) {
         m_error_message =
             "Unknown exception thrown when parsing plugin endpoint response.";
     }
-    
-    LogMsg(m_error_message.c_str());
+
+    LogMsg(ES_ERROR, m_error_message.c_str());
     return false;
 }
 
 bool ESCommunication::EstablishConnection() {
     // Generate HttpClient Connection class if it does not exist
-    LogMsg("Attempting to establish DB connection.");
+    LogMsg(ES_ALL, "Attempting to establish DB connection.");
     if (!m_http_client) {
         InitializeConnection();
     }
 
     // Check whether SQL plugin has been installed on the Elasticsearch server.
     // This is required for executing driver queries with the server.
-    LogMsg("Checking for SQL plugin");
+    LogMsg(ES_ALL, "Checking for SQL plugin");
     std::shared_ptr< Aws::Http::HttpResponse > response = nullptr;
     IssueRequest(PLUGIN_ENDPOINT_FORMAT_JSON, Aws::Http::HttpMethod::HTTP_GET,
                  "", "", response);
@@ -362,25 +365,25 @@ bool ESCommunication::EstablishConnection() {
             }
         }
     }
-    LogMsg(m_error_message.c_str());
+    LogMsg(ES_ERROR, m_error_message.c_str());
     return false;
 }
 
 int ESCommunication::ExecDirect(const char* query) {
     if (!query) {
         m_error_message = "Query is NULL";
-        LogMsg(m_error_message.c_str());
+        LogMsg(ES_ERROR, m_error_message.c_str());
         return -1;
     } else if (!m_http_client) {
         m_error_message = "Unable to connect. Please try connecting again.";
-        LogMsg(m_error_message.c_str());
+        LogMsg(ES_ERROR, m_error_message.c_str());
         return -1;
     }
 
     // Prepare statement
     std::string statement(query);
     std::string msg = "Attempting to execute a query \"" + statement + "\"";
-    LogMsg(msg.c_str());
+    LogMsg(ES_DEBUG, msg.c_str());
 
     // Issue request
     std::shared_ptr< Aws::Http::HttpResponse > response = nullptr;
@@ -392,6 +395,7 @@ int ESCommunication::ExecDirect(const char* query) {
         m_error_message =
             "Failed to receive response from query. "
             "Received NULL response.";
+        LogMsg(ES_ERROR, m_error_message.c_str());
         return -1;
     }
 
@@ -412,6 +416,7 @@ int ESCommunication::ExecDirect(const char* query) {
             m_error_message +=
                 " Response error: '" + result->result_json + "'.";
         }
+        LogMsg(ES_ERROR, m_error_message.c_str());
         delete result;
         return -1;
     }
@@ -424,6 +429,7 @@ int ESCommunication::ExecDirect(const char* query) {
             "Received runtime exception: " + std::string(e.what());
         if (!result->result_json.empty())
             m_error_message += " Result body: " + result->result_json;
+        LogMsg(ES_ERROR, m_error_message.c_str());
         delete result;
         return -1;
     }
@@ -454,14 +460,14 @@ void ESCommunication::ConstructESResult(ESResult& result) {
     result.num_fields = (uint16_t)schema_array.size();
 }
 
-inline void ESCommunication::LogMsg(const char* msg) {
+inline void ESCommunication::LogMsg(ESLogLevel level, const char* msg) {
 #if WIN32
 #pragma warning(push)
 #pragma warning(disable : 4551)
 #endif  // WIN32
     // cppcheck outputs an erroneous missing argument error which breaks build.
     // Disable for this function call
-    MYLOG(0, "%s\n", msg);
+    MYLOG(level, "%s\n", msg);
 #if WIN32
 #pragma warning(pop)
 #endif  // WIN32
@@ -469,7 +475,7 @@ inline void ESCommunication::LogMsg(const char* msg) {
 
 ESResult* ESCommunication::PopResult() {
     if (m_result_queue.empty()) {
-        LogMsg("Result queue is empty; returning null result.");
+        LogMsg(ES_WARNING, "Result queue is empty; returning null result.");
         return NULL;
     }
     ESResult* result = m_result_queue.front().release();
@@ -490,7 +496,8 @@ bool ESCommunication::SetClientEncoding(std::string& encoding) {
         m_client_encoding = encoding;
         return true;
     }
-    LogMsg(std::string("Failed to find encoding " + encoding).c_str());
+    LogMsg(ES_ERROR,
+           std::string("Failed to find encoding " + encoding).c_str());
     return false;
 }
 
@@ -506,6 +513,7 @@ std::string ESCommunication::GetServerVersion() {
         m_error_message =
             "Failed to receive response from query. "
             "Received NULL response.";
+        LogMsg(ES_ERROR, m_error_message.c_str());
         return "";
     }
 
@@ -522,21 +530,21 @@ std::string ESCommunication::GetServerVersion() {
         } catch (const rabbit::type_mismatch& e) {
             m_error_message = "Error parsing main endpoint response: "
                               + std::string(e.what());
-            LogMsg(m_error_message.c_str());
+            LogMsg(ES_ERROR, m_error_message.c_str());
         } catch (const rabbit::parse_error& e) {
             m_error_message = "Error parsing main endpoint response: "
                               + std::string(e.what());
-            LogMsg(m_error_message.c_str());
+            LogMsg(ES_ERROR, m_error_message.c_str());
         } catch (const std::exception& e) {
             m_error_message = "Error parsing main endpoint response: "
                               + std::string(e.what());
-            LogMsg(m_error_message.c_str());
+            LogMsg(ES_ERROR, m_error_message.c_str());
         } catch (...) {
-            LogMsg(
-                "Unknown exception thrown when parsing main endpoint "
-                "response.");
+            LogMsg(ES_ERROR,
+                   "Unknown exception thrown when parsing main endpoint "
+                   "response.");
         }
     }
-    LogMsg(m_error_message.c_str());
+    LogMsg(ES_ERROR, m_error_message.c_str());
     return "";
 }

@@ -67,12 +67,12 @@ RETCODE ExecuteStatement(StatementClass *stmt, BOOL commit) {
 
     QResultClass *res = SendQueryGetResult(stmt, commit);
     if (!res) {
-        const char *es_conn_err = GetErrorMsg(SC_get_conn(stmt)->esconn);
-        const char *es_parse_err = GetResultParserError();
-        if (es_conn_err != NULL) {
-            SC_set_error(stmt, STMT_NO_RESPONSE, es_conn_err, func);
-        } else if (es_parse_err != NULL) {
-            SC_set_error(stmt, STMT_EXEC_ERROR, es_parse_err, func);
+        std::string es_conn_err = GetErrorMsg(SC_get_conn(stmt)->esconn);
+        std::string es_parse_err = GetResultParserError();
+        if (!es_conn_err.empty()) {
+            SC_set_error(stmt, STMT_NO_RESPONSE, es_conn_err.c_str(), func);
+        } else if (!es_parse_err.empty()) {
+            SC_set_error(stmt, STMT_EXEC_ERROR, es_parse_err.c_str(), func);
         } else if (SC_get_errornumber(stmt) <= 0) {
             SC_set_error(
                 stmt, STMT_NO_RESPONSE,

@@ -48,7 +48,7 @@ class ESCommunication {
     EXPORTED ~ESCommunication();
 
     // Create function for factory
-    EXPORTED const char* GetErrorMessage();
+    EXPORTED std::string GetErrorMessage();
     EXPORTED bool ConnectionOptions(runtime_options& rt_opts, bool use_defaults,
                                     int expand_dbname,
                                     unsigned int option_count);
@@ -56,7 +56,7 @@ class ESCommunication {
     EXPORTED bool ConnectDBStart();
     EXPORTED ConnStatusType GetConnectionStatus();
     EXPORTED void DropDBConnection();
-    EXPORTED void LogMsg(const char* msg);
+    EXPORTED void LogMsg(ESLogLevel level, const char* msg);
     EXPORTED int ExecDirect(const char* query);
     EXPORTED ESResult* PopResult();
     EXPORTED std::string GetClientEncoding();
