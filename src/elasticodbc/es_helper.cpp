@@ -135,7 +135,7 @@ class CriticalSectionHelper {
 #pragma warning(disable : 4551)  // MYLOG complains 'function call missing
                                  // argument list' on Windows, which is isn't
 #endif
-                MYLOG(ES_Error, "%s\n",
+                MYLOG(ES_ERROR, "%s\n",
                       "CRITICAL WARNING: ExitCritical section called when lock "
                       "count was already 0!");
 #ifdef WIN32
@@ -153,7 +153,7 @@ class CriticalSectionHelper {
 #pragma warning(disable : 4551)  // MYLOG complains 'function call missing
                                  // argument list' on Windows, which is isn't
 #endif
-            MYLOG(ES_Error, "%s\n",
+            MYLOG(ES_ERROR, "%s\n",
                   "CRITICAL WARNING: ExitCritical section called by thread "
                   "that does not own the lock!");
 #ifdef WIN32

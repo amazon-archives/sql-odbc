@@ -30,11 +30,11 @@
 void QR_set_num_fields(QResultClass *self, int new_num_fields) {
     if (!self)
         return;
-    MYLOG(ES_Debug, "entering\n");
+    MYLOG(ES_TRACE, "entering\n");
 
     CI_set_num_fields(QR_get_fields(self), (SQLSMALLINT)new_num_fields);
 
-    MYLOG(ES_Debug, "leaving\n");
+    MYLOG(ES_TRACE, "leaving\n");
 }
 
 void QR_set_position(QResultClass *self, SQLLEN pos) {
@@ -90,7 +90,7 @@ void QR_set_rowstart_in_cache(QResultClass *self, SQLLEN start) {
 
 void QR_inc_rowstart_in_cache(QResultClass *self, SQLLEN base_inc) {
     if (!QR_has_valid_base(self))
-        MYLOG(ES_Debug, " called while the cache is not ready\n");
+        MYLOG(ES_DEBUG, " called while the cache is not ready\n");
     self->base += base_inc;
     if (QR_synchronize_keys(self))
         self->key_base = self->base;
@@ -123,7 +123,7 @@ void QR_set_fields(QResultClass *self, ColumnInfoClass *fields) {
 QResultClass *QR_Constructor(void) {
     QResultClass *rv;
 
-    MYLOG(ES_Debug, "entering\n");
+    MYLOG(ES_TRACE, "entering\n");
     rv = (QResultClass *)malloc(sizeof(QResultClass));
 
     if (rv != NULL) {
@@ -192,7 +192,7 @@ QResultClass *QR_Constructor(void) {
         rv->es_result = NULL;
     }
 
-    MYLOG(ES_Debug, "leaving\n");
+    MYLOG(ES_TRACE, "leaving\n");
     return rv;
 }
 
@@ -203,7 +203,7 @@ void QR_close_result(QResultClass *self, BOOL destroy) {
 
     if (!self)
         return;
-    MYLOG(ES_Debug, "entering\n");
+    MYLOG(ES_TRACE, "entering\n");
 
     while (self) {
         QR_free_memory(self); /* safe to call anyway */
@@ -249,11 +249,11 @@ void QR_close_result(QResultClass *self, BOOL destroy) {
         top = FALSE;
     }
 
-    MYLOG(ES_Debug, "leaving\n");
+    MYLOG(ES_TRACE, "leaving\n");
 }
 
 void QR_reset_for_re_execute(QResultClass *self) {
-    MYLOG(ES_Debug, "entering for %p\n", self);
+    MYLOG(ES_TRACE, "entering for %p\n", self);
     if (!self)
         return;
     QR_close_result(self, FALSE);
@@ -267,16 +267,16 @@ void QR_reset_for_re_execute(QResultClass *self) {
     self->sqlstate[0] = '\0';
     self->messageref = NULL;
 
-    MYLOG(ES_Debug, "leaving\n");
+    MYLOG(ES_TRACE, "leaving\n");
 }
 
 void QR_Destructor(QResultClass *self) {
-    MYLOG(ES_Debug, "entering\n");
+    MYLOG(ES_TRACE, "entering\n");
     if (!self)
         return;
     QR_close_result(self, TRUE);
 
-    MYLOG(ES_Debug, "leaving\n");
+    MYLOG(ES_TRACE, "leaving\n");
 }
 
 void QR_set_command(QResultClass *self, const char *msg) {
@@ -351,7 +351,7 @@ TupleField *QR_AddNew(QResultClass *self) {
 
     if (!self)
         return NULL;
-    MYLOG(ES_All,
+    MYLOG(ES_ALL,
           FORMAT_ULEN "th row(%d fields) alloc=" FORMAT_LEN "\n",
           self->num_cached_rows, QR_NumResultCols(self),
           self->count_backend_allocated);
@@ -389,7 +389,7 @@ void QR_free_memory(QResultClass *self) {
     SQLLEN num_backend_rows = self->num_cached_rows;
     int num_fields = self->num_fields;
 
-    MYLOG(ES_Debug, "entering fcount=" FORMAT_LEN "\n", num_backend_rows);
+    MYLOG(ES_TRACE, "entering fcount=" FORMAT_LEN "\n", num_backend_rows);
 
     if (self->backend_tuples) {
         ClearCachedRows(self->backend_tuples, num_fields, num_backend_rows);
@@ -461,5 +461,5 @@ void QR_free_memory(QResultClass *self) {
     self->cursTuple = -1;
     self->pstatus = 0;
 
-    MYLOG(ES_Debug, "leaving\n");
+    MYLOG(ES_TRACE, "leaving\n");
 }

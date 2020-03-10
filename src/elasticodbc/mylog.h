@@ -129,14 +129,14 @@ const char *po_basename(const char *path);
 enum ESLogLevel {
     // Prefixing with ES_ because C does not support namespaces and we may get a
     // collision, given how common these names are
-    ES_Off,
-    ES_Fatal,
-    ES_Error,
-    ES_Warning,
-    ES_Info,
-    ES_Debug,
-    ES_Trace,
-    ES_All
+    ES_OFF,
+    ES_FATAL,
+    ES_ERROR,
+    ES_WARNING,
+    ES_INFO,
+    ES_DEBUG,
+    ES_TRACE,
+    ES_ALL
 };
 
 int get_qlog(void);
