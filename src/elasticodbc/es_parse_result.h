@@ -19,9 +19,9 @@
 #include "qresult.h"
 
 #ifdef __cplusplus
+std::string GetResultParserError();
 extern "C" {
 #endif
-const char *GetResultParserError();
 #ifdef __cplusplus
 }
 #endif

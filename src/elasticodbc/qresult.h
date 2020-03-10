@@ -17,10 +17,9 @@
 #ifndef __QRESULT_H__
 #define __QRESULT_H__
 
-#include "es_odbc.h"
-
 #include "columninfo.h"
 #include "es_connection.h"
+#include "es_odbc.h"
 #include "tuple.h"
 
 #ifdef __cplusplus
@@ -118,7 +117,7 @@ struct QResultClass_ {
     SQLLEN *updated;            /* updated index info */
     KeySet *updated_keyset;     /* uddated keyset info */
     TupleField *updated_tuples; /* uddated data by myself */
-    void* es_result;
+    void *es_result;
 };
 
 enum {
@@ -213,16 +212,17 @@ enum {
         if (QR_haskeyset(self))      \
             self->num_cached_keys++; \
     } while (0)
-#define QR_set_next_in_cache(self, number)                                   \
-    do {                                                                     \
-        MYLOG(1, "set the number to " FORMAT_LEN " to read next\n", number); \
-        self->fetch_number = number;                                         \
+#define QR_set_next_in_cache(self, number)                               \
+    do {                                                                 \
+        MYLOG(ES_ALL, "set the number to " FORMAT_LEN " to read next\n", \
+              number);                                                   \
+        self->fetch_number = number;                                     \
     } while (0)
-#define QR_inc_next_in_cache(self)                                        \
-    do {                                                                  \
-        MYLOG(1, "increased the number " FORMAT_LEN, self->fetch_number); \
-        self->fetch_number++;                                             \
-        MYLOG(1, "to " FORMAT_LEN " to next read\n", self->fetch_number); \
+#define QR_inc_next_in_cache(self)                                             \
+    do {                                                                       \
+        MYLOG(ES_ALL, "increased the number " FORMAT_LEN, self->fetch_number); \
+        self->fetch_number++;                                                  \
+        MYLOG(ES_ALL, "to " FORMAT_LEN " to next read\n", self->fetch_number); \
     } while (0)
 
 #define QR_get_message(self) \

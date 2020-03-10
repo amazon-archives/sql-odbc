@@ -156,7 +156,7 @@ const char *GetExeProgramName() {
 
 static void *qlog_cs, *mylog_cs;
 
-static int mylog_on = 1, qlog_on = 1;
+static int mylog_on = ES_WARNING, qlog_on = ES_WARNING;
 
 #define INIT_QLOG_CS XPlatformInitializeCriticalSection(&qlog_cs)
 #define ENTER_QLOG_CS XPlatformEnterCriticalSection(qlog_cs)
@@ -231,7 +231,7 @@ void logs_on_off(int cnopen, int mylog_onoff, int qlog_onoff) {
     else if (getGlobalCommlog() > 0)
         qlog_on = getGlobalCommlog();
     LEAVE_QLOG_CS;
-    MYLOG(0, "mylog_on=%d qlog_on=%d\n", mylog_on, qlog_on);
+    MYLOG(ES_DEBUG, "mylog_on=%d qlog_on=%d\n", mylog_on, qlog_on);
 }
 
 #ifdef WIN32

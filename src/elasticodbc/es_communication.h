@@ -47,14 +47,14 @@ class ESCommunication {
     ~ESCommunication();
 
     // Create function for factory
-    const char* GetErrorMessage();
+    std::string GetErrorMessage();
     bool ConnectionOptions(runtime_options& rt_opts, bool use_defaults,
                            int expand_dbname, unsigned int option_count);
     bool ConnectionOptions2();
     bool ConnectDBStart();
     ConnStatusType GetConnectionStatus();
     void DropDBConnection();
-    void LogMsg(const char* msg);
+    void LogMsg(ESLogLevel level, const char* msg);
     int ExecDirect(const char* query);
     ESResult* PopResult();
     std::string GetClientEncoding();
