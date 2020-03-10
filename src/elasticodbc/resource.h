@@ -50,6 +50,14 @@
 #define IDS_AUTHTYPE_NONE               417
 #define IDS_AUTHTYPE_BASIC              418
 #define IDS_AUTHTYPE_IAM                419
+#define IDS_LOGTYPE_OFF                 420
+#define IDS_LOGTYPE_FATAL               421
+#define IDS_LOGTYPE_ERROR               422
+#define IDS_LOGTYPE_WARNING             423
+#define IDS_LOGTYPE_INFO                424
+#define IDS_LOGTYPE_DEBUG               425
+#define IDS_LOGTYPE_TRACE               426
+#define IDS_LOGTYPE_ALL                 427
 #define DLG_CONFIG                      1001
 #define IDC_PORT                        1002
 #define IDC_USER                        1006
@@ -95,7 +103,7 @@
 #define IDC_CERTIFICATE_STATIC2         1119
 #define IDC_CERTIFICATENOTE_STATIC      1119
 #define IDC_KEY_STATIC                  1119
-#define IDC_MFCEDITBROWSE1              1120
+#define IDC_LOG_PATH_BROWSE             1120
 #define IDC_REGION                      1121
 #define IDC_REGION_STATIC               1122
 #define IDC_AUTH_STATIC                 1123
@@ -108,14 +116,15 @@
 #define IDC_CONNTIMEOUT                 1130
 #define DLG_LOG_OPTIONS                 1131
 #define IDC_LOG_LEVEL                   1132
+#define IDC_LOG_PATH                    1133
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        110
+#define _APS_NEXT_RESOURCE_VALUE        112
 #define _APS_NEXT_COMMAND_VALUE         40001
-#define _APS_NEXT_CONTROL_VALUE         1133
+#define _APS_NEXT_CONTROL_VALUE         1134
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

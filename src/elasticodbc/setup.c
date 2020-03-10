@@ -322,10 +322,6 @@ LRESULT CALLBACK ConfigDlgProc(HWND hdlg, UINT wMsg, WPARAM wParam,
                                        sizeof(lpsetupdlg->ci.dsn));
 
                     /* Get Dialog Values */
-                    UINT log_button_checked =
-                        (IsDlgButtonChecked(hdlg, IDC_CHECK1) ? 1 : 0);
-                    setGlobalCommlog(log_button_checked);
-                    lpsetupdlg->ci.drivers.loglevel = (char)log_button_checked;
                     GetDlgStuff(hdlg, &lpsetupdlg->ci);
                     /* Update ODBC.INI */
                     SetDSNAttributes(hdlg, lpsetupdlg, NULL);
