@@ -573,11 +573,7 @@ TEST_SQL_GET_DESC_FIELD(Test_SQL_DESC_UPDATABLE, SQL_DESC_UPDATABLE, 255, 1,
                         , SQL_SUCCESS, m_ird_hdesc, 0, 0, 0);
 #ifdef WIN32
 #pragma warning(pop)
-<<<<<<< HEAD
-#elif defined(__APPLE__)
-=======
 #elif __APPLE__
->>>>>>> master
 #pragma clang diagnostic pop
 #endif
 
