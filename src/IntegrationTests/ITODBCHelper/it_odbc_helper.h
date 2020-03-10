@@ -55,17 +55,6 @@ std::wstring conn_string = []()
         temp += it.first + L"=" + it.second + L";";
     return temp;
 }();
-/*std::wstring conn_string = 
-    use_ssl ? L"Driver={Elasticsearch ODBC};"
-              L"host=https://localhost;port=9200;"
-              L"user=admin;password=admin;auth=BASIC;useSSL="
-              L"1;hostnameVerification=0;logLevel=0;logOutput=C:\\;"
-              L"responseTimeout=10;"
-            : L"Driver={Elasticsearch ODBC};"
-              L"host=localhost;port=9200;"
-              L"user=admin;password=admin;auth=BASIC;useSSL="
-              L"0;hostnameVerification=0;logLevel=0;logOutput=C:\\;"
-              L"responseTimeout=10;";*/
 
 void AllocConnection(SQLTCHAR* connection_string, SQLHDBC* db_connection,
                      bool throw_on_error, bool log_diag);
