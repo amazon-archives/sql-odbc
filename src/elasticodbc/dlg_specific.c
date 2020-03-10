@@ -53,16 +53,19 @@ void makeConnectString(char *connect_string, const ConnInfo *ci, UWORD len) {
     encode(ci->password, encoded_item, sizeof(encoded_item));
     /* fundamental info */
     nlen = MAX_CONNECT_STRING;
-    olen = snprintf(connect_string, nlen,
-             "%s=%s;" INI_HOST "=%s;" INI_PORT "=%s;" INI_USERNAME
-             "=%s;" INI_PASSWORD "=%s;" INI_AUTH_MODE "=%s;" INI_REGION
-             "=%s;" INI_SSL_USE "=%d;" INI_SSL_HOST_VERIFY "=%d;" INI_LOG_LEVEL
-             "=%d;" INI_LOG_OUTPUT "=%s;" INI_TIMEOUT "=%s;",
-             got_dsn ? "DSN" : "DRIVER", got_dsn ? ci->dsn : ci->drivername,
-             ci->server, ci->port, ci->username, encoded_item, ci->authtype,
-             ci->region, (int)ci->use_ssl, (int)ci->verify_server,
-             (int)ci->drivers.loglevel, ci->drivers.output_dir,
-             ci->response_timeout);
+    olen = snprintf(
+        connect_string, nlen,
+        "%s=%s;" INI_SERVER
+        "=%s;"
+        "database=elasticsearch;" INI_PORT "=%s;" INI_USERNAME_ABBR
+        "=%s;" INI_PASSWORD_ABBR "=%s;" INI_AUTH_MODE "=%s;" INI_REGION
+        "=%s;" INI_SSL_USE "=%d;" INI_SSL_HOST_VERIFY "=%d;" INI_LOG_LEVEL
+        "=%d;" INI_LOG_OUTPUT "=%s;" INI_TIMEOUT "=%s;",
+        got_dsn ? "DSN" : "DRIVER", got_dsn ? ci->dsn : ci->drivername,
+        ci->server, ci->port, ci->username, encoded_item, ci->authtype,
+        ci->region, (int)ci->use_ssl, (int)ci->verify_server,
+        (int)ci->drivers.loglevel, ci->drivers.output_dir,
+        ci->response_timeout);
     if (olen < 0 || olen >= nlen) {
         connect_string[0] = '\0';
         return;
@@ -118,8 +121,7 @@ BOOL copyConnAttributes(ConnInfo *ci, const char *attribute,
         MYLOG(0, "key='%s' value='xxxxxxxx'\n", attribute);
         printed = TRUE;
 #endif
-    } 
-    else if (stricmp(attribute, INI_AUTH_MODE) == 0)
+    } else if (stricmp(attribute, INI_AUTH_MODE) == 0)
         STRCPY_FIXED(ci->authtype, value);
     else if (stricmp(attribute, INI_REGION) == 0)
         STRCPY_FIXED(ci->region, value);
@@ -148,9 +150,10 @@ static void getCiDefaults(ConnInfo *ci) {
     strncpy(ci->drivername, DEFAULT_DRIVERNAME, MEDIUM_REGISTRY_LEN);
     strncpy(ci->server, DEFAULT_HOST, MEDIUM_REGISTRY_LEN);
     strncpy(ci->port, DEFAULT_PORT, SMALL_REGISTRY_LEN);
-    strncpy(ci->response_timeout, DEFAULT_RESPONSE_TIMEOUT_STR, SMALL_REGISTRY_LEN);
+    strncpy(ci->response_timeout, DEFAULT_RESPONSE_TIMEOUT_STR,
+            SMALL_REGISTRY_LEN);
     strncpy(ci->authtype, DEFAULT_AUTHTYPE, MEDIUM_REGISTRY_LEN);
-    if(ci->password.name != NULL)
+    if (ci->password.name != NULL)
         ci->password.name = strdup("");
     ci->password.name = NULL;
     strncpy(ci->username, DEFAULT_USERNAME, MEDIUM_REGISTRY_LEN);
@@ -211,7 +214,7 @@ void getDSNinfo(ConnInfo *ci, const char *configDrvrname) {
     /* brute-force chop off trailing blanks... */
     while (*(DSN + strlen(DSN) - 1) == ' ')
         *(DSN + strlen(DSN) - 1) = '\0';
-    
+
     if (!drivername[0] && DSN[0])
         getDriverNameFromDSN(DSN, (char *)drivername, sizeof(ci->drivername));
     MYLOG(0, "drivername=%s\n", drivername);
@@ -301,7 +304,7 @@ int writeDriversDefaults(const char *drivername, const GLOBAL_VALUES *comval) {
 void writeDSNinfo(const ConnInfo *ci) {
     const char *DSN = ci->dsn;
     char encoded_item[MEDIUM_REGISTRY_LEN], temp[SMALL_REGISTRY_LEN];
-    
+
     SQLWritePrivateProfileString(DSN, INI_HOST, ci->server, ODBC_INI);
     SQLWritePrivateProfileString(DSN, INI_PORT, ci->port, ODBC_INI);
     SQLWritePrivateProfileString(DSN, INI_USERNAME, ci->username, ODBC_INI);
@@ -314,8 +317,9 @@ void writeDSNinfo(const ConnInfo *ci) {
     ITOA_FIXED(temp, ci->verify_server);
     SQLWritePrivateProfileString(DSN, INI_SSL_HOST_VERIFY, temp, ODBC_INI);
     ITOA_FIXED(temp, ci->drivers.loglevel);
-    SQLWritePrivateProfileString(DSN, INI_SSL_HOST_VERIFY, temp, ODBC_INI);
-    SQLWritePrivateProfileString(DSN, INI_LOG_OUTPUT, ci->drivers.output_dir, ODBC_INI);
+    SQLWritePrivateProfileString(DSN, INI_LOG_LEVEL, temp, ODBC_INI);
+    SQLWritePrivateProfileString(DSN, INI_LOG_OUTPUT, ci->drivers.output_dir,
+                                 ODBC_INI);
     SQLWritePrivateProfileString(DSN, INI_TIMEOUT, ci->response_timeout,
                                  ODBC_INI);
 }
@@ -445,9 +449,10 @@ void CC_conninfo_init(ConnInfo *conninfo, UInt4 option) {
     strncpy(conninfo->drivername, DEFAULT_DRIVERNAME, MEDIUM_REGISTRY_LEN);
     strncpy(conninfo->server, DEFAULT_HOST, MEDIUM_REGISTRY_LEN);
     strncpy(conninfo->port, DEFAULT_PORT, SMALL_REGISTRY_LEN);
-    strncpy(conninfo->response_timeout, DEFAULT_RESPONSE_TIMEOUT_STR, SMALL_REGISTRY_LEN);
+    strncpy(conninfo->response_timeout, DEFAULT_RESPONSE_TIMEOUT_STR,
+            SMALL_REGISTRY_LEN);
     strncpy(conninfo->authtype, DEFAULT_AUTHTYPE, MEDIUM_REGISTRY_LEN);
-    if(conninfo->password.name != NULL)
+    if (conninfo->password.name != NULL)
         free(conninfo->password.name);
     conninfo->password.name = strdup("");
     strncpy(conninfo->username, DEFAULT_USERNAME, MEDIUM_REGISTRY_LEN);
