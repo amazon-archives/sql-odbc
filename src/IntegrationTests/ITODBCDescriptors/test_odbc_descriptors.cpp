@@ -143,7 +143,7 @@ class TestSQLSetDescField : public testing::Test {
 // This warning detects casts from integer types to void*.
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wint-to-void-pointer-cast"
-#endif
+#endif // WIN32
 
 // Descriptor Header Fields Tests
 
@@ -574,7 +574,7 @@ TEST_SQL_GET_DESC_FIELD(Test_SQL_DESC_UPDATABLE, SQL_DESC_UPDATABLE, 255, 1,
                         , SQL_SUCCESS, m_ird_hdesc, 0, 0, 0);
 #ifdef WIN32
 #pragma warning(pop)
-#elif defined(__APPLE__)
+#elif __APPLE__
 #pragma clang diagnostic pop
 #endif
 
