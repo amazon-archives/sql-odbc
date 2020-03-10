@@ -32,6 +32,7 @@ const std::string invalid_host = "10.1.1.189";
 const std::string invalid_port = "920";
 const std::string invalid_user = "amin";
 const std::string invalid_pw = "amin";
+const std::string invalid_region = "bad-region";
 runtime_options valid_opt_val = {{valid_host, valid_port, "1"},
                                  {"BASIC", valid_user, valid_pw, valid_region},
                                  {use_ssl, false, "", "", "", ""}};
