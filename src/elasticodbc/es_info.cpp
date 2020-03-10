@@ -290,7 +290,7 @@ void GetCatalogData(const std::string &query, StatementClass *stmt,
                     StatementClass *sub_stmt, const TableResultSet res_type,
                     std::string &table_type,
                     void (*populate_binds)(bind_vector &),
-                    void (*setup_qrES_INFO)(QResultClass *,
+                    void (*setup_qres_info)(QResultClass *,
                                             EnvironmentClass *));
 
 // Common function declarations
@@ -610,7 +610,7 @@ void GetCatalogData(const std::string &query, StatementClass *stmt,
                     StatementClass *sub_stmt, const TableResultSet res_type,
                     std::string &table_type,
                     void (*populate_binds)(bind_vector &),
-                    void (*setup_qrES_INFO)(QResultClass *,
+                    void (*setup_qres_info)(QResultClass *,
                                             EnvironmentClass *)) {
     // Execute query
     ExecuteQuery(SC_get_conn(stmt), reinterpret_cast< HSTMT * >(&sub_stmt),
@@ -625,7 +625,7 @@ void GetCatalogData(const std::string &query, StatementClass *stmt,
         SetupQResult(binds, stmt, sub_stmt, static_cast< int >(binds.size()));
 
     // Setup QResultClass
-    (*setup_qrES_INFO)(
+    (*setup_qres_info)(
         res, static_cast< EnvironmentClass * >(CC_get_env(SC_get_conn(stmt))));
     SetTableTuples(res, res_type, binds, table_type, stmt, sub_stmt);
 
