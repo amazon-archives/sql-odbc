@@ -24,6 +24,7 @@
 #include <sqlext.h>
 
 #include <iostream>
+#include <vector>
 
 #include "unit_test_helper.h"
 
@@ -34,7 +35,7 @@
 #define SQLSTATE_INVALID_DESCRIPTOR_FIELD_IDENTIFIER (SQLWCHAR*)L"HY091"
 
 #define IT_SIZEOF(x) (NULL == (x) ? 0 : (sizeof((x)) / sizeof((x)[0])))
-#include <vector>
+
 std::vector< std::pair< std::wstring, std::wstring > > conn_str_pair = {
     {L"Driver", L"{Elasticsearch ODBC}"},
     {L"host", (use_ssl ? L"https://localhost" : L"localhost")},
@@ -48,10 +49,9 @@ std::vector< std::pair< std::wstring, std::wstring > > conn_str_pair = {
     {L"logOutput", L"C:\\"},
     {L"responseTimeout", L"10"}};
 
-std::wstring conn_string = []()
-{
+std::wstring conn_string = []() {
     std::wstring temp;
-    for(auto it: conn_str_pair)
+    for (auto it : conn_str_pair)
         temp += it.first + L"=" + it.second + L";";
     return temp;
 }();
