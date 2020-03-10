@@ -28,6 +28,7 @@ void ESClearResult(ESResult* es_result);
 void* ESConnectDBParams(runtime_options& rt_opts, int expand_dbname,
                         unsigned int option_count);
 std::string GetServerVersion(void* es_conn);
+std::string GetErrorMsg(void* es_conn);
 
 // C Interface
 extern "C" {
@@ -37,7 +38,6 @@ void XPlatformEnterCriticalSection(void* critical_section_helper);
 void XPlatformLeaveCriticalSection(void* critical_section_helper);
 void XPlatformDeleteCriticalSection(void** critical_section_helper);
 ConnStatusType ESStatus(void* es_conn);
-const char* GetErrorMsg(void* es_conn);
 int ESExecDirect(void* es_conn, const char* statement);
 void ESDisconnect(void* es_conn);
 #ifdef __cplusplus

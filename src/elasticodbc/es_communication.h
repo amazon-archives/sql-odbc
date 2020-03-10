@@ -39,42 +39,41 @@
 #include <aws/core/http/HttpClientFactory.h>
 #include <aws/core/http/HttpClient.h>
 #include <aws/core/client/ClientConfiguration.h>
-#include "export_def.h"
 // clang-format on
 
 class ESCommunication {
    public:
-    EXPORTED ESCommunication();
-    EXPORTED ~ESCommunication();
+    ESCommunication();
+    ~ESCommunication();
 
     // Create function for factory
-    EXPORTED const char* GetErrorMessage();
-    EXPORTED bool ConnectionOptions(runtime_options& rt_opts, bool use_defaults,
-                                    int expand_dbname,
-                                    unsigned int option_count);
-    EXPORTED bool ConnectionOptions2();
-    EXPORTED bool ConnectDBStart();
-    EXPORTED ConnStatusType GetConnectionStatus();
-    EXPORTED void DropDBConnection();
-    EXPORTED void LogMsg(const char* msg);
-    EXPORTED int ExecDirect(const char* query);
-    EXPORTED ESResult* PopResult();
-    EXPORTED std::string GetClientEncoding();
-    EXPORTED bool SetClientEncoding(std::string& encoding);
-    EXPORTED bool IsSQLPluginInstalled(const std::string& plugin_response);
-    EXPORTED std::string GetServerVersion();
+    std::string GetErrorMessage();
+    bool ConnectionOptions(runtime_options& rt_opts, bool use_defaults,
+                           int expand_dbname, unsigned int option_count);
+    bool ConnectionOptions2();
+    bool ConnectDBStart();
+    ConnStatusType GetConnectionStatus();
+    void DropDBConnection();
+    void LogMsg(ESLogLevel level, const char* msg);
+    int ExecDirect(const char* query);
+    ESResult* PopResult();
+    std::string GetClientEncoding();
+    bool SetClientEncoding(std::string& encoding);
+    bool IsSQLPluginInstalled(const std::string& plugin_response);
+    std::string GetServerVersion();
+    void IssueRequest(const std::string& endpoint,
+                      const Aws::Http::HttpMethod request_type,
+                      const std::string& content_type, const std::string& query,
+                      std::shared_ptr< Aws::Http::HttpResponse >& response);
+    void AwsHttpResponseToString(
+        std::shared_ptr< Aws::Http::HttpResponse > response,
+        std::string& output);
 
    private:
     void InitializeConnection();
     bool CheckConnectionOptions();
     bool EstablishConnection();
-    void IssueRequest(const std::string& endpoint,
-                      const Aws::Http::HttpMethod request_type,
-                      const std::string& content_type, const std::string& query,
-                      std::shared_ptr< Aws::Http::HttpResponse >& response);
     void ConstructESResult(ESResult& result);
-    void AwsHttpResponseToString(
-    std::shared_ptr< Aws::Http::HttpResponse > response, std::string& output);
     void GetJsonSchema(ESResult& es_result);
     std::string m_error_message;  // TODO: Go through and add error messages on
                                   // exit conditions

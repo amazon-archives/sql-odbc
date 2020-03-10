@@ -24,6 +24,7 @@
 #include <sqlext.h>
 
 #include <iostream>
+#include <vector>
 
 #include "unit_test_helper.h"
 
@@ -35,17 +36,25 @@
 
 #define IT_SIZEOF(x) (NULL == (x) ? 0 : (sizeof((x)) / sizeof((x)[0])))
 
-std::wstring conn_string =
-    use_ssl ? L"Driver={Elasticsearch ODBC};"
-              L"host=https://localhost;port=9200;"
-              L"user=admin;password=admin;auth=BASIC;useSSL="
-              L"1;hostnameVerification=0;logLevel=0;logOutput=C:\\;"
-              L"responseTimeout=10;"
-            : L"Driver={Elasticsearch ODBC};"
-              L"host=localhost;port=9200;"
-              L"user=admin;password=admin;auth=BASIC;useSSL="
-              L"0;hostnameVerification=0;logLevel=0;logOutput=C:\\;"
-              L"responseTimeout=10;";
+std::vector< std::pair< std::wstring, std::wstring > > conn_str_pair = {
+    {L"Driver", L"{Elasticsearch ODBC}"},
+    {L"host", (use_ssl ? L"https://localhost" : L"localhost")},
+    {L"port", L"9200"},
+    {L"user", L"admin"},
+    {L"password", L"admin"},
+    {L"auth", L"BASIC"},
+    {L"useSSL", (use_ssl ? L"1" : L"0")},
+    {L"hostnameVerification", L"0"},
+    {L"logLevel", L"0"},
+    {L"logOutput", L"C:\\"},
+    {L"responseTimeout", L"10"}};
+
+std::wstring conn_string = []() {
+    std::wstring temp;
+    for (auto it : conn_str_pair)
+        temp += it.first + L"=" + it.second + L";";
+    return temp;
+}();
 
 void AllocConnection(SQLTCHAR* connection_string, SQLHDBC* db_connection,
                      bool throw_on_error, bool log_diag);

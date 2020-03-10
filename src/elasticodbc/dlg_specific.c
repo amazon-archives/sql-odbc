@@ -118,11 +118,10 @@ BOOL copyConnAttributes(ConnInfo *ci, const char *attribute,
              || (stricmp(attribute, INI_PASSWORD_ABBR) == 0)) {
         ci->password = decode_or_remove_braces(value);
 #ifndef FORCE_PASSWORDE_DISPLAY
-        MYLOG(0, "key='%s' value='xxxxxxxx'\n", attribute);
+        MYLOG(ES_DEBUG, "key='%s' value='xxxxxxxx'\n", attribute);
         printed = TRUE;
 #endif
-    } 
-    else if (stricmp(attribute, INI_AUTH_MODE) == 0)
+    } else if (stricmp(attribute, INI_AUTH_MODE) == 0)
         STRCPY_FIXED(ci->authtype, value);
     else if (stricmp(attribute, INI_REGION) == 0)
         STRCPY_FIXED(ci->region, value);
@@ -140,7 +139,7 @@ BOOL copyConnAttributes(ConnInfo *ci, const char *attribute,
         found = FALSE;
 
     if (!printed)
-        MYLOG(0, "key='%s' value='%s'%s\n", attribute, value,
+        MYLOG(ES_DEBUG, "key='%s' value='%s'%s\n", attribute, value,
               found ? NULL_STRING : " not found");
 
     return found;
@@ -151,9 +150,10 @@ static void getCiDefaults(ConnInfo *ci) {
     strncpy(ci->drivername, DEFAULT_DRIVERNAME, MEDIUM_REGISTRY_LEN);
     strncpy(ci->server, DEFAULT_HOST, MEDIUM_REGISTRY_LEN);
     strncpy(ci->port, DEFAULT_PORT, SMALL_REGISTRY_LEN);
-    strncpy(ci->response_timeout, DEFAULT_RESPONSE_TIMEOUT_STR, SMALL_REGISTRY_LEN);
+    strncpy(ci->response_timeout, DEFAULT_RESPONSE_TIMEOUT_STR,
+            SMALL_REGISTRY_LEN);
     strncpy(ci->authtype, DEFAULT_AUTHTYPE, MEDIUM_REGISTRY_LEN);
-    if(ci->password.name != NULL)
+    if (ci->password.name != NULL)
         ci->password.name = strdup("");
     ci->password.name = NULL;
     strncpy(ci->username, DEFAULT_USERNAME, MEDIUM_REGISTRY_LEN);
@@ -214,10 +214,10 @@ void getDSNinfo(ConnInfo *ci, const char *configDrvrname) {
     /* brute-force chop off trailing blanks... */
     while (*(DSN + strlen(DSN) - 1) == ' ')
         *(DSN + strlen(DSN) - 1) = '\0';
-    
+
     if (!drivername[0] && DSN[0])
         getDriverNameFromDSN(DSN, (char *)drivername, sizeof(ci->drivername));
-    MYLOG(0, "drivername=%s\n", drivername);
+    MYLOG(ES_DEBUG, "drivername=%s\n", drivername);
     if (!drivername[0])
         drivername = INVALID_DRIVER;
     getDriversDefaults(drivername, &(ci->drivers));
@@ -304,7 +304,7 @@ int writeDriversDefaults(const char *drivername, const GLOBAL_VALUES *comval) {
 void writeDSNinfo(const ConnInfo *ci) {
     const char *DSN = ci->dsn;
     char encoded_item[MEDIUM_REGISTRY_LEN], temp[SMALL_REGISTRY_LEN];
-    
+
     SQLWritePrivateProfileString(DSN, INI_HOST, ci->server, ODBC_INI);
     SQLWritePrivateProfileString(DSN, INI_PORT, ci->port, ODBC_INI);
     SQLWritePrivateProfileString(DSN, INI_USERNAME, ci->username, ODBC_INI);
@@ -318,7 +318,8 @@ void writeDSNinfo(const ConnInfo *ci) {
     SQLWritePrivateProfileString(DSN, INI_SSL_HOST_VERIFY, temp, ODBC_INI);
     ITOA_FIXED(temp, ci->drivers.loglevel);
     SQLWritePrivateProfileString(DSN, INI_LOG_LEVEL, temp, ODBC_INI);
-    SQLWritePrivateProfileString(DSN, INI_LOG_OUTPUT, ci->drivers.output_dir, ODBC_INI);
+    SQLWritePrivateProfileString(DSN, INI_LOG_OUTPUT, ci->drivers.output_dir,
+                                 ODBC_INI);
     SQLWritePrivateProfileString(DSN, INI_TIMEOUT, ci->response_timeout,
                                  ODBC_INI);
 }
@@ -437,7 +438,7 @@ void CC_conninfo_release(ConnInfo *conninfo) {
 }
 
 void CC_conninfo_init(ConnInfo *conninfo, UInt4 option) {
-    MYLOG(0, "entering opt=%d\n", option);
+    MYLOG(ES_TRACE, "entering opt=%d\n", option);
 
     if (0 != (CLEANUP_FOR_REUSE & option))
         CC_conninfo_release(conninfo);
@@ -448,9 +449,10 @@ void CC_conninfo_init(ConnInfo *conninfo, UInt4 option) {
     strncpy(conninfo->drivername, DEFAULT_DRIVERNAME, MEDIUM_REGISTRY_LEN);
     strncpy(conninfo->server, DEFAULT_HOST, MEDIUM_REGISTRY_LEN);
     strncpy(conninfo->port, DEFAULT_PORT, SMALL_REGISTRY_LEN);
-    strncpy(conninfo->response_timeout, DEFAULT_RESPONSE_TIMEOUT_STR, SMALL_REGISTRY_LEN);
+    strncpy(conninfo->response_timeout, DEFAULT_RESPONSE_TIMEOUT_STR,
+            SMALL_REGISTRY_LEN);
     strncpy(conninfo->authtype, DEFAULT_AUTHTYPE, MEDIUM_REGISTRY_LEN);
-    if(conninfo->password.name != NULL)
+    if (conninfo->password.name != NULL)
         free(conninfo->password.name);
     conninfo->password.name = strdup("");
     strncpy(conninfo->username, DEFAULT_USERNAME, MEDIUM_REGISTRY_LEN);

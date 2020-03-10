@@ -107,8 +107,8 @@ void SetError(const char *err) {
 void ClearError() {
     error_msg = "";
 }
-const char *GetResultParserError() {
-    return (error_msg != "") ? error_msg.c_str() : NULL;
+std::string GetResultParserError() {
+    return error_msg;
 }
 
 BOOL CC_from_ESResult(QResultClass *q_res, ConnectionClass *conn,

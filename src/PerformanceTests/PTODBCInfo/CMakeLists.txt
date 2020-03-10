@@ -1,5 +1,3 @@
-#!/bin/bash
-
 #
 #   Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 #
@@ -15,19 +13,20 @@
 #   permissions and limitations under the License.
 #
 
+project(performance_info)
 
-PROJECT_DIR=$(pwd)
-TEST_RUNNER_DIR=${PROJECT_DIR}/src/TestRunner
-WORKING_DIR=${PROJECT_DIR}/bin64
+# Source, headers, and include dirs
+set(SOURCE_FILES performance_odbc_info.cpp)
+include_directories(	${UT_HELPER}
+						${IT_HELPER}
+						${ESODBC_SRC}
+						${VLD_SRC}  
+						${RABBIT_SRC}
+						${RAPIDJSON_SRC})
 
-cd ${WORKING_DIR}
+# Generate executable
+add_executable(performance_info ${SOURCE_FILES})
 
-pip3 install mako
-
-python3 ${TEST_RUNNER_DIR}/test_runner.py -i ${TEST_RUNNER_DIR}/mako_template.html -o test_output.html -e ${TEST_RUNNER_DIR}/test_exclude_list.txt 
-
-ERROR_CODE=$?
-
-cd ..
-
-exit ${ERROR_CODE}
+# Library dependencies
+target_link_libraries(performance_info elasticodbc itodbc_helper ut_helper gtest_main)
+target_compile_definitions(performance_info PUBLIC _UNICODE UNICODE)
