@@ -16,7 +16,6 @@
 #define IDS_ADVANCE_OPTION_CON1         6
 #define IDS_ADVANCE_OPTION_DSN2         7
 #define IDS_ADVANCE_OPTION_CON2         8
-#define IDS_ADVANCE_CONNECTION          9
 #define IDS_ADVANCE_OPTION_DSN3         10
 #define KEEPALIVE_X                     10
 #define DTC_GRP_X                       10
@@ -96,14 +95,6 @@
 #define IDC_AUTHTYPE                    1115
 #define IDC_HOST_VER                    1115
 #define IDC_USERNAME_STATIC             1116
-#define IDC_CHECK4                      1117
-#define IDC_ALLOWSELFSIGNED             1117
-#define IDC_CERTIFICATE_STATIC          1118
-#define IDC_RICHEDIT21                  1119
-#define IDC_CERTIFICATE_STATIC2         1119
-#define IDC_CERTIFICATENOTE_STATIC      1119
-#define IDC_KEY_STATIC                  1119
-#define IDC_LOG_PATH_BROWSE             1120
 #define IDC_REGION                      1121
 #define IDC_REGION_STATIC               1122
 #define IDC_AUTH_STATIC                 1123
@@ -122,9 +113,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        112
+#define _APS_NEXT_RESOURCE_VALUE        113
 #define _APS_NEXT_COMMAND_VALUE         40001
-#define _APS_NEXT_CONTROL_VALUE         1134
+#define _APS_NEXT_CONTROL_VALUE         1135
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

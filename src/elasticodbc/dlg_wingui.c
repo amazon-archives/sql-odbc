@@ -27,10 +27,10 @@
 #endif /* _HANDLE_ENLIST_IN_DTC_ */
 
 #define AUTHMODE_CNT 3
-#define LOGMODE_CNT 8
+#define LOGLEVEL_CNT 8
 extern HINSTANCE s_hModule;
 
-static const struct loglevel logmodes[LOGMODE_CNT] = {
+static const struct loglevel loglevels[LOGLEVEL_CNT] = {
     {IDS_LOGTYPE_OFF, LOGTYPE_OFF},
     {IDS_LOGTYPE_FATAL, LOGTYPE_FATAL},
     {IDS_LOGTYPE_ERROR, LOGTYPE_ERROR},
@@ -55,14 +55,14 @@ const struct authmode *GetCurrentAuthMode(HWND hdlg) {
     return &ams[authtype_selection_idx];
 }
 
-const struct loglevel *GetLogTypes(unsigned int *count) {
-    *count = LOGMODE_CNT;
-    return logmodes;
+const struct loglevel *GetLogLevels(unsigned int *count) {
+    *count = LOGLEVEL_CNT;
+    return loglevels;
 }
 
 const struct loglevel *GetCurrentLogLevel(HWND hdlg) {
     unsigned int log_cnt = 0;
-    const struct loglevel *log = GetLogTypes(&log_cnt);
+    const struct loglevel *log = GetLogLevels(&log_cnt);
     unsigned int logtype_selection_idx = (unsigned int)(DWORD)SendMessage(
         GetDlgItem(hdlg, IDC_LOG_LEVEL), CB_GETCURSEL, 0L, 0L);
     if (logtype_selection_idx >= log_cnt)
@@ -206,7 +206,7 @@ LRESULT logOptionsProc(HWND hdlg, UINT wMsg, WPARAM wParam, LPARAM lParam) {
             // Logging
             int loglevel_selection_idx = 0;
             unsigned int log_cnt = 0;
-            log = GetLogTypes(&log_cnt);
+            log = GetLogLevels(&log_cnt);
             char buff[MEDIUM_REGISTRY_LEN + 1];
             for (unsigned int i = 0; i < log_cnt; i++) {
                 LoadString(GetWindowInstance(hdlg), log[i].loglevel_id, buff,
@@ -217,12 +217,8 @@ LRESULT logOptionsProc(HWND hdlg, UINT wMsg, WPARAM wParam, LPARAM lParam) {
                     loglevel_selection_idx = i;
                 }
             }
-            if (loglevel_selection_idx)
-                SendDlgItemMessage(hdlg, IDC_LOG_LEVEL, CB_SETCURSEL,
+            SendDlgItemMessage(hdlg, IDC_LOG_LEVEL, CB_SETCURSEL,
                                loglevel_selection_idx, (WPARAM)0);
-            else
-                SendDlgItemMessage(hdlg, IDC_LOG_LEVEL, CB_SETCURSEL,
-                                   0, (WPARAM)0);
             SetDlgItemText(hdlg, IDC_LOG_PATH, ci->drivers.output_dir);
             break;
 
@@ -239,31 +235,31 @@ LRESULT logOptionsProc(HWND hdlg, UINT wMsg, WPARAM wParam, LPARAM lParam) {
                     log = GetCurrentLogLevel(hdlg);
                     switch (log->loglevel_id) {
                         case IDS_LOGTYPE_OFF:
-                            lpsetupdlg->ci.drivers.loglevel = (char)0;
+                            lpsetupdlg->ci.drivers.loglevel = (char)ES_OFF;
                             break;
                         case IDS_LOGTYPE_FATAL:
-                            lpsetupdlg->ci.drivers.loglevel = (char)1;
+                            lpsetupdlg->ci.drivers.loglevel = (char)ES_FATAL;
                             break;
                         case IDS_LOGTYPE_ERROR:
-                            lpsetupdlg->ci.drivers.loglevel = (char)2;
+                            lpsetupdlg->ci.drivers.loglevel = (char)ES_ERROR;
                             break;
                         case IDS_LOGTYPE_WARNING:
-                            lpsetupdlg->ci.drivers.loglevel = (char)3;
+                            lpsetupdlg->ci.drivers.loglevel = (char)ES_WARNING;
                             break;
                         case IDS_LOGTYPE_INFO:
-                            lpsetupdlg->ci.drivers.loglevel = (char)4;
+                            lpsetupdlg->ci.drivers.loglevel = (char)ES_INFO;
                             break;
                         case IDS_LOGTYPE_DEBUG:
-                            lpsetupdlg->ci.drivers.loglevel = (char)5;
+                            lpsetupdlg->ci.drivers.loglevel = (char)ES_DEBUG;
                             break;
                         case IDS_LOGTYPE_TRACE:
-                            lpsetupdlg->ci.drivers.loglevel = (char)6;
+                            lpsetupdlg->ci.drivers.loglevel = (char)ES_TRACE;
                             break;
                         case IDS_LOGTYPE_ALL:
-                            lpsetupdlg->ci.drivers.loglevel = (char)7;
+                            lpsetupdlg->ci.drivers.loglevel = (char)ES_ALL;
                             break;
                         default:
-                            lpsetupdlg->ci.drivers.loglevel = (char)0;
+                            lpsetupdlg->ci.drivers.loglevel = (char)ES_OFF;
                             break;
                     }
                     setGlobalCommlog(lpsetupdlg->ci.drivers.loglevel);

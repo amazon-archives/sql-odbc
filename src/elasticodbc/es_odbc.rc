@@ -217,16 +217,10 @@ BEGIN
     0
 END
 
-
 /////////////////////////////////////////////////////////////////////////////
 //
 // String Table
 //
-
-STRINGTABLE
-BEGIN
-    IDS_ADVANCE_CONNECTION  "Connection"
-END
 
 STRINGTABLE
 BEGIN
