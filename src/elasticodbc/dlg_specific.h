@@ -81,15 +81,7 @@ extern "C" {
 
 #define AUTHTYPE_NONE "NONE"
 #define AUTHTYPE_BASIC "BASIC"
-#define AUTHTYPE_IAM "AWS_SIGV4"
-#define LOGTYPE_OFF "ES_OFF"
-#define LOGTYPE_FATAL "ES_FATAL"
-#define LOGTYPE_ERROR "ES_ERROR" 
-#define LOGTYPE_WARNING "ES_WARNING"
-#define LOGTYPE_INFO "ES_INFO"
-#define LOGTYPE_DEBUG "ES_DEBUG"
-#define LOGTYPE_TRACE "ES_TRACE"
-#define LOGTYPE_ALL  "ES_ALL"    
+#define AUTHTYPE_IAM "AWS_SIGV4"  
 
 #ifdef _HANDLE_ENLIST_IN_DTC_
 #define INI_XAOPT "XaOpt"
@@ -189,7 +181,6 @@ const struct authmode *GetAuthModes();
 
 struct loglevel {
     int loglevel_id;
-    const char *loglevel_str;
 };
 const struct loglevel *GetLogLevels();
 /*	prototypes */

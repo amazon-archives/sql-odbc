@@ -31,14 +31,14 @@
 extern HINSTANCE s_hModule;
 
 static const struct loglevel loglevels[LOGLEVEL_CNT] = {
-    {IDS_LOGTYPE_OFF, LOGTYPE_OFF},
-    {IDS_LOGTYPE_FATAL, LOGTYPE_FATAL},
-    {IDS_LOGTYPE_ERROR, LOGTYPE_ERROR},
-    {IDS_LOGTYPE_WARNING, LOGTYPE_WARNING},
-    {IDS_LOGTYPE_INFO, LOGTYPE_INFO},
-    {IDS_LOGTYPE_DEBUG, LOGTYPE_DEBUG}, 
-    {IDS_LOGTYPE_TRACE, LOGTYPE_TRACE},
-    {IDS_LOGTYPE_ALL, LOGTYPE_ALL}};
+    {IDS_LOGTYPE_OFF},
+    {IDS_LOGTYPE_FATAL},
+    {IDS_LOGTYPE_ERROR},
+    {IDS_LOGTYPE_WARNING},
+    {IDS_LOGTYPE_INFO},
+    {IDS_LOGTYPE_DEBUG}, 
+    {IDS_LOGTYPE_TRACE},
+    {IDS_LOGTYPE_ALL}};
 
 static const struct authmode authmodes[AUTHMODE_CNT] = {
     {IDS_AUTHTYPE_NONE, AUTHTYPE_IAM},
@@ -155,19 +155,18 @@ static void getDriversDefaultsOfCi(const ConnInfo *ci, GLOBAL_VALUES *glbv) {
 
 LRESULT CALLBACK advancedOptionsProc(HWND hdlg, UINT wMsg, WPARAM wParam,
                                      LPARAM lParam) {
-    ConnInfo *ci;
-
     switch (wMsg) {
-        case WM_INITDIALOG:
+        case WM_INITDIALOG: {
             SetWindowLongPtr(hdlg, DWLP_USER, lParam);
-            ci = (ConnInfo *)lParam;
+            ConnInfo *ci = (ConnInfo *)lParam;
             CheckDlgButton(hdlg, IDC_USESSL, ci->use_ssl);
             CheckDlgButton(hdlg, IDC_HOST_VER, ci->verify_server);
             SetDlgItemText(hdlg, IDC_CONNTIMEOUT, ci->response_timeout);
             break;
+        }
 
-        case WM_COMMAND:
-            ci = (ConnInfo *)GetWindowLongPtr(hdlg, DWLP_USER);
+        case WM_COMMAND: {
+            ConnInfo *ci = (ConnInfo *)GetWindowLongPtr(hdlg, DWLP_USER);
             switch (GET_WM_COMMAND_ID(wParam, lParam)) {
                 case IDOK:
                     // Get Dialog Values 
@@ -180,23 +179,21 @@ LRESULT CALLBACK advancedOptionsProc(HWND hdlg, UINT wMsg, WPARAM wParam,
                     EndDialog(hdlg, FALSE);
                     return TRUE;
             }
+        }
     }
     return FALSE;
 }
 
 LRESULT logOptionsProc(HWND hdlg, UINT wMsg, WPARAM wParam, LPARAM lParam) {
-    ConnInfo *ci;
-    const struct loglevel *log;
-
     switch (wMsg) {
-        case WM_INITDIALOG:
-            ci = (ConnInfo *)lParam;
+        case WM_INITDIALOG: {
+            ConnInfo *ci = (ConnInfo *)lParam;
             SetWindowLongPtr(hdlg, DWLP_USER, lParam);
 
             // Logging
             int loglevel_selection_idx = 0;
             unsigned int log_cnt = 0;
-            log = GetLogLevels(&log_cnt);
+            const struct loglevel *log = GetLogLevels(&log_cnt);
             char buff[MEDIUM_REGISTRY_LEN + 1];
             for (unsigned int i = 0; i < log_cnt; i++) {
                 LoadString(GetWindowInstance(hdlg), log[i].loglevel_id, buff,
@@ -211,13 +208,14 @@ LRESULT logOptionsProc(HWND hdlg, UINT wMsg, WPARAM wParam, LPARAM lParam) {
                                loglevel_selection_idx, (WPARAM)0);
             SetDlgItemText(hdlg, IDC_LOG_PATH, ci->drivers.output_dir);
             break;
+        }
 
-        case WM_COMMAND:
-            ci = (ConnInfo *)GetWindowLongPtr(hdlg, DWLP_USER);
+        case WM_COMMAND: {
+            ConnInfo *ci = (ConnInfo *)GetWindowLongPtr(hdlg, DWLP_USER);
             switch (GET_WM_COMMAND_ID(wParam, lParam)) {
-                case IDOK:
+                case IDOK: {
                     // Get Dialog Values
-                    log = GetCurrentLogLevel(hdlg);
+                    const struct loglevel *log = GetCurrentLogLevel(hdlg);
                     switch (log->loglevel_id) {
                         case IDS_LOGTYPE_OFF:
                             ci->drivers.loglevel = (char)ES_OFF;
@@ -250,10 +248,12 @@ LRESULT logOptionsProc(HWND hdlg, UINT wMsg, WPARAM wParam, LPARAM lParam) {
                     setGlobalCommlog(ci->drivers.loglevel);
                     GetDlgItemText(hdlg, IDC_LOG_PATH, ci->drivers.output_dir,
                                    sizeof(ci->drivers.output_dir));
+                }
 
                 case IDCANCEL:
                     EndDialog(hdlg, FALSE);
                     return TRUE;
+                }
             }
     }
     return FALSE;
