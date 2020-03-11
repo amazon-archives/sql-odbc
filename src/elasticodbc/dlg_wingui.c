@@ -63,11 +63,11 @@ const struct loglevel *GetLogLevels(unsigned int *count) {
 const struct loglevel *GetCurrentLogLevel(HWND hdlg) {
     unsigned int log_cnt = 0;
     const struct loglevel *log = GetLogLevels(&log_cnt);
-    unsigned int logtype_selection_idx = (unsigned int)(DWORD)SendMessage(
+    unsigned int loglevel_selection_idx = (unsigned int)(DWORD)SendMessage(
         GetDlgItem(hdlg, IDC_LOG_LEVEL), CB_GETCURSEL, 0L, 0L);
-    if (logtype_selection_idx >= log_cnt)
-        logtype_selection_idx = 0;
-    return &log[logtype_selection_idx];
+    if (loglevel_selection_idx >= log_cnt)
+        loglevel_selection_idx = 0;
+    return &log[loglevel_selection_idx];
 }
 
 

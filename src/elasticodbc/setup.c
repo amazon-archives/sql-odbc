@@ -332,28 +332,6 @@ LRESULT CALLBACK ConfigDlgProc(HWND hdlg, UINT wMsg, WPARAM wParam,
                     return TRUE;
                     break;
                 }
-                case IDC_CHECK1: {  // DRV_COMM_LOG
-                    BOOL translated = FALSE;
-                    switch (Button_GetCheck(GetDlgItem(hdlg, IDC_CHECK1))) {
-                        case BST_CHECKED:
-                            if (!GetDlgItemInt(hdlg, IDC_CHECK1, &translated,
-                                               FALSE)) {
-                                ShowWindow(GetDlgItem(hdlg, IDC_CHECK1),
-                                           SW_SHOW);
-                                if (translated)
-                                    SetDlgItemInt(hdlg, IDC_CHECK1, 2, FALSE);
-                            }
-                            break;
-                        case BST_UNCHECKED:
-                            if (GetDlgItemInt(hdlg, IDC_CHECK1, &translated,
-                                              FALSE)) {
-                                ShowWindow(GetDlgItem(hdlg, IDC_CHECK1),
-                                           SW_HIDE);
-                                SetDlgItemInt(hdlg, IDC_CHECK1, 0, FALSE);
-                            }
-                            break;
-                    }
-                }
                 case ID_ADVANCED_OPTIONS: {
                     if (DialogBoxParam(
                             s_hModule, MAKEINTRESOURCE(DLG_ADVANCED_OPTIONS),
