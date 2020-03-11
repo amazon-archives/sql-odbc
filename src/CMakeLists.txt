@@ -51,6 +51,7 @@ if(NOT WIN32)
 endif()
 
 # Base directories
+set(PROJECT_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/..")
 set(ESODBC_SRC "${CMAKE_CURRENT_SOURCE_DIR}/elasticodbc")
 set(ESENLIST_SRC "${CMAKE_CURRENT_SOURCE_DIR}/elasticenlist")
 set(INTEGRATION_TESTS "${CMAKE_CURRENT_SOURCE_DIR}/IntegrationTests")
@@ -58,6 +59,9 @@ set(UNIT_TESTS "${CMAKE_CURRENT_SOURCE_DIR}/UnitTests")
 set(LIBRARY_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../libraries)
 set(AWS_SDK_CPP "${CMAKE_CURRENT_SOURCE_DIR}/aws-sdk-cpp")
 set(AWS_SDK_CPP_CORE "${AWS_SDK_CPP}/aws-cpp-sdk-core/include")
+set(INSTALL_SRC "${CMAKE_CURRENT_SOURCE_DIR}/installer")
+
+set(PACKAGE_VERSION "0.0.0")
 
 # Extensions of base directories
 set(PERFORMANCE_TESTS "${CMAKE_CURRENT_SOURCE_DIR}/PerformanceTests")
@@ -117,3 +121,4 @@ add_subdirectory(${INTEGRATION_TESTS})
 add_subdirectory(${UNIT_TESTS})
 add_subdirectory(${PERFORMANCE_TESTS})
 add_subdirectory(${AWS_SDK_CPP})
+add_subdirectory(${INSTALL_SRC})
