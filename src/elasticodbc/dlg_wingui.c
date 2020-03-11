@@ -155,34 +155,26 @@ static void getDriversDefaultsOfCi(const ConnInfo *ci, GLOBAL_VALUES *glbv) {
 
 LRESULT CALLBACK advancedOptionsProc(HWND hdlg, UINT wMsg, WPARAM wParam,
                                      LPARAM lParam) {
-    LPSETUPDLG lpsetupdlg;
     ConnInfo *ci;
 
     switch (wMsg) {
         case WM_INITDIALOG:
             SetWindowLongPtr(hdlg, DWLP_USER, lParam);
-            lpsetupdlg = (LPSETUPDLG)lParam;
-            ci = &lpsetupdlg->ci;
+            ci = (ConnInfo *)lParam;
             CheckDlgButton(hdlg, IDC_USESSL, ci->use_ssl);
             CheckDlgButton(hdlg, IDC_HOST_VER, ci->verify_server);
             SetDlgItemText(hdlg, IDC_CONNTIMEOUT, ci->response_timeout);
             break;
 
         case WM_COMMAND:
-            lpsetupdlg = (LPSETUPDLG)GetWindowLongPtr(hdlg, DWLP_USER);
+            ci = (ConnInfo *)GetWindowLongPtr(hdlg, DWLP_USER);
             switch (GET_WM_COMMAND_ID(wParam, lParam)) {
                 case IDOK:
-                    // Retrieve dialog values 
-                    if (!lpsetupdlg->fDefault)
-                        GetDlgItemText(hdlg, IDC_DSNAME, lpsetupdlg->ci.dsn,
-                                       sizeof(lpsetupdlg->ci.dsn));
-
                     // Get Dialog Values 
-                    lpsetupdlg->ci.use_ssl = (IsDlgButtonChecked(hdlg, IDC_USESSL) ? 1 : 0);
-                    lpsetupdlg->ci.verify_server = (IsDlgButtonChecked(hdlg, IDC_HOST_VER) ? 1 : 0);
-                    GetDlgItemText(hdlg, IDC_CONNTIMEOUT,
-                                   lpsetupdlg->ci.response_timeout,
-                                   sizeof(lpsetupdlg->ci.response_timeout));
+                    ci->use_ssl = (IsDlgButtonChecked(hdlg, IDC_USESSL) ? 1 : 0);
+                    ci->verify_server = (IsDlgButtonChecked(hdlg, IDC_HOST_VER) ? 1 : 0);
+                    GetDlgItemText(hdlg, IDC_CONNTIMEOUT, ci->response_timeout,
+                                   sizeof(ci->response_timeout));
 
                 case IDCANCEL:
                     EndDialog(hdlg, FALSE);
@@ -193,14 +185,12 @@ LRESULT CALLBACK advancedOptionsProc(HWND hdlg, UINT wMsg, WPARAM wParam,
 }
 
 LRESULT logOptionsProc(HWND hdlg, UINT wMsg, WPARAM wParam, LPARAM lParam) {
-    LPSETUPDLG lpsetupdlg;
     ConnInfo *ci;
     const struct loglevel *log;
 
     switch (wMsg) {
         case WM_INITDIALOG:
-            lpsetupdlg = (LPSETUPDLG)lParam;
-            ci = &lpsetupdlg->ci;
+            ci = (ConnInfo *)lParam;
             SetWindowLongPtr(hdlg, DWLP_USER, lParam);
 
             // Logging
@@ -223,49 +213,43 @@ LRESULT logOptionsProc(HWND hdlg, UINT wMsg, WPARAM wParam, LPARAM lParam) {
             break;
 
         case WM_COMMAND:
-            lpsetupdlg = (LPSETUPDLG)GetWindowLongPtr(hdlg, DWLP_USER);
+            ci = (ConnInfo *)GetWindowLongPtr(hdlg, DWLP_USER);
             switch (GET_WM_COMMAND_ID(wParam, lParam)) {
                 case IDOK:
-                    // Retrieve dialog values
-                    if (!lpsetupdlg->fDefault)
-                        GetDlgItemText(hdlg, IDC_DSNAME, lpsetupdlg->ci.dsn,
-                                       sizeof(lpsetupdlg->ci.dsn));
-
                     // Get Dialog Values
                     log = GetCurrentLogLevel(hdlg);
                     switch (log->loglevel_id) {
                         case IDS_LOGTYPE_OFF:
-                            lpsetupdlg->ci.drivers.loglevel = (char)ES_OFF;
+                            ci->drivers.loglevel = (char)ES_OFF;
                             break;
                         case IDS_LOGTYPE_FATAL:
-                            lpsetupdlg->ci.drivers.loglevel = (char)ES_FATAL;
+                            ci->drivers.loglevel = (char)ES_FATAL;
                             break;
                         case IDS_LOGTYPE_ERROR:
-                            lpsetupdlg->ci.drivers.loglevel = (char)ES_ERROR;
+                            ci->drivers.loglevel = (char)ES_ERROR;
                             break;
                         case IDS_LOGTYPE_WARNING:
-                            lpsetupdlg->ci.drivers.loglevel = (char)ES_WARNING;
+                            ci->drivers.loglevel = (char)ES_WARNING;
                             break;
                         case IDS_LOGTYPE_INFO:
-                            lpsetupdlg->ci.drivers.loglevel = (char)ES_INFO;
+                            ci->drivers.loglevel = (char)ES_INFO;
                             break;
                         case IDS_LOGTYPE_DEBUG:
-                            lpsetupdlg->ci.drivers.loglevel = (char)ES_DEBUG;
+                            ci->drivers.loglevel = (char)ES_DEBUG;
                             break;
                         case IDS_LOGTYPE_TRACE:
-                            lpsetupdlg->ci.drivers.loglevel = (char)ES_TRACE;
+                            ci->drivers.loglevel = (char)ES_TRACE;
                             break;
                         case IDS_LOGTYPE_ALL:
-                            lpsetupdlg->ci.drivers.loglevel = (char)ES_ALL;
+                            ci->drivers.loglevel = (char)ES_ALL;
                             break;
                         default:
-                            lpsetupdlg->ci.drivers.loglevel = (char)ES_OFF;
+                            ci->drivers.loglevel = (char)ES_OFF;
                             break;
                     }
-                    setGlobalCommlog(lpsetupdlg->ci.drivers.loglevel);
-                    GetDlgItemText(hdlg, IDC_LOG_PATH,
-                                   lpsetupdlg->ci.drivers.output_dir,
-                                   sizeof(lpsetupdlg->ci.drivers.output_dir));
+                    setGlobalCommlog(ci->drivers.loglevel);
+                    GetDlgItemText(hdlg, IDC_LOG_PATH, ci->drivers.output_dir,
+                                   sizeof(ci->drivers.output_dir));
 
                 case IDCANCEL:
                     EndDialog(hdlg, FALSE);

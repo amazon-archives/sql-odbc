@@ -254,7 +254,6 @@ LRESULT CALLBACK ConfigDlgProc(HWND hdlg, UINT wMsg, WPARAM wParam,
     LPSETUPDLG lpsetupdlg;
     ConnInfo *ci;
     DWORD cmd;
-    char strbuf[64];
 
     switch (wMsg) {
             /* Initialize the dialog */
@@ -262,11 +261,6 @@ LRESULT CALLBACK ConfigDlgProc(HWND hdlg, UINT wMsg, WPARAM wParam,
             lpsetupdlg = (LPSETUPDLG)lParam;
             ci = &lpsetupdlg->ci;
 
-            /* Hide the driver connect message */
-            ShowWindow(GetDlgItem(hdlg, DRV_MSG_LABEL), SW_HIDE);
-            LoadString(s_hModule, IDS_ADVANCE_SAVE, strbuf, sizeof(strbuf));
-
-            CheckDlgButton(hdlg, IDC_CHECK1, getGlobalCommlog());
             SetWindowLongPtr(hdlg, DWLP_USER, lParam);
             CenterDialog(hdlg); /* Center dialog */
 
@@ -278,10 +272,9 @@ LRESULT CALLBACK ConfigDlgProc(HWND hdlg, UINT wMsg, WPARAM wParam,
                 STRCPY_FIXED(lpsetupdlg->ci.drivername, lpsetupdlg->lpszDrvr);
 
             if (lpsetupdlg->fNewDSN || !ci->dsn[0])
-                ShowWindow(GetDlgItem(hdlg, IDC_MANAGEDSN), SW_HIDE);
+                EnableWindow(GetDlgItem(hdlg, IDC_DSNAME), TRUE);
             if (lpsetupdlg->fDefault) {
                 EnableWindow(GetDlgItem(hdlg, IDC_DSNAME), FALSE);
-                EnableWindow(GetDlgItem(hdlg, IDC_DSNAMETEXT), FALSE);
             } else
                 SendDlgItemMessage(hdlg, IDC_DSNAME, EM_LIMITTEXT,
                                    (WPARAM)(MAXDSNAME - 1), 0L);
@@ -364,14 +357,14 @@ LRESULT CALLBACK ConfigDlgProc(HWND hdlg, UINT wMsg, WPARAM wParam,
                 case ID_ADVANCED_OPTIONS: {
                     if (DialogBoxParam(
                             s_hModule, MAKEINTRESOURCE(DLG_ADVANCED_OPTIONS),
-                            hdlg, advancedOptionsProc, (LPARAM)lpsetupdlg) > 0)
+                            hdlg, advancedOptionsProc, (LPARAM)&lpsetupdlg->ci) > 0)
                         EndDialog(hdlg, 0);
                     break;
                 }
                 case ID_LOG_OPTIONS: {
                     if (DialogBoxParam(
-                            s_hModule, MAKEINTRESOURCE(DLG_LOG_OPTIONS),
-                            hdlg, logOptionsProc, (LPARAM)lpsetupdlg) > 0)
+                            s_hModule, MAKEINTRESOURCE(DLG_LOG_OPTIONS), hdlg,
+                                       logOptionsProc, (LPARAM)&lpsetupdlg->ci) > 0)
                         EndDialog(hdlg, 0);
                     break;
                 }
