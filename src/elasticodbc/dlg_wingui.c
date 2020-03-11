@@ -30,7 +30,7 @@
 #define LOGLEVEL_CNT 8
 extern HINSTANCE s_hModule;
 
-static const struct loglevel loglevels[LOGLEVEL_CNT] = {
+int loglevels[LOGLEVEL_CNT] = {
     {IDS_LOGTYPE_OFF},
     {IDS_LOGTYPE_FATAL},
     {IDS_LOGTYPE_ERROR},
@@ -55,19 +55,19 @@ const struct authmode *GetCurrentAuthMode(HWND hdlg) {
     return &ams[authtype_selection_idx];
 }
 
-const struct loglevel *GetLogLevels(unsigned int *count) {
+int *GetLogLevels(unsigned int *count) {
     *count = LOGLEVEL_CNT;
     return loglevels;
 }
 
-const struct loglevel *GetCurrentLogLevel(HWND hdlg) {
+int GetCurrentLogLevel(HWND hdlg) {
     unsigned int log_cnt = 0;
-    const struct loglevel *log = GetLogLevels(&log_cnt);
+    int *log = GetLogLevels(&log_cnt);
     unsigned int loglevel_selection_idx = (unsigned int)(DWORD)SendMessage(
         GetDlgItem(hdlg, IDC_LOG_LEVEL), CB_GETCURSEL, 0L, 0L);
     if (loglevel_selection_idx >= log_cnt)
         loglevel_selection_idx = 0;
-    return &log[loglevel_selection_idx];
+    return log[loglevel_selection_idx];
 }
 
 
@@ -193,10 +193,10 @@ LRESULT logOptionsProc(HWND hdlg, UINT wMsg, WPARAM wParam, LPARAM lParam) {
             // Logging
             int loglevel_selection_idx = 0;
             unsigned int log_cnt = 0;
-            const struct loglevel *log = GetLogLevels(&log_cnt);
+            int *log = GetLogLevels(&log_cnt);
             char buff[MEDIUM_REGISTRY_LEN + 1];
             for (unsigned int i = 0; i < log_cnt; i++) {
-                LoadString(GetWindowInstance(hdlg), log[i].loglevel_id, buff,
+                LoadString(GetWindowInstance(hdlg), log[i], buff,
                            MEDIUM_REGISTRY_LEN);
                 SendDlgItemMessage(hdlg, IDC_LOG_LEVEL, CB_ADDSTRING, 0,
                                    (WPARAM)buff);
@@ -215,8 +215,8 @@ LRESULT logOptionsProc(HWND hdlg, UINT wMsg, WPARAM wParam, LPARAM lParam) {
             switch (GET_WM_COMMAND_ID(wParam, lParam)) {
                 case IDOK: {
                     // Get Dialog Values
-                    const struct loglevel *log = GetCurrentLogLevel(hdlg);
-                    switch (log->loglevel_id) {
+                    int log = GetCurrentLogLevel(hdlg);
+                    switch (log) {
                         case IDS_LOGTYPE_OFF:
                             ci->drivers.loglevel = (char)ES_OFF;
                             break;
@@ -258,6 +258,5 @@ LRESULT logOptionsProc(HWND hdlg, UINT wMsg, WPARAM wParam, LPARAM lParam) {
     }
     return FALSE;
 }
-
 
 #endif /* WIN32 */

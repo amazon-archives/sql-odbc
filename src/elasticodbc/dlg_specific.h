@@ -179,10 +179,6 @@ struct authmode {
 };
 const struct authmode *GetAuthModes();
 
-struct loglevel {
-    int loglevel_id;
-};
-const struct loglevel *GetLogLevels();
 /*	prototypes */
 
 #ifdef WIN32
@@ -206,7 +202,8 @@ int getDriverNameFromDSN(const char *dsn, char *driver_name, int namelen);
 UInt4 getExtraOptions(const ConnInfo *);
 void SetAuthenticationVisibility(HWND hdlg, const struct authmode *am);
 const struct authmode *GetCurrentAuthMode(HWND hdlg);
-const struct loglevel *GetCurrentLogLevel(HWND hdlg);
+int *GetLogLevels();
+int GetCurrentLogLevel(HWND hdlg);
 
 #ifdef __cplusplus
 }
