@@ -115,7 +115,7 @@ BEGIN
     GROUPBOX        "",IDC_STATIC,10,4,230,51
     LTEXT           "Log Level",IDC_STATIC,22,15,31,8
     COMBOBOX        IDC_LOG_LEVEL,71,13,149,30,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
-    LTEXT           "Log Path",IDC_STATIC,23,38,29,8
+    LTEXT           "Log Path",IDC_STATIC,22,38,29,8
     EDITTEXT        IDC_LOG_PATH,71,36,149,12,ES_AUTOHSCROLL
     DEFPUSHBUTTON   "OK",IDOK,144,60,44,14,WS_GROUP
     PUSHBUTTON      "Cancel",IDCANCEL,193,59,47,15
@@ -216,6 +216,7 @@ DLG_LOG_OPTIONS AFX_DIALOG_LAYOUT
 BEGIN
     0
 END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
