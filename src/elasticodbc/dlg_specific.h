@@ -81,7 +81,7 @@ extern "C" {
 
 #define AUTHTYPE_NONE "NONE"
 #define AUTHTYPE_BASIC "BASIC"
-#define AUTHTYPE_IAM "AWS_SIGV4"
+#define AUTHTYPE_IAM "AWS_SIGV4"  
 
 #ifdef _HANDLE_ENLIST_IN_DTC_
 #define INI_XAOPT "XaOpt"
@@ -178,6 +178,7 @@ struct authmode {
     const char *authtype_str;
 };
 const struct authmode *GetAuthModes();
+
 /*	prototypes */
 
 #ifdef WIN32
@@ -201,6 +202,8 @@ int getDriverNameFromDSN(const char *dsn, char *driver_name, int namelen);
 UInt4 getExtraOptions(const ConnInfo *);
 void SetAuthenticationVisibility(HWND hdlg, const struct authmode *am);
 const struct authmode *GetCurrentAuthMode(HWND hdlg);
+int *GetLogLevels();
+int GetCurrentLogLevel(HWND hdlg);
 
 #ifdef __cplusplus
 }

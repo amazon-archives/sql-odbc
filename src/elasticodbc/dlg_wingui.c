@@ -27,7 +27,19 @@
 #endif /* _HANDLE_ENLIST_IN_DTC_ */
 
 #define AUTHMODE_CNT 3
+#define LOGLEVEL_CNT 8
 extern HINSTANCE s_hModule;
+
+int loglevels[LOGLEVEL_CNT] = {
+    {IDS_LOGTYPE_OFF},
+    {IDS_LOGTYPE_FATAL},
+    {IDS_LOGTYPE_ERROR},
+    {IDS_LOGTYPE_WARNING},
+    {IDS_LOGTYPE_INFO},
+    {IDS_LOGTYPE_DEBUG}, 
+    {IDS_LOGTYPE_TRACE},
+    {IDS_LOGTYPE_ALL}};
+
 static const struct authmode authmodes[AUTHMODE_CNT] = {
     {IDS_AUTHTYPE_NONE, AUTHTYPE_IAM},
     {IDS_AUTHTYPE_BASIC, AUTHTYPE_BASIC},
@@ -42,6 +54,22 @@ const struct authmode *GetCurrentAuthMode(HWND hdlg) {
         authtype_selection_idx = 0;
     return &ams[authtype_selection_idx];
 }
+
+int *GetLogLevels(unsigned int *count) {
+    *count = LOGLEVEL_CNT;
+    return loglevels;
+}
+
+int GetCurrentLogLevel(HWND hdlg) {
+    unsigned int log_cnt = 0;
+    int *log = GetLogLevels(&log_cnt);
+    unsigned int loglevel_selection_idx = (unsigned int)(DWORD)SendMessage(
+        GetDlgItem(hdlg, IDC_LOG_LEVEL), CB_GETCURSEL, 0L, 0L);
+    if (loglevel_selection_idx >= log_cnt)
+        loglevel_selection_idx = 0;
+    return log[loglevel_selection_idx];
+}
+
 
 void SetAuthenticationVisibility(HWND hdlg, const struct authmode *am) {
     if (strcmp(am->authtype_str, AUTHTYPE_BASIC) == 0) {
@@ -84,10 +112,6 @@ void SetDlgStuff(HWND hdlg, const ConnInfo *ci) {
     SetDlgItemText(hdlg, IDC_USER, ci->username);
     SetDlgItemText(hdlg, IDC_PASSWORD, SAFE_NAME(ci->password));
     SetDlgItemText(hdlg, IDC_REGION, ci->region);
-
-    // Misc
-    UINT log_button_checked = ci->drivers.loglevel;
-    CheckDlgButton(hdlg, IDC_CHECK1, log_button_checked);
 }
 
 static void GetNameField(HWND hdlg, int item, esNAME *name) {
@@ -110,9 +134,6 @@ void GetDlgStuff(HWND hdlg, ConnInfo *ci) {
     SetAuthenticationVisibility(hdlg, am);
     STRCPY_FIXED(ci->authtype, am->authtype_str);
 
-    // Misc
-    ci->drivers.loglevel = (IsDlgButtonChecked(hdlg, IDC_CHECK1) ? 1 : 0);
-    setGlobalCommlog(ci->drivers.loglevel);
 }
 
 const struct authmode *GetAuthModes(unsigned int *count) {
@@ -134,70 +155,108 @@ static void getDriversDefaultsOfCi(const ConnInfo *ci, GLOBAL_VALUES *glbv) {
 
 LRESULT CALLBACK advancedOptionsProc(HWND hdlg, UINT wMsg, WPARAM wParam,
                                      LPARAM lParam) {
-    LPSETUPDLG lpsetupdlg;
-    ConnInfo *ci;
-
     switch (wMsg) {
-        case WM_INITDIALOG:
+        case WM_INITDIALOG: {
             SetWindowLongPtr(hdlg, DWLP_USER, lParam);
-            lpsetupdlg = (LPSETUPDLG)lParam;
-            ci = &lpsetupdlg->ci;
+            ConnInfo *ci = (ConnInfo *)lParam;
             CheckDlgButton(hdlg, IDC_USESSL, ci->use_ssl);
             CheckDlgButton(hdlg, IDC_HOST_VER, ci->verify_server);
             SetDlgItemText(hdlg, IDC_CONNTIMEOUT, ci->response_timeout);
             break;
+        }
 
-        case WM_COMMAND:
-            lpsetupdlg = (LPSETUPDLG)GetWindowLongPtr(hdlg, DWLP_USER);
+        case WM_COMMAND: {
+            ConnInfo *ci = (ConnInfo *)GetWindowLongPtr(hdlg, DWLP_USER);
             switch (GET_WM_COMMAND_ID(wParam, lParam)) {
                 case IDOK:
-                    // Retrieve dialog values 
-                    if (!lpsetupdlg->fDefault)
-                        GetDlgItemText(hdlg, IDC_DSNAME, lpsetupdlg->ci.dsn,
-                                       sizeof(lpsetupdlg->ci.dsn));
-
                     // Get Dialog Values 
-                    lpsetupdlg->ci.use_ssl = (IsDlgButtonChecked(hdlg, IDC_USESSL) ? 1 : 0);
-                    lpsetupdlg->ci.verify_server = (IsDlgButtonChecked(hdlg, IDC_HOST_VER) ? 1 : 0);
-                    GetDlgItemText(hdlg, IDC_CONNTIMEOUT,
-                                   lpsetupdlg->ci.response_timeout,
-                                   sizeof(lpsetupdlg->ci.response_timeout));
-                    EndDialog(hdlg, FALSE);
-                    break;
+                    ci->use_ssl = (IsDlgButtonChecked(hdlg, IDC_USESSL) ? 1 : 0);
+                    ci->verify_server = (IsDlgButtonChecked(hdlg, IDC_HOST_VER) ? 1 : 0);
+                    GetDlgItemText(hdlg, IDC_CONNTIMEOUT, ci->response_timeout,
+                                   sizeof(ci->response_timeout));
 
                 case IDCANCEL:
                     EndDialog(hdlg, FALSE);
                     return TRUE;
             }
+        }
     }
     return FALSE;
 }
 
 LRESULT logOptionsProc(HWND hdlg, UINT wMsg, WPARAM wParam, LPARAM lParam) {
-    LPSETUPDLG lpsetupdlg;
-    ConnInfo *ci;
-
     switch (wMsg) {
-        case WM_INITDIALOG:
+        case WM_INITDIALOG: {
+            ConnInfo *ci = (ConnInfo *)lParam;
             SetWindowLongPtr(hdlg, DWLP_USER, lParam);
-            lpsetupdlg = (LPSETUPDLG)lParam;
-            ci = &lpsetupdlg->ci;
-            break;
 
-        case WM_COMMAND:
-            lpsetupdlg = (LPSETUPDLG)GetWindowLongPtr(hdlg, DWLP_USER);
+            // Logging
+            int loglevel_selection_idx = 0;
+            unsigned int log_cnt = 0;
+            int *log = GetLogLevels(&log_cnt);
+            char buff[MEDIUM_REGISTRY_LEN + 1];
+            for (unsigned int i = 0; i < log_cnt; i++) {
+                LoadString(GetWindowInstance(hdlg), log[i], buff,
+                           MEDIUM_REGISTRY_LEN);
+                SendDlgItemMessage(hdlg, IDC_LOG_LEVEL, CB_ADDSTRING, 0,
+                                   (WPARAM)buff);
+                if ((unsigned int)ci->drivers.loglevel == i) {
+                    loglevel_selection_idx = i;
+                }
+            }
+            SendDlgItemMessage(hdlg, IDC_LOG_LEVEL, CB_SETCURSEL,
+                               loglevel_selection_idx, (WPARAM)0);
+            SetDlgItemText(hdlg, IDC_LOG_PATH, ci->drivers.output_dir);
+            break;
+        }
+
+        case WM_COMMAND: {
+            ConnInfo *ci = (ConnInfo *)GetWindowLongPtr(hdlg, DWLP_USER);
             switch (GET_WM_COMMAND_ID(wParam, lParam)) {
-                case IDOK:
-                    EndDialog(hdlg, FALSE);
-                    break;
+                case IDOK: {
+                    // Get Dialog Values
+                    int log = GetCurrentLogLevel(hdlg);
+                    switch (log) {
+                        case IDS_LOGTYPE_OFF:
+                            ci->drivers.loglevel = (char)ES_OFF;
+                            break;
+                        case IDS_LOGTYPE_FATAL:
+                            ci->drivers.loglevel = (char)ES_FATAL;
+                            break;
+                        case IDS_LOGTYPE_ERROR:
+                            ci->drivers.loglevel = (char)ES_ERROR;
+                            break;
+                        case IDS_LOGTYPE_WARNING:
+                            ci->drivers.loglevel = (char)ES_WARNING;
+                            break;
+                        case IDS_LOGTYPE_INFO:
+                            ci->drivers.loglevel = (char)ES_INFO;
+                            break;
+                        case IDS_LOGTYPE_DEBUG:
+                            ci->drivers.loglevel = (char)ES_DEBUG;
+                            break;
+                        case IDS_LOGTYPE_TRACE:
+                            ci->drivers.loglevel = (char)ES_TRACE;
+                            break;
+                        case IDS_LOGTYPE_ALL:
+                            ci->drivers.loglevel = (char)ES_ALL;
+                            break;
+                        default:
+                            ci->drivers.loglevel = (char)ES_OFF;
+                            break;
+                    }
+                    setGlobalCommlog(ci->drivers.loglevel);
+                    GetDlgItemText(hdlg, IDC_LOG_PATH, ci->drivers.output_dir,
+                                   sizeof(ci->drivers.output_dir));
+                }
 
                 case IDCANCEL:
-                    EndDialog(hdlg, GET_WM_COMMAND_ID(wParam, lParam) == IDOK);
+                    EndDialog(hdlg, FALSE);
                     return TRUE;
+                }
             }
     }
     return FALSE;
 }
-
 
 #endif /* WIN32 */

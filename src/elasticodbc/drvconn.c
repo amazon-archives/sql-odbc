@@ -115,8 +115,6 @@ LRESULT CALLBACK dconn_FDriverConnectProc(HWND hdlg, UINT wMsg, WPARAM wParam,
             /* Change the caption for the setup dialog */
             SetWindowText(hdlg, "Elasticsearch Connection");
 
-            CheckDlgButton(hdlg, IDC_CHECK1, getGlobalCommlog());
-
             /* Hide the DSN and description fields */
             ShowWindow(GetDlgItem(hdlg, IDC_DSNAMETEXT), SW_HIDE);
             ShowWindow(GetDlgItem(hdlg, IDC_DSNAME), SW_HIDE);
