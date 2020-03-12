@@ -29,7 +29,7 @@ class TestSQLGetInfo : public testing::Test {
     }
 
     void SetUp() {
-        AllocConnection((SQLTCHAR*)conn_string.c_str(), &m_conn, true, true);
+        ITDriverConnect((SQLTCHAR*)conn_string.c_str(), &m_conn, true, true);
     }
 
     void TearDown() {
@@ -110,21 +110,21 @@ int Ver1GEVer2(std::wstring ver_1_str, std::wstring ver_2_str) {
         SQLSMALLINT string_length_ptr;                                    \
         SQLRETURN ret =                                                   \
             SQLGetInfo(m_conn, info_type, &info_value_ptr,                \
-                       sizeof(info_value_ptr), &string_length_ptr);   \
+                       sizeof(info_value_ptr), &string_length_ptr);       \
         LogAnyDiagnostics(SQL_HANDLE_DBC, m_conn, ret);                   \
         EXPECT_EQ((size_t)info_value_ptr, (size_t)expected_value);        \
     }
 
 // Test template for SQLGetInfo
-#define TEST_SQL_GET_INFO_UINT16(test_name, info_type, expected_value)  \
-    TEST_F(TestSQLGetInfo, test_name) {                                 \
-        SQLUSMALLINT info_value_ptr;                                    \
-        SQLSMALLINT string_length_ptr;                                  \
-        SQLRETURN ret =                                                 \
-            SQLGetInfo(m_conn, info_type, &info_value_ptr,              \
-                       sizeof(info_value_ptr), &string_length_ptr); \
-        LogAnyDiagnostics(SQL_HANDLE_DBC, m_conn, ret);                 \
-        EXPECT_EQ(info_value_ptr, expected_value);                      \
+#define TEST_SQL_GET_INFO_UINT16(test_name, info_type, expected_value) \
+    TEST_F(TestSQLGetInfo, test_name) {                                \
+        SQLUSMALLINT info_value_ptr;                                   \
+        SQLSMALLINT string_length_ptr;                                 \
+        SQLRETURN ret =                                                \
+            SQLGetInfo(m_conn, info_type, &info_value_ptr,             \
+                       sizeof(info_value_ptr), &string_length_ptr);    \
+        LogAnyDiagnostics(SQL_HANDLE_DBC, m_conn, ret);                \
+        EXPECT_EQ(info_value_ptr, expected_value);                     \
     }
 
 /////////////////

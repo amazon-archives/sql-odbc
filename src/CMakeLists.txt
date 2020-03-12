@@ -77,7 +77,7 @@ add_compile_definitions		(	_SILENCE_TR1_NAMESPACE_DEPRECATION_WARNING
 								_MBCS
 								_CRT_SECURE_NO_DEPRECATE	
 								_USRDLL	
-								USE_SSL					
+								# USE_SSL					
 							)
 
 # Platform specific compiler definitions
