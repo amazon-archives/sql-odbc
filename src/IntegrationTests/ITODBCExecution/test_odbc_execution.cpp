@@ -306,8 +306,7 @@ TEST_F(TestSQLCancel, NULLHandle) {
     EXPECT_EQ(ret_exec, SQL_INVALID_HANDLE);
 }
 
-// This test will fail because we are not cancelling in flight queries at this
-// time. Add Mac testing compatibility
+// This test will fail because we are not cancelling in flight queries at this time. 
 #if 0
 TEST_F(TestSQLCancel, QueryInProgress) {
     // Create lambda thread
