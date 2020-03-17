@@ -83,7 +83,6 @@ const std::unordered_map< int, std::vector< int > > sql_es_type_map = {
       ES_TYPE_UNSUPPORTED}},
     {SQL_TYPE_TIMESTAMP, {ES_TYPE_DATETIME}}};
 
-// TODO #325 (SQL Plugin)- Refactor this to improve performance
 // Boilerplate code for easy column bind handling
 class BindTemplate {
    public:
@@ -661,7 +660,6 @@ ESAPI_Tables(HSTMT hstmt, const SQLCHAR *catalog_name_sql,
         //  arguments
         TableResultSet result_type = TableResultSet::All;
 
-        // TODO #324 (SQL Plugin)- Refactor logic
         if (catalog_name == SQL_ALL_CATALOGS) {
             if (schema_valid && table_valid && (table_name == "")
                 && (schema_name == ""))
