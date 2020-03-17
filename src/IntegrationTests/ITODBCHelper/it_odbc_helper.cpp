@@ -14,10 +14,10 @@
  *
  */
 
-#include "it_odbc_helper.h"
-
 #include <codecvt>
 #include <locale>
+
+#include "it_odbc_helper.h"
 
 #define EXECUTION_HANDLER(throw_on_error, log_diag, handle_type, handle, \
                           ret_code, statement, error_msg)                \
@@ -29,7 +29,24 @@
             throw std::runtime_error((error_msg));                       \
     } while (0);
 
-void AllocConnection(SQLTCHAR* connection_string, SQLHDBC* db_connection,
+void AllocConnection(SQLHDBC* db_connection, bool throw_on_error,
+                     bool log_diag) {
+    SQLHENV env;
+    SQLRETURN ret_code;
+    EXECUTION_HANDLER(throw_on_error, log_diag, SQL_HANDLE_ENV, env, ret_code,
+                      SQLAllocHandle(SQL_HANDLE_ENV, SQL_NULL_HANDLE, &env),
+                      "Failed to allocate handle for environment.");
+    EXECUTION_HANDLER(
+        throw_on_error, log_diag, SQL_ATTR_ODBC_VERSION, env, ret_code,
+        SQLSetEnvAttr(env, SQL_ATTR_ODBC_VERSION, (void*)SQL_OV_ODBC3, 0),
+        "Failed to set attributes for environment.");
+    EXECUTION_HANDLER(throw_on_error, log_diag, SQL_HANDLE_DBC, *db_connection,
+                      ret_code,
+                      SQLAllocHandle(SQL_HANDLE_DBC, env, db_connection),
+                      "Failed to allocate handle for db connection.");
+}
+
+void ITDriverConnect(SQLTCHAR* connection_string, SQLHDBC* db_connection,
                      bool throw_on_error, bool log_diag) {
     SQLHENV env;
     SQLRETURN ret_code;
@@ -59,7 +76,7 @@ void AllocConnection(SQLTCHAR* connection_string, SQLHDBC* db_connection,
 void AllocStatement(SQLTCHAR* connection_string, SQLHDBC* db_connection,
                     SQLHSTMT* h_statement, bool throw_on_error, bool log_diag) {
     SQLRETURN ret_code;
-    AllocConnection(connection_string, db_connection, throw_on_error, log_diag);
+    ITDriverConnect(connection_string, db_connection, throw_on_error, log_diag);
     EXECUTION_HANDLER(
         throw_on_error, log_diag, SQL_HANDLE_STMT, h_statement, ret_code,
         SQLAllocHandle(SQL_HANDLE_STMT, *db_connection, h_statement),
