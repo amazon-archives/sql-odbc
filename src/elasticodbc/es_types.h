@@ -295,7 +295,6 @@ typedef struct ColumnInfo {
     }
 } ColumnInfo;
 
-// perhaps a vector of smart pointers?
 typedef struct ESResult {
     uint32_t ref_count;  // reference count. A ColumnInfo can be shared by
                          // several qresults.
