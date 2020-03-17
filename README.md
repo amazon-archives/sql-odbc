@@ -63,7 +63,7 @@ The driver will be available through standard open source repositories for insta
 
 ### Building
 
-Please refer to the [build instructions](./BUILD_INSTRUCTIONS) for detailed build instructions on your platform.
+Please refer to the [build instructions](./BUILD_INSTRUCTIONS.md) for detailed build instructions on your platform.
 If your PC is already setup to build the library, you can simply invoke cmake using
 
 > cmake ./src
@@ -74,7 +74,7 @@ From the projects root directory, then build the project using Visual Studio (Wi
 
 ### Testing
 
-**NOTE**: Some tests in ITODBCConnection will fail if a test DSN (Data Source Name) is not configured on your system. Refer to "Running Tests" in the [build instructions](./BUILD_INSTRUCTIONS) for more information on configuring this.
+**NOTE**: Some tests in ITODBCConnection will fail if a test DSN (Data Source Name) is not configured on your system. Refer to "Running Tests" in the [build instructions](./BUILD_INSTRUCTIONS.md) for more information on configuring this.
 
 ## Documentation
 
