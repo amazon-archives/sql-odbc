@@ -56,7 +56,9 @@ std::wstring conn_string = []() {
     return temp;
 }();
 
-void AllocConnection(SQLTCHAR* connection_string, SQLHDBC* db_connection,
+void AllocConnection(SQLHDBC* db_connection, bool throw_on_error,
+                     bool log_diag);
+void ITDriverConnect(SQLTCHAR* connection_string, SQLHDBC* db_connection,
                      bool throw_on_error, bool log_diag);
 void AllocStatement(SQLTCHAR* connection_string, SQLHDBC* db_connection,
                     SQLHSTMT* h_statement, bool throw_on_error, bool log_diag);
