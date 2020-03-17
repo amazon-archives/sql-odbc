@@ -295,7 +295,6 @@ typedef struct ColumnInfo {
     }
 } ColumnInfo;
 
-// TODO: AE-111 determine if there's a better way to hold the server_info -
 // perhaps a vector of smart pointers?
 typedef struct ESResult {
     uint32_t ref_count;  // reference count. A ColumnInfo can be shared by

@@ -795,7 +795,7 @@ RETCODE SQL_API ESAPI_GetInfo(HDBC hdbc, SQLUSMALLINT fInfoType,
             value = SQL_PAS_BATCH;
             break;
         case SQL_SQL_CONFORMANCE:
-            // TODO: SQL plugin currently does not support this level,
+            // SQL plugin currently does not support this level,
             // but Tableau requires at least Entry level reported for retrieving
             // row data
             len = 4;

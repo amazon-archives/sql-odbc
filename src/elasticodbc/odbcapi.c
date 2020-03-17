@@ -465,7 +465,6 @@ RETCODE SQL_API SQLParamData(HSTMT StatementHandle, PTR *Value) {
     return SQL_ERROR;
 }
 
-// TODO AE-161: Revisit SQLPrepare / SQLExecute handling
 #ifndef UNICODE_SUPPORTXX
 RETCODE SQL_API SQLPrepare(HSTMT StatementHandle, SQLCHAR *StatementText,
                            SQLINTEGER TextLength) {

@@ -81,8 +81,6 @@ void ExecuteSqlDriverConnect(SQLTCHAR* _conn_string,
 
 // Tests
 
-// TODO: Investigate why this returns SQL_SUCCESS_WITH_INFO with empty diagrec.
-// (AE-104).
 TEST(TestSqlConnect, SqlSuccess) {
     SQLRETURN ret = SQL_ERROR;
     ASSERT_NO_FATAL_FAILURE(
@@ -97,8 +95,6 @@ TEST(TestSqlConnect, SqlError) {
     EXPECT_EQ(SQL_ERROR, ret);
 }
 
-// TODO: Investigate why this returns SQL_SUCCESS_WITH_INFO with empty diagrec.
-// (AE-104)
 TEST(TestSqlDriverConnect, DSNConnectionString) {
     SQLRETURN ret;
     ExecuteSqlDriverConnect((SQLTCHAR*)dsn_conn_string.c_str(),
@@ -106,8 +102,6 @@ TEST(TestSqlDriverConnect, DSNConnectionString) {
     EXPECT_TRUE(SQL_SUCCEEDED(ret));
 }
 
-// TODO: Investigate why this returns SQL_SUCCESS_WITH_INFO with empty diagrec.
-// (AE-104)
 TEST(TestSqlDriverConnect, SqlDriverPrompt) {
     SQLRETURN ret;
     ExecuteSqlDriverConnect((SQLTCHAR*)conn_string.c_str(), SQL_DRIVER_PROMPT,
@@ -115,8 +109,6 @@ TEST(TestSqlDriverConnect, SqlDriverPrompt) {
     EXPECT_TRUE(SQL_SUCCEEDED(ret));
 }
 
-// TODO: Investigate why this returns SQL_SUCCESS_WITH_INFO with empty diagrec.
-// (AE-104)
 TEST(TestSqlDriverConnect, SqlDriverComplete) {
     SQLRETURN ret;
     ExecuteSqlDriverConnect((SQLTCHAR*)conn_string.c_str(), SQL_DRIVER_COMPLETE,
@@ -124,8 +116,6 @@ TEST(TestSqlDriverConnect, SqlDriverComplete) {
     EXPECT_TRUE(SQL_SUCCEEDED(ret));
 }
 
-// TODO: Investigate why this returns SQL_SUCCESS_WITH_INFO with empty diagrec.
-// (AE-104)
 TEST(TestSqlDriverConnect, SqlDriverCompleteRequired) {
     SQLRETURN ret;
     ExecuteSqlDriverConnect((SQLTCHAR*)conn_string.c_str(),
@@ -133,8 +123,6 @@ TEST(TestSqlDriverConnect, SqlDriverCompleteRequired) {
     EXPECT_TRUE(SQL_SUCCEEDED(ret));
 }
 
-// TODO: Investigate why this returns SQL_SUCCESS_WITH_INFO with empty diagrec.
-// (AE-104)
 TEST(TestSqlDriverConnect, SqlDriverNoprompt) {
     SQLRETURN ret;
     ExecuteSqlDriverConnect((SQLTCHAR*)conn_string.c_str(), SQL_DRIVER_NOPROMPT,
@@ -142,18 +130,17 @@ TEST(TestSqlDriverConnect, SqlDriverNoprompt) {
     EXPECT_TRUE(SQL_SUCCEEDED(ret));
 }
 
-// TODO: Revisit when parser code is updated (AE-46)
-// TEST(TestSqlDriverConnect, InvalidDriver) {
-// 	std::wstring invalid_driver_conn_string =
-// 		L"Driver=xxxx;DataBase=database_name;"
-// 		L"Server=localhost;port=9200;"
-// 		L"username=admin;password=admin;";
+ TEST(TestSqlDriverConnect, InvalidDriver) {
+ 	std::wstring invalid_driver_conn_string =
+ 		L"Driver=xxxx;DataBase=database_name;"
+ 		L"Server=localhost;port=9200;"
+ 		L"username=admin;password=admin;";
 
-// 	SQLRETURN ret;
-// 	ExecuteSqlDriverConnect((SQLTCHAR*)invalid_driver_conn_string.c_str(),
-//							SQL_DRIVER_COMPLETE, &ret);
-// 	EXPECT_EQ(SQL_SUCCESS_WITH_INFO, ret);
-// }
+ 	SQLRETURN ret;
+ 	ExecuteSqlDriverConnect((SQLTCHAR*)invalid_driver_conn_string.c_str(),
+							SQL_DRIVER_COMPLETE, &ret);
+ 	EXPECT_EQ(SQL_SUCCESS, ret);
+ }
 
 TEST(TestSqlDriverConnect, InvalidHost) {
     std::wstring invalid_host_conn_string = 
@@ -193,9 +180,6 @@ TEST(TestSqlDriverConnect, InvalidPort) {
     EXPECT_EQ(SQL_ERROR, ret);
 }
 
-// TODO: Revisit when parser code is updated (AE-46)
-// This should return SQL_SUCCESS_WITH_INFO (SQLSTATE 01S00 - Invalid connection
-// string attribute)
 TEST(TestSqlDriverConnect, UnsupportedKeyword) {
     std::wstring unsupported_keyword_conn_string =
     use_ssl ? L"Driver={Elasticsearch ODBC};"

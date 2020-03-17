@@ -75,8 +75,9 @@ class ESCommunication {
     bool EstablishConnection();
     void ConstructESResult(ESResult& result);
     void GetJsonSchema(ESResult& es_result);
-    std::string m_error_message;  // TODO: Go through and add error messages on
-                                  // exit conditions
+
+    // TODO #35 - Go through and add error messages on exit conditions
+    std::string m_error_message;  
     const std::vector< std::string > m_supported_client_encodings = {"UTF8"};
 
     ConnStatusType m_status;

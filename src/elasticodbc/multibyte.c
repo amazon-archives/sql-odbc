@@ -339,7 +339,7 @@ const char *derive_locale_encoding(const char *dbencoding) {
             break;
     }
 #else
-        // TODO: Investigate locale handling on Mac [AE-227]
+        // TODO #34 - Investigate locale handling on Mac 
 #endif /* WIN32 */
     return wenc;
 }

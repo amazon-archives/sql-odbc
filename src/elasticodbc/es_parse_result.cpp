@@ -331,7 +331,7 @@ bool AssignRowData(const json_arr_it &row, const schema_type &row_schema,
     size_t i = 0;
     for (auto row_column = row.value_begin(); i < row_schema.size();
          ++row_column, ++i) {
-        // TODO: Milestone-3 use row_schema[i].second's type (or something else)
+        // Use row_schema[i].second's type (or something else)
         // to properly handle different data types This str() call has a switch
         // statement for the type and uses a stringstream, which is not very
         // efficient
@@ -421,7 +421,7 @@ void UpdateResultFields(QResultClass *q_res, const ConnectionClass *conn,
     QR_set_rstatus(q_res, PORES_TUPLES_OK);
 }
 
-// TODO: Milestone 3 - Revisit this function and see if there is a better way to
+// Revisit this function and see if there is a better way to
 // approach allocation This function is pulled from qresult.c and only has minor
 // coding convention changes
 bool QR_prepare_for_tupledata(QResultClass *q_res) {
