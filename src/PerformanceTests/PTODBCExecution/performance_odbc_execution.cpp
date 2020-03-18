@@ -52,7 +52,7 @@ void ExecuteQuery() {
     SQLExecDirect(hstmt, (SQLTCHAR*)query, SQL_NTS);
 }
 
-void main() {
+int main() {
     std::cout << "Connection:" << ConnectDataSource() << std::endl;
     SQLAllocHandle(SQL_HANDLE_STMT, conn, &hstmt);
     for (int i = 0; i < 10; i++) {
@@ -67,4 +67,5 @@ void main() {
     }
     SQLDisconnect(conn);
     SQLFreeHandle(SQL_HANDLE_ENV, env);
+    return 0;
 }
