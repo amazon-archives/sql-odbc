@@ -31,3 +31,4 @@ src/IntegrationTests/ITODBCResults/memory_leak_report.txt
 src/IntegrationTests/ITODBCHelper/ITODBCHelper.vcxproj.user
 src/IntegrationTests/ITODBCExecution/memory_leak_report.txt
 src/IntegrationTests/ITODBCResults/ITODBCResults.vcxproj.user
+LICENSE.txt
