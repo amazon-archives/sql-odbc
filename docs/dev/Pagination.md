@@ -13,7 +13,8 @@ For information on how the pagination is supported on Elasticsearch server, chec
 * Steps 3 & 4 will repeatedly get datarows until entire result is retrieved.
 * Step 5 will send a request to close cursor whenever the connection is closed.
 * ODBC Driver will provide an option to define fetch size as a connection parameter.
-* If fetch size is not given or zero then the number of rows per request will be as per server-defined [default fetch size](https://github.com/opendistro-for-elasticsearch/sql/blob/master/docs/dev/Pagination.md#42-salient-points).
+  * If fetch size is zero, query will fallback to non-cursor behavior.
+  * If fetch size is not given then the number of rows per request will be as per server-defined [default fetch size](https://github.com/opendistro-for-elasticsearch/sql/blob/master/docs/dev/Pagination.md#42-salient-points).
 * ODBC Driver will send the request to close cursor whenever the connection is closed.
 
 ## Detailed Design
