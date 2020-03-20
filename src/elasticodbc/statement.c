@@ -1463,9 +1463,9 @@ int SC_Create_bookmark(StatementClass *self, BindInfoClass *bookmark,
         SQLLEN *used = LENADDR_SHIFT(bookmark->used, offset);
 
         if (bind_size > 0)
-            used = LENADDR_SHIFT(used, bind_row * bind_size);
+            used = (SQLLEN *)((char *)used + (bind_row * bind_size));
         else
-            used = LENADDR_SHIFT(used, bind_row * sizeof(SQLLEN));
+            used = (SQLLEN *)((char *)used + (bind_row * sizeof(SQLLEN)));
         *used = cvtlen;
     }
     MYLOG(ES_TRACE, "leaving cvtlen=" FORMAT_SIZE_T " ix(bl,of)=%d(%d,%d)\n",

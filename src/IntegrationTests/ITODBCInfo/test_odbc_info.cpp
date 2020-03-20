@@ -29,16 +29,20 @@ class TestSQLGetInfo : public testing::Test {
     }
 
     void SetUp() {
-        ITDriverConnect((SQLTCHAR*)conn_string.c_str(), &m_conn, true, true);
+        ITDriverConnect((SQLTCHAR*)conn_string.c_str(), &m_env, &m_conn, true,
+                        true);
     }
 
     void TearDown() {
+        SQLDisconnect(m_conn);
+        SQLFreeHandle(SQL_HANDLE_ENV, m_env);
     }
 
     ~TestSQLGetInfo() {
         // cleanup any pending stuff, but no exceptions allowed
     }
 
+    SQLHENV m_env = SQL_NULL_HENV;
     SQLHDBC m_conn = SQL_NULL_HDBC;
 };
 
@@ -251,6 +255,10 @@ TEST_SQL_GET_INFO_UINT_MASK(SQLSQL92StringFunctions, SQL_SQL92_STRING_FUNCTIONS,
 TEST_SQL_GET_INFO_UINT16(SQLMaxIdentifierLen, SQL_MAX_IDENTIFIER_LEN, SHRT_MAX);
 
 int main(int argc, char** argv) {
+#ifdef __APPLE__
+    // Enable malloc logging for detecting memory leaks.
+    system("export MallocStackLogging=1");
+#endif
     testing::internal::CaptureStdout();
     ::testing::InitGoogleTest(&argc, argv);
 
@@ -262,5 +270,10 @@ int main(int argc, char** argv) {
               << std::endl;
     WriteFileIfSpecified(argv, argv + argc, "-fout", output);
 
+#ifdef __APPLE__
+    // Disable malloc logging and report memory leaks
+    system("unset MallocStackLogging");
+    system("leaks itodbc_info > leaks_itodbc_info");
+#endif
     return failures;
 }

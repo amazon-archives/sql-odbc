@@ -44,19 +44,22 @@ class TestSQLCopyDesc : public testing::Test {
     }
 
     void SetUp() {
-        AllocStatement((SQLTCHAR*)conn_string.c_str(), &m_conn, &m_hstmt, true,
-                       true);
+        AllocStatement((SQLTCHAR*)conn_string.c_str(), &m_env, &m_conn,
+                       &m_hstmt, true, true);
         SQLAllocHandle(SQL_HANDLE_STMT, m_conn, &m_hstmt_copy);
     }
 
     void TearDown() {
+        SQLFreeHandle(SQL_HANDLE_STMT, m_hstmt);
         SQLDisconnect(m_conn);
+        SQLFreeHandle(SQL_HANDLE_ENV, m_env);
     }
 
     ~TestSQLCopyDesc() {
         // cleanup any pending stuff, but no exceptions allowed
     }
 
+    SQLHENV m_env = SQL_NULL_HENV;
     SQLHDBC m_conn = SQL_NULL_HDBC;
     SQLHSTMT m_hstmt = SQL_NULL_HSTMT;
     SQLHSTMT m_hstmt_copy = SQL_NULL_HSTMT;
@@ -93,20 +96,23 @@ class TestSQLSetDescField : public testing::Test {
     }
 
     void SetUp() {
-        AllocStatement((SQLTCHAR*)conn_string.c_str(), &m_conn, &m_hstmt, true,
-                       true);
+        AllocStatement((SQLTCHAR*)conn_string.c_str(), &m_env, &m_conn,
+                       &m_hstmt, true, true);
         SQLGetStmtAttr(m_hstmt, SQL_ATTR_APP_ROW_DESC, &m_ard_hdesc, 0, NULL);
         SQLGetStmtAttr(m_hstmt, SQL_ATTR_IMP_ROW_DESC, &m_ird_hdesc, 0, NULL);
     }
 
     void TearDown() {
+        SQLFreeHandle(SQL_HANDLE_STMT, m_hstmt);
         SQLDisconnect(m_conn);
+        SQLFreeHandle(SQL_HANDLE_ENV, m_env);
     }
 
     ~TestSQLSetDescField() {
         // cleanup any pending stuff, but no exceptions allowed
     }
 
+    SQLHENV m_env = SQL_NULL_HENV;
     SQLHDBC m_conn = SQL_NULL_HDBC;
     SQLHSTMT m_hstmt = SQL_NULL_HSTMT;
     SQLHDESC m_ard_hdesc = SQL_NULL_HDESC;
@@ -128,8 +134,8 @@ class TestSQLSetDescField : public testing::Test {
         m_rec_number = rec_num;                                                \
         value_ptr_assignment;                                                  \
         EXPECT_EQ(expected_val,                                                \
-                SQLSetDescField(hdesc, m_rec_number, m_field_identifier,       \
-                                (SQLPOINTER)m_value_ptr, m_buffer_length));    \
+                  SQLSetDescField(hdesc, m_rec_number, m_field_identifier,     \
+                                  (SQLPOINTER)m_value_ptr, m_buffer_length));  \
         if (check_state)                                                       \
             EXPECT_TRUE(                                                       \
                 CheckSQLSTATE(SQL_HANDLE_DESC, hdesc,                          \
@@ -137,13 +143,14 @@ class TestSQLSetDescField : public testing::Test {
     }
 #ifdef WIN32
 #pragma warning(push)
-// This warning detects an attempt to assign a 32-bit value to a 64-bit pointer type
+// This warning detects an attempt to assign a 32-bit value to a 64-bit pointer
+// type
 #pragma warning(disable : 4312)
 #elif defined(__APPLE__)
 // This warning detects casts from integer types to void*.
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wint-to-void-pointer-cast"
-#endif // WIN32
+#endif  // WIN32
 
 // Descriptor Header Fields Tests
 
@@ -152,31 +159,31 @@ TEST_SQL_SET_DESC_FIELD(Test_SQL_DESC_ALLOC_TYPE, SQL_DESC_ALLOC_TYPE,
                         SQLSMALLINT m_value_ptr = SQL_DESC_ALLOC_USER;
                         , SQL_ERROR, m_ird_hdesc, 1);
 
-TEST_SQL_SET_DESC_FIELD(Test_SQL_DESC_ARRAY_SIZE, SQL_DESC_ARRAY_SIZE, SQL_NTS, 0, 
-						SQLULEN m_value_ptr = single_col_cnt;
+TEST_SQL_SET_DESC_FIELD(Test_SQL_DESC_ARRAY_SIZE, SQL_DESC_ARRAY_SIZE, SQL_NTS,
+                        0, SQLULEN m_value_ptr = single_col_cnt;
                         , SQL_SUCCESS, m_ard_hdesc, 0);
 
 TEST_SQL_SET_DESC_FIELD(Test_SQL_DESC_ARRAY_STATUS_PTR,
-                        SQL_DESC_ARRAY_STATUS_PTR, SQL_NTS, 0, 
-						SQLUSMALLINT foo;  SQLUSMALLINT* m_value_ptr = &foo;
+                        SQL_DESC_ARRAY_STATUS_PTR, SQL_NTS, 0, SQLUSMALLINT foo;
+                        SQLUSMALLINT* m_value_ptr = &foo;
                         , SQL_SUCCESS, m_ard_hdesc, 0);
 
 TEST_SQL_SET_DESC_FIELD(Test_SQL_DESC_BIND_OFFSET_PTR, SQL_DESC_BIND_OFFSET_PTR,
-                        SQL_NTS, 0, 
-						SQLLEN foo; SQLLEN * m_value_ptr = &foo;
+                        SQL_NTS, 0, SQLLEN foo;
+                        SQLLEN* m_value_ptr = &foo;
                         , SQL_SUCCESS, m_ard_hdesc, 0);
 
 TEST_SQL_SET_DESC_FIELD(Test_SQL_DESC_BIND_TYPE, SQL_DESC_BIND_TYPE, SQL_NTS, 0,
                         SQLINTEGER m_value_ptr = SQL_BIND_BY_COLUMN;
                         , SQL_SUCCESS, m_ard_hdesc, 0);
 
- TEST_SQL_SET_DESC_FIELD(Test_SQL_DESC_COUNT, SQL_DESC_COUNT, SQL_IS_SMALLINT, 0,
-						SQLSMALLINT m_value_ptr = 25;
-						, SQL_SUCCESS, m_ard_hdesc, 0);
+TEST_SQL_SET_DESC_FIELD(Test_SQL_DESC_COUNT, SQL_DESC_COUNT, SQL_IS_SMALLINT, 0,
+                        SQLSMALLINT m_value_ptr = 25;
+                        , SQL_SUCCESS, m_ard_hdesc, 0);
 
 TEST_SQL_SET_DESC_FIELD(Test_SQL_DESC_ROWS_PROCESSED_PTR,
-                        SQL_DESC_ROWS_PROCESSED_PTR, SQL_NTS, 0,
-                        SQLULEN foo; SQLULEN* m_value_ptr = &foo;
+                        SQL_DESC_ROWS_PROCESSED_PTR, SQL_NTS, 0, SQLULEN foo;
+                        SQLULEN* m_value_ptr = &foo;
                         , SQL_SUCCESS, m_ird_hdesc, 0);
 
 // Descriptor Record Fields Tests
@@ -212,8 +219,7 @@ TEST_SQL_SET_DESC_FIELD(TestUndefinedError_SQL_DESC_CONCISE_TYPE,
                         , SQL_ERROR, m_ird_hdesc, 1);
 
 TEST_SQL_SET_DESC_FIELD(TestUndefinedError_SQL_DESC_DATA_PTR, SQL_DESC_DATA_PTR,
-                        SQL_IS_POINTER, 1, 
-						SQLPOINTER m_value_ptr = NULL;
+                        SQL_IS_POINTER, 1, SQLPOINTER m_value_ptr = NULL;
                         , SQL_ERROR, m_ird_hdesc, 1);
 
 TEST_SQL_SET_DESC_FIELD(TestUndefinedError_SQL_DESC_DATETIME_INTERVAL_CODE,
@@ -349,20 +355,23 @@ class TestSQLGetDescField : public testing::Test {
     }
 
     void SetUp() {
-        AllocStatement((SQLTCHAR*)conn_string.c_str(), &m_conn, &m_hstmt, true,
-                       true);
+        AllocStatement((SQLTCHAR*)conn_string.c_str(), &m_env, &m_conn,
+                       &m_hstmt, true, true);
         SQLGetStmtAttr(m_hstmt, SQL_ATTR_APP_ROW_DESC, &m_ard_hdesc, 0, NULL);
         SQLGetStmtAttr(m_hstmt, SQL_ATTR_IMP_ROW_DESC, &m_ird_hdesc, 0, NULL);
     }
 
     void TearDown() {
+        SQLFreeHandle(SQL_HANDLE_STMT, m_hstmt);
         SQLDisconnect(m_conn);
+        SQLFreeHandle(SQL_HANDLE_ENV, m_env);
     }
 
     ~TestSQLGetDescField() {
         // cleanup any pending stuff, but no exceptions allowed
     }
 
+    SQLHENV m_env = SQL_NULL_HENV;
     SQLHDBC m_conn = SQL_NULL_HDBC;
     SQLHSTMT m_hstmt = SQL_NULL_HSTMT;
     SQLHDESC m_ard_hdesc = SQL_NULL_HDESC;
@@ -464,9 +473,10 @@ TEST_SQL_GET_DESC_FIELD(Test_SQL_DESC_DATETIME_INTERVAL_CODE,
                         SQLSMALLINT m_value_ptr;
                         , SQL_SUCCESS, m_ard_hdesc, 0, 0, 0);
 
-// This field contains the interval leading precision if the SQL_DESC_TYPE field is SQL_INTERVAL.
-// As SQL_INTERVAL support is disabled because some applications are unhappy with it, 
-// this test should return SQL_ERROR as DESC_INVALID_DESCRIPTOR_IDENTIFIER
+// This field contains the interval leading precision if the SQL_DESC_TYPE field
+// is SQL_INTERVAL. As SQL_INTERVAL support is disabled because some
+// applications are unhappy with it, this test should return SQL_ERROR as
+// DESC_INVALID_DESCRIPTOR_IDENTIFIER
 TEST_SQL_GET_DESC_FIELD(Test_SQL_DESC_DATETIME_INTERVAL_PRECISION,
                         SQL_DESC_DATETIME_INTERVAL_PRECISION, 0, 1,
                         SQLINTEGER m_value_ptr = 0;
@@ -579,6 +589,10 @@ TEST_SQL_GET_DESC_FIELD(Test_SQL_DESC_UPDATABLE, SQL_DESC_UPDATABLE, 255, 1,
 #endif
 
 int main(int argc, char** argv) {
+#ifdef __APPLE__
+    // Enable malloc logging for detecting memory leaks.
+    system("export MallocStackLogging=1");
+#endif
     testing::internal::CaptureStdout();
     ::testing::InitGoogleTest(&argc, argv);
 
@@ -590,5 +604,10 @@ int main(int argc, char** argv) {
               << std::endl;
     WriteFileIfSpecified(argv, argv + argc, "-fout", output);
 
-	return failures;
+#ifdef __APPLE__
+    // Disable malloc logging and report memory leaks
+    system("unset MallocStackLogging");
+    system("leaks itodbc_descriptors > leaks_itodbc_descriptors");
+#endif
+    return failures;
 }

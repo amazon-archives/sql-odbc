@@ -45,12 +45,13 @@ class TestSQLConnect : public testing::Test {
     }
 
     void SetUp() {
-        AllocConnection(&m_conn, true, true);
+        AllocConnection(&m_env, &m_conn, true, true);
     }
 
     void TearDown() {
         if (SQL_NULL_HDBC != m_conn) {
             SQLFreeHandle(SQL_HANDLE_DBC, m_conn);
+            SQLFreeHandle(SQL_HANDLE_ENV, m_env);
         }
     }
 
@@ -58,6 +59,7 @@ class TestSQLConnect : public testing::Test {
         // cleanup any pending stuff, but no exceptions allowed
     }
 
+    SQLHENV m_env = SQL_NULL_HENV;
     SQLHDBC m_conn = SQL_NULL_HDBC;
 };
 
@@ -87,12 +89,13 @@ class TestSQLDriverConnect : public testing::Test {
     }
 
     void SetUp() {
-        AllocConnection(&m_conn, true, true);
+        AllocConnection(&m_env, &m_conn, true, true);
     }
 
     void TearDown() {
         if (SQL_NULL_HDBC != m_conn) {
             SQLFreeHandle(SQL_HANDLE_DBC, m_conn);
+            SQLFreeHandle(SQL_HANDLE_ENV, m_env);
         }
     }
 
@@ -100,6 +103,7 @@ class TestSQLDriverConnect : public testing::Test {
         // cleanup any pending stuff, but no exceptions allowed
     }
 
+    SQLHENV m_env = SQL_NULL_HENV;
     SQLHDBC m_conn = SQL_NULL_HDBC;
     SQLTCHAR m_out_conn_string[1024];
     SQLSMALLINT m_out_conn_string_length;
@@ -169,12 +173,12 @@ TEST_F(TestSQLDriverConnect, InvalidHost) {
                   L"host=https://8.8.8.8;port=9200;"
                   L"user=admin;password=admin;auth=BASIC;useSSL="
                   L"1;hostnameVerification=0;logLevel=0;logOutput=C:\\;"
-                  L"responseTimeout=10;"
+                  L"responseTimeout=1;"
                 : L"Driver={Elasticsearch ODBC};"
                   L"host=8.8.8.8;port=9200;"
                   L"user=admin;password=admin;auth=BASIC;useSSL="
                   L"0;hostnameVerification=0;logLevel=0;logOutput=C:\\;"
-                  L"responseTimeout=10;";
+                  L"responseTimeout=1;";
 
     SQLRETURN ret = SQLDriverConnect(
         m_conn, NULL, (SQLTCHAR*)invalid_host_conn_string.c_str(), SQL_NTS,
@@ -443,24 +447,29 @@ class TestSQLDisconnect : public testing::Test {
     }
 
     void TearDown() {
+        if (m_conn != SQL_NULL_HDBC) {
+            SQLFreeHandle(SQL_HANDLE_DBC, m_conn);
+        }
+        SQLFreeHandle(SQL_HANDLE_ENV, m_env);
     }
 
     ~TestSQLDisconnect() {
         // cleanup any pending stuff, but no exceptions allowed
     }
 
+    SQLHENV m_env = SQL_NULL_HENV;
     SQLHDBC m_conn = SQL_NULL_HDBC;
 };
 
 TEST_F(TestSQLDisconnect, TestSuccess) {
-    ASSERT_NO_THROW(
-        ITDriverConnect((SQLTCHAR*)conn_string.c_str(), &m_conn, true, true));
+    ASSERT_NO_THROW(ITDriverConnect((SQLTCHAR*)conn_string.c_str(), &m_env,
+                                    &m_conn, true, true));
     EXPECT_EQ(SQL_SUCCESS, SQLDisconnect(m_conn));
 }
 
 TEST_F(TestSQLDisconnect, TestReconnectOnce) {
     for (int i = 0; i <= 1; i++) {
-        ASSERT_NO_THROW((ITDriverConnect((SQLTCHAR*)conn_string.c_str(),
+        ASSERT_NO_THROW((ITDriverConnect((SQLTCHAR*)conn_string.c_str(), &m_env,
                                          &m_conn, true, true)));
         EXPECT_EQ(SQL_SUCCESS, SQLDisconnect(m_conn));
     }
@@ -468,20 +477,23 @@ TEST_F(TestSQLDisconnect, TestReconnectOnce) {
 
 TEST_F(TestSQLDisconnect, TestReconnectMultipleTimes) {
     for (int i = 0; i <= 10; i++) {
-        ASSERT_NO_THROW((ITDriverConnect((SQLTCHAR*)conn_string.c_str(),
+        ASSERT_NO_THROW((ITDriverConnect((SQLTCHAR*)conn_string.c_str(), &m_env,
                                          &m_conn, true, true)));
         EXPECT_EQ(SQL_SUCCESS, SQLDisconnect(m_conn));
     }
 }
 
 TEST_F(TestSQLDisconnect, TestDisconnectWithoutConnect) {
-    SQLHENV env = NULL;
-    ASSERT_NO_THROW(SQLAllocHandle(SQL_HANDLE_ENV, SQL_NULL_HANDLE, &env));
-    ASSERT_NO_THROW(SQLAllocHandle(SQL_HANDLE_DBC, env, &m_conn));
+    ASSERT_NO_THROW(SQLAllocHandle(SQL_HANDLE_ENV, SQL_NULL_HANDLE, &m_env));
+    ASSERT_NO_THROW(SQLAllocHandle(SQL_HANDLE_DBC, m_env, &m_conn));
     EXPECT_EQ(SQL_ERROR, SQLDisconnect(m_conn));
 }
 
 int main(int argc, char** argv) {
+#ifdef __APPLE__
+    // Enable malloc logging for detecting memory leaks.
+    system("export MallocStackLogging=1");
+#endif
     testing::internal::CaptureStdout();
     ::testing::InitGoogleTest(&argc, argv);
 
@@ -493,5 +505,10 @@ int main(int argc, char** argv) {
               << std::endl;
     WriteFileIfSpecified(argv, argv + argc, "-fout", output);
 
+#ifdef __APPLE__
+    // Disable malloc logging and report memory leaks
+    system("unset MallocStackLogging");
+    system("leaks itodbc_connection > leaks_itodbc_connection");
+#endif
     return failures;
 }
