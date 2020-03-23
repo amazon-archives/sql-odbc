@@ -243,7 +243,7 @@ class BindTemplateSQLCHAR : public BindTemplate {
             throw std::runtime_error(
                 "Default data size exceeds max info string size.");
         } else {
-            m_data.insert(data.begin(), data.end(), data.end());
+            m_data.insert(m_data.begin(), data.begin(), data.end());
         }
     }
     ~BindTemplateSQLCHAR() {
@@ -298,7 +298,7 @@ void ConvertToString(std::string &out, bool &valid, const SQLCHAR *sql_char,
                      const SQLSMALLINT sz) {
     valid = (sql_char != NULL);
     if (!valid) {
-        out = "";
+        out = "%";
     } else if (sz == SQL_NTS) {
         out.assign(reinterpret_cast< const char * >(sql_char));
     } else if (sz <= 0) {

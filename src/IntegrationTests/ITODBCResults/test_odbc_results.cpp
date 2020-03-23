@@ -165,11 +165,11 @@ inline void ExtendedFetch(const uint64_t exp_row_cnt,
                           const uint64_t exp_read_cnt, const bool aligned,
                           const uint64_t total_row_cnt, SQLHSTMT* hstmt) {
     SQLULEN row_cnt = 0;
-    SQLUSMALLINT row_stat = 0;
+    SQLUSMALLINT row_stat[10];
     uint64_t read_cnt = 0;
     SQLRETURN ret;
     while (
-        (ret = SQLExtendedFetch(*hstmt, SQL_FETCH_NEXT, 0, &row_cnt, &row_stat))
+        (ret = SQLExtendedFetch(*hstmt, SQL_FETCH_NEXT, 0, &row_cnt, row_stat))
         == SQL_SUCCESS) {
         read_cnt++;
         if (aligned) {

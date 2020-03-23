@@ -308,12 +308,16 @@ void QR_add_message(QResultClass *self, const char *msg) {
         pos = 0;
         alsize = addlen + 1;
     }
-    if (message = realloc(message, alsize), NULL == message)
-        return;
-    if (pos > 0)
-        message[pos - 1] = ';';
-    strncpy_null(message + pos, msg, addlen + 1);
-    self->message = message;
+    char *message_tmp = realloc(message, alsize);
+    if (message_tmp) {
+        message = message_tmp;
+        if (pos > 0)
+            message[pos - 1] = ';';
+        strncpy_null(message + pos, msg, addlen + 1);
+        self->message = message;
+    } else {
+        free(message_tmp);
+    }
 }
 
 void QR_set_notice(QResultClass *self, const char *msg) {
@@ -337,12 +341,16 @@ void QR_add_notice(QResultClass *self, const char *msg) {
         pos = 0;
         alsize = addlen + 1;
     }
-    if (message = realloc(message, alsize), NULL == message)
-        return;
-    if (pos > 0)
-        message[pos - 1] = ';';
-    strncpy_null(message + pos, msg, addlen + 1);
-    self->notice = message;
+    char *message_tmp = realloc(message, alsize);
+    if (message_tmp) {
+        message = message_tmp;
+        if (pos > 0)
+            message[pos - 1] = ';';
+        strncpy_null(message + pos, msg, addlen + 1);
+        self->notice = message;
+    } else {
+        free(message_tmp);
+    }
 }
 
 TupleField *QR_AddNew(QResultClass *self) {

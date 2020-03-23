@@ -103,6 +103,12 @@ class TestSQLSetDescField : public testing::Test {
     }
 
     void TearDown() {
+        if (m_ard_hdesc != SQL_NULL_HDESC) {
+            SQLFreeHandle(SQL_HANDLE_DESC, m_ard_hdesc);
+        }
+        if (m_ird_hdesc != SQL_NULL_HDESC) {
+            SQLFreeHandle(SQL_HANDLE_DESC, m_ird_hdesc);
+        }
         SQLFreeHandle(SQL_HANDLE_STMT, m_hstmt);
         SQLDisconnect(m_conn);
         SQLFreeHandle(SQL_HANDLE_ENV, m_env);
@@ -362,6 +368,12 @@ class TestSQLGetDescField : public testing::Test {
     }
 
     void TearDown() {
+        if (m_ard_hdesc != SQL_NULL_HDESC) {
+            SQLFreeHandle(SQL_HANDLE_DESC, m_ard_hdesc);
+        }
+        if (m_ird_hdesc != SQL_NULL_HDESC) {
+            SQLFreeHandle(SQL_HANDLE_DESC, m_ird_hdesc);
+        }
         SQLFreeHandle(SQL_HANDLE_STMT, m_hstmt);
         SQLDisconnect(m_conn);
         SQLFreeHandle(SQL_HANDLE_ENV, m_env);
@@ -534,10 +546,6 @@ TEST_SQL_GET_DESC_FIELD(Test_SQL_DESC_OCTET_LENGTH, SQL_DESC_OCTET_LENGTH, 0, 1,
 TEST_SQL_GET_DESC_FIELD(Test_SQL_DESC_OCTET_LENGTH_PTR,
                         SQL_DESC_OCTET_LENGTH_PTR, 0, 1, SQLLEN m_value_ptr;
                         , SQL_SUCCESS, m_ard_hdesc, 0, 0, 0);
-
-TEST_SQL_GET_DESC_FIELD(Test_SQL_DESC_PARAMETER_TYPE, SQL_DESC_PARAMETER_TYPE,
-                        0, 1, SQLSMALLINT m_value_ptr;
-                        , SQL_ERROR, m_ard_hdesc, 1, 0, 0);
 
 TEST_SQL_GET_DESC_FIELD(Test_SQL_DESC_PRECISION, SQL_DESC_PRECISION, 0, 1,
                         SQLSMALLINT m_value_ptr;

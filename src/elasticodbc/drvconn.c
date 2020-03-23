@@ -207,7 +207,7 @@ BOOL dconn_get_attributes(copyfunc func, const char *connect_string,
     char *last = NULL;
 #endif /* HAVE_STRTOK_R */
 
-    if (our_connect_string = strdup(connect_string), NULL == our_connect_string)
+    if (our_connect_string = strdup(connect_string), free(our_connect_string), NULL == our_connect_string)
         return FALSE;
     strtok_arg = our_connect_string;
 

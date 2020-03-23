@@ -358,7 +358,7 @@ TEST_F(TestSQLDriverConnect, Timeout1Second) {
     // Windows rounds up to nearest 4s with timeout, another user reported this
     // issue:
     // https://social.msdn.microsoft.com/Forums/vstudio/en-US/42ae1b2f-b120-4b46-9417-e594c3d02a5f/does-winhttpsettimeouts-support-small-timeouts?forum=vcgeneral
-    EXPECT_GT(time, 3500);
+    EXPECT_GT(time, 3400);
     EXPECT_LT(time, 4500);
 #else
     EXPECT_GT(time, 500);
