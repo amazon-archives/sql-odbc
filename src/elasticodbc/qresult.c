@@ -15,13 +15,14 @@
  */
 
 #include "qresult.h"
-#include "statement.h"
-#include "es_statement.h"
 
 #include <limits.h>
 #include <stdio.h>
 #include <string.h>
+
+#include "es_statement.h"
 #include "misc.h"
+#include "statement.h"
 
 /*
  *	Used for building a Manual Result only
@@ -315,8 +316,6 @@ void QR_add_message(QResultClass *self, const char *msg) {
             message[pos - 1] = ';';
         strncpy_null(message + pos, msg, addlen + 1);
         self->message = message;
-    } else {
-        free(message_tmp);
     }
 }
 
@@ -348,8 +347,6 @@ void QR_add_notice(QResultClass *self, const char *msg) {
             message[pos - 1] = ';';
         strncpy_null(message + pos, msg, addlen + 1);
         self->notice = message;
-    } else {
-        free(message_tmp);
     }
 }
 
@@ -359,8 +356,7 @@ TupleField *QR_AddNew(QResultClass *self) {
 
     if (!self)
         return NULL;
-    MYLOG(ES_ALL,
-          FORMAT_ULEN "th row(%d fields) alloc=" FORMAT_LEN "\n",
+    MYLOG(ES_ALL, FORMAT_ULEN "th row(%d fields) alloc=" FORMAT_LEN "\n",
           self->num_cached_rows, QR_NumResultCols(self),
           self->count_backend_allocated);
     if (num_fields = QR_NumResultCols(self), !num_fields)
@@ -455,7 +451,7 @@ void QR_free_memory(QResultClass *self) {
         free(self->updated_tuples);
         self->updated_tuples = NULL;
     }
-    if(self->es_result){
+    if (self->es_result) {
         ClearESResult(self->es_result);
         self->es_result = NULL;
     }

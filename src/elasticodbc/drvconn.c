@@ -122,7 +122,7 @@ LRESULT CALLBACK dconn_FDriverConnectProc(HWND hdlg, UINT wMsg, WPARAM wParam,
             SetWindowLongPtr(hdlg, DWLP_USER,
                              lParam); /* Save the ConnInfo for the "OK" */
             SetDlgStuff(hdlg, ci);
-            
+
             if (ci->server[0] == '\0')
                 SetFocus(GetDlgItem(hdlg, IDC_SERVER));
             else if (ci->port[0] == '\0')
@@ -159,8 +159,9 @@ LRESULT CALLBACK dconn_FDriverConnectProc(HWND hdlg, UINT wMsg, WPARAM wParam,
                 }
                 case ID_ADVANCED_OPTIONS: {
                     ci = (ConnInfo *)GetWindowLongPtr(hdlg, DWLP_USER);
-                    DialogBoxParam(s_hModule, MAKEINTRESOURCE(DLG_ADVANCED_OPTIONS),
-                                   hdlg, advancedOptionsProc, (LPARAM)ci);
+                    DialogBoxParam(s_hModule,
+                                   MAKEINTRESOURCE(DLG_ADVANCED_OPTIONS), hdlg,
+                                   advancedOptionsProc, (LPARAM)ci);
                     break;
                 }
                 case ID_LOG_OPTIONS: {
@@ -207,7 +208,7 @@ BOOL dconn_get_attributes(copyfunc func, const char *connect_string,
     char *last = NULL;
 #endif /* HAVE_STRTOK_R */
 
-    if (our_connect_string = strdup(connect_string), free(our_connect_string), NULL == our_connect_string)
+    if (our_connect_string = strdup(connect_string), NULL == our_connect_string)
         return FALSE;
     strtok_arg = our_connect_string;
 
@@ -270,14 +271,16 @@ BOOL dconn_get_attributes(copyfunc func, const char *connect_string,
                     if (NULL == closep) {
                         if (!delp) /* error */
                         {
-                            MYLOG(ES_DEBUG, "closing bracket doesn't exist 1\n");
+                            MYLOG(ES_DEBUG,
+                                  "closing bracket doesn't exist 1\n");
                             ret = FALSE;
                             goto cleanup;
                         }
                         closep = strchr(delp + 1, CLOSING_BRACKET);
                         if (!closep) /* error */
                         {
-                            MYLOG(ES_DEBUG, "closing bracket doesn't exist 2\n");
+                            MYLOG(ES_DEBUG,
+                                  "closing bracket doesn't exist 2\n");
                             ret = FALSE;
                             goto cleanup;
                         }
