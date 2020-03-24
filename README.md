@@ -57,7 +57,7 @@ The following are the driver options that can be configured using a DSN or conne
 | `LogLevel` | Severity level for driver logs. | one of `ES_OFF`, `ES_FATAL`, `ES_ERROR`, `ES_INFO`, `ES_DEBUG`, `ES_TRACE`, `ES_ALL` | `ES_WARNING` |
 | `LogOutput` | Location for storing driver logs. | string | WIN: `C:\`, MAC: `/tmp` |
 
-Administrative privileges are required to change the value of logging options.
+**NOTE:** Administrative privileges are required to change the value of logging options.
 
 ## Download and Installation
 
