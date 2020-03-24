@@ -13,14 +13,15 @@
 #   permissions and limitations under the License.
 #
 
-project(performance_tests)
+project(performance_execution)
 
-set(RESULTS_PTESTS "${CMAKE_CURRENT_SOURCE_DIR}/PTODBCResults")
-set(INFO_PTESTS "${CMAKE_CURRENT_SOURCE_DIR}/PTODBCInfo")
-set(EXECUTION_PTESTS "${CMAKE_CURRENT_SOURCE_DIR}/PTODBCExecution")
+# Source, headers, and include dirs
+set(SOURCE_FILES performance_odbc_execution.cpp)
+include_directories(${ESODBC_SRC})
 
-# Projects to build
-add_subdirectory(${RESULTS_PTESTS})
-add_subdirectory(${INFO_PTESTS})
-add_subdirectory(${EXECUTION_PTESTS})
+# Generate executable
+add_executable(performance_execution ${SOURCE_FILES})
 
+# Library dependencies
+target_link_libraries(performance_execution elasticodbc)
+target_compile_definitions(performance_execution PUBLIC _UNICODE UNICODE)
