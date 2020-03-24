@@ -482,9 +482,10 @@ int writeGlobalLogs() {
 
 void logInstallerError(int ret, const char *dir) {
     DWORD err = (DWORD)ret;
-    char msg[SQL_MAX_MESSAGE_LENGTH];
+    char msg[SQL_MAX_MESSAGE_LENGTH] = "";
+    msg[0] = '\0';
     ret = SQLInstallerError(1, &err, msg, sizeof(msg), NULL);
-    if (msg)
+    if (msg[0] != '\0')
         MYLOG(ES_DEBUG, "Dir= %s ErrorMsg = %s\n", dir, msg);
 }
 
