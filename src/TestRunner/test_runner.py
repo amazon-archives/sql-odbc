@@ -71,7 +71,6 @@ def RunTests(tests, test_type):
             with open(output_path, "r+") as f:
                 output.append({"UnitTest" : test.split(os.path.sep)[-1].replace(".exe",""), "Log": f.read()})
         elif test_type == IT_TYPE:
-            # TODO: Fix this so it works for integration tests
             with open(output_path, "r+") as f:
                 output.append({"IntegrationTest" : test.split(os.path.sep)[-1].replace(".exe",""), "Log": f.read()})
     print("Total Failures :", total_failures)

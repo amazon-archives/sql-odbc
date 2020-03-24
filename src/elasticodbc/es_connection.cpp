@@ -110,7 +110,6 @@ int LIBES_connect(ConnectionClass *self) {
     // Encryption
     rt_opts.crypt.verify_server = (self->connInfo.verify_server == 1);
     rt_opts.crypt.use_ssl = (self->connInfo.use_ssl == 1);
-    // TODO AE-288: Add settings if required for Mac support
 
     void *esconn = ESConnectDBParams(rt_opts, FALSE, OPTION_COUNT);
     if (esconn == NULL) {
@@ -149,7 +148,7 @@ int LIBES_connect(ConnectionClass *self) {
     return 1;
 }
 
-// TODO: When we fix encoding, we should look into returning a code here. This
+// TODO #36 - When we fix encoding, we should look into returning a code here. This
 // is called in connection.c and the return code isn't checked
 void CC_set_locale_encoding(ConnectionClass *self, const char *encoding) {
     if (self == NULL)
@@ -162,14 +161,14 @@ void CC_set_locale_encoding(ConnectionClass *self, const char *encoding) {
         free(prev_encoding);
 }
 
-// TODO: Add return code - see above function comment
+// TODO #36 - Add return code - see above function comment
 void CC_determine_locale_encoding(ConnectionClass *self) {
     // Don't update if it's already set
     if ((self == NULL) || (self->locale_encoding != NULL))
         return;
 
     // Get current db encoding and derive the locale encoding
-    // TODO AE-227: Investigate locale
+    // TODO #34 - Investigate locale
     CC_set_locale_encoding(self, "SQL_ASCII");
 }
 
@@ -197,8 +196,6 @@ int CC_send_client_encoding(ConnectionClass *self, const char *encoding) {
     return SQL_SUCCESS;
 }
 
-// TODO: Use of es_version* is peppered throughout connection.c, convert to
-// es_version*
 void CC_initialize_es_version(ConnectionClass *self) {
     STRCPY_FIXED(self->es_version, "7.4");
     self->es_version_major = 7;

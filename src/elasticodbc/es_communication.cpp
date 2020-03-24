@@ -125,7 +125,7 @@ ESCommunication::~ESCommunication() {
 }
 
 std::string ESCommunication::GetErrorMessage() {
-    // TODO: Check if they expect NULL or "" when there is no error.
+    // TODO #35 - Check if they expect NULL or "" when there is no error.
     return m_error_message;
 }
 
@@ -483,12 +483,12 @@ ESResult* ESCommunication::PopResult() {
     return result;
 }
 
-// TODO: Send query to database to get encoding
+// TODO #36 - Send query to database to get encoding
 std::string ESCommunication::GetClientEncoding() {
     return m_client_encoding;
 }
 
-// TODO: Send query to database to set encoding
+// TODO #36 - Send query to database to set encoding
 bool ESCommunication::SetClientEncoding(std::string& encoding) {
     if (std::find(m_supported_client_encodings.begin(),
                   m_supported_client_encodings.end(), encoding)

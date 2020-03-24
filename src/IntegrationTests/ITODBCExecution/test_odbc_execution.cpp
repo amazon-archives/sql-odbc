@@ -331,10 +331,7 @@ TEST_F(TestSQLCancel, NULLHandle) {
     EXPECT_EQ(ret_exec, SQL_INVALID_HANDLE);
 }
 
-// TODO: AE-128 - Add other test cases
-// This test will fail because we are not cancelling in flight queries at this
-// time
-// TODO: AE-128 Add Mac testing compatibility
+// This test will fail because we are not cancelling in flight queries at this time. 
 #if 0
 TEST_F(TestSQLCancel, QueryInProgress) {
     // Create lambda thread

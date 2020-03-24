@@ -154,18 +154,27 @@ TEST_F(TestSQLDriverConnect, SqlDriverNoprompt) {
     EXPECT_EQ(SQL_SUCCESS, ret);
 }
 
-// TODO: Revisit when parser code is updated (AE-46)
-// TEST(TestSqlDriverConnect, InvalidDriver) {
-// 	std::wstring invalid_driver_conn_string =
-// 		L"Driver=xxxx;DataBase=database_name;"
-// 		L"Server=localhost;port=9200;"
-// 		L"username=admin;password=admin;";
+// TODO #41 - Revisit when parser code
+// This should return SQL_SUCCESS_WITH_INFO
+TEST_F(TestSQLDriverConnect, InvalidDriver) {
+    std::wstring invalid_driver_conn_string =
+         use_ssl ? L"Driver=xxxx;"
+                   L"host=https://localhost;port=5432;"
+                   L"user=admin;password=admin;auth=BASIC;useSSL="
+                   L"1;hostnameVerification=0;logLevel=0;logOutput=C:\\;"
+                   L"responseTimeout=10;"
+                 : L"Driver=xxxx;"
+                   L"host=localhost;port=5432;"
+                   L"user=admin;password=admin;auth=BASIC;useSSL="
+                   L"0;hostnameVerification=0;logLevel=0;logOutput=C:\\;"
+                   L"responseTimeout=10;";
 
-// 	SQLRETURN ret;
-// 	ExecuteSqlDriverConnect((SQLTCHAR*)invalid_driver_conn_string.c_str(),
-//							SQL_DRIVER_COMPLETE, &ret);
-// 	EXPECT_EQ(SQL_SUCCESS_WITH_INFO, ret);
-// }
+    SQLRETURN ret = SQLDriverConnect(
+        m_conn, NULL, (SQLTCHAR*)invalid_driver_conn_string.c_str(), SQL_NTS,
+        m_out_conn_string, IT_SIZEOF(m_out_conn_string),
+        &m_out_conn_string_length, SQL_DRIVER_COMPLETE);
+    EXPECT_EQ(SQL_ERROR, ret);
+ }
 
 TEST_F(TestSQLDriverConnect, InvalidHost) {
     std::wstring invalid_host_conn_string =
@@ -207,7 +216,7 @@ TEST_F(TestSQLDriverConnect, InvalidPort) {
     EXPECT_EQ(SQL_ERROR, ret);
 }
 
-// TODO: Revisit when parser code is updated (AE-46)
+// TODO #41 - Revisit when parser code
 // This should return SQL_SUCCESS_WITH_INFO (SQLSTATE 01S00 - Invalid connection
 // string attribute)
 TEST_F(TestSQLDriverConnect, UnsupportedKeyword) {

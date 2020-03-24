@@ -25,7 +25,7 @@
 #include <unordered_map>
 #include <vector>
 
-// TODO: AE-152 - Update if Elasticsearch extends support for multiple tables
+// TODO #324 (SQL Plugin)- Update if Elasticsearch extends support for multiple tables
 #define DEFAULT_TYPE_STR \
     { 'k', 'e', 'y', 'w', 'o', 'r', 'd', '\0' }
 #define DEFAULT_TYPE_INT (SQL_WVARCHAR)
@@ -83,7 +83,6 @@ const std::unordered_map< int, std::vector< int > > sql_es_type_map = {
       ES_TYPE_UNSUPPORTED}},
     {SQL_TYPE_TIMESTAMP, {ES_TYPE_DATETIME}}};
 
-// TODO AE-152: Refactor this to improve performance
 // Boilerplate code for easy column bind handling
 class BindTemplate {
    public:
@@ -393,7 +392,7 @@ void split(const std::string &input, const std::string &delim,
     output.push_back(input.substr(start, end));
 }
 
-// TODO AE-152 - Fix patterns and escape characters for this
+// TODO #324 (SQL Plugin)- Fix patterns and escape characters for this
 void GenerateTableQuery(std::string &tables_query, const UWORD flag,
                         const std::string &table_name_value,
                         const TableResultSet result_type,
@@ -511,7 +510,7 @@ void SetTableTuples(QResultClass *res, const TableResultSet res_type,
         }
 
         // Get new tuple and assign index of interest (NULL others)
-        // TODO AE-152: Should these be unique?
+        // TODO #324 (SQL Plugin)- Should these be unique?
         TupleField *tuple = QR_AddNew(res);
         for (size_t i = 0; i < bind_tbl.size(); i++) {
             if (i == idx)
@@ -565,7 +564,7 @@ void SetupColumnQResInfo(QResultClass *res, EnvironmentClass *unused) {
                         INFO_VARCHAR_SIZE);
 }
 
-// TODO AE-152 - Fix patterns and escape characters for this
+// TODO #325 (SQL Plugin)- Fix patterns and escape characters for this
 void GenerateColumnQuery(std::string &query, const std::string &table_name,
                          const std::string &column_name, const bool table_valid,
                          const bool column_valid, const UWORD flag) {
@@ -661,7 +660,6 @@ ESAPI_Tables(HSTMT hstmt, const SQLCHAR *catalog_name_sql,
         //  arguments
         TableResultSet result_type = TableResultSet::All;
 
-        // TODO: Refactor logic
         if (catalog_name == SQL_ALL_CATALOGS) {
             if (schema_valid && table_valid && (table_name == "")
                 && (schema_name == ""))
@@ -682,7 +680,7 @@ ESAPI_Tables(HSTMT hstmt, const SQLCHAR *catalog_name_sql,
         std::string query;
         GenerateTableQuery(query, flag, table_name, result_type, table_valid);
 
-        // TODO AE-152: evaluate catalog & schema support
+        // TODO #324 (SQL Plugin)- evaluate catalog & schema support
         GetCatalogData(query, stmt, tbl_stmt, result_type, table_type,
                        AssignTableBindTemplates, SetupTableQResInfo);
         return SQL_SUCCESS;
@@ -739,7 +737,7 @@ ESAPI_Columns(HSTMT hstmt, const SQLCHAR *catalog_name_sql,
         GenerateColumnQuery(query, table_name, column_name, table_valid,
                             column_valid, flag);
 
-        // TODO AE-152: evaluate catalog & schema support
+        // TODO #324 (SQL Plugin)- evaluate catalog & schema support
 
         // Execute query
         std::string table_type = "";

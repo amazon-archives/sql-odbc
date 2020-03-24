@@ -139,7 +139,6 @@ typedef struct sample_data_struct {
     std::string remarks;
 } sample_data_struct;
 
-// TODO: AE-153 - Update the sample data for tests
 const std::vector< sample_data_struct > table_data_filtered{
     {"", "", "kibana_sample_data_datetime", "BASE TABLE", ""},
     {"", "", "kibana_sample_data_ecommerce", "BASE TABLE", ""},
@@ -292,7 +291,6 @@ class TestSQLCatalogKeys : public testing::Test {
     }
 
 // SQL Tables Tests
-// TODO: AE-153/AE-152: Increase overall test coverage
 // NULL test
 TEST_SQL_TABLES(Null, NULL, NULL, NULL, NULL, table_data_all, true, false);
 
@@ -323,7 +321,6 @@ TEST_SQL_TABLES(InvalidTableType, (SQLTCHAR*)L"", (SQLTCHAR*)L"",
                 table_data_types, false, true)
 
 // SQL Columns Tests
-// TODO: AE-153/AE-152: Increase overall test coverage
 // NULL test
 TEST_SQL_COLUMNS(Null, NULL, NULL, NULL, NULL, true, false)
 
