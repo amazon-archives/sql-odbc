@@ -1053,7 +1053,7 @@ int copy_and_convert_field(StatementClass *stmt, OID field_type, int atttypmod,
     if (pcbValue)
         pcbValueBindRow = LENADDR_SHIFT(pcbValue, pcbValueOffset);
     if (pIndicator) {
-        pIndicatorBindRow = LENADDR_SHIFT(pIndicator, pcbValueOffset);
+        pIndicatorBindRow = (SQLLEN *)((char *)pIndicator + pcbValueOffset);
         *pIndicatorBindRow = 0;
     }
 
@@ -1315,7 +1315,9 @@ int copy_and_convert_field(StatementClass *stmt, OID field_type, int atttypmod,
                     int wdt;
                     int fr = effective_fraction(std_time.fr, &wdt);
 
-                    len = SPRINTF_FIXED(midtemp, "%s.%0*d", midtemp, wdt, fr);
+                    char *fraction = NULL;
+                    len = sprintf(fraction, ".%0*d", wdt, fr);
+                    strcat(midtemp, fraction);
                 }
                 break;
 

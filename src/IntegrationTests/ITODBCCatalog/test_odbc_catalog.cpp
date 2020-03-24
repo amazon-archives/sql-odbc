@@ -95,16 +95,19 @@ class TestSQLColumns : public testing::Test {
     TestSQLColumns() {
     }
     void SetUp() {
-        AllocStatement((SQLTCHAR*)conn_string.c_str(), &m_conn, &m_hstmt, true,
-                       true);
+        AllocStatement((SQLTCHAR*)conn_string.c_str(), &m_env, &m_conn,
+                       &m_hstmt, true, true);
     }
     void TearDown() {
+        SQLFreeHandle(SQL_HANDLE_STMT, m_hstmt);
         SQLDisconnect(m_conn);
+        SQLFreeHandle(SQL_HANDLE_ENV, m_env);
     }
     ~TestSQLColumns() {
         // cleanup any pending stuff, but no exceptions allowed
     }
 
+    SQLHENV m_env = SQL_NULL_HENV;
     SQLHDBC m_conn = SQL_NULL_HDBC;
     SQLHSTMT m_hstmt = SQL_NULL_HSTMT;
 };
@@ -164,16 +167,19 @@ class TestSQLTables : public testing::Test {
     TestSQLTables() {
     }
     void SetUp() {
-        AllocStatement((SQLTCHAR*)conn_string.c_str(), &m_conn, &m_hstmt, true,
-                       true);
+        AllocStatement((SQLTCHAR*)conn_string.c_str(), &m_env, &m_conn,
+                       &m_hstmt, true, true);
     }
     void TearDown() {
+        SQLFreeHandle(SQL_HANDLE_STMT, m_hstmt);
         SQLDisconnect(m_conn);
+        SQLFreeHandle(SQL_HANDLE_ENV, m_env);
     }
     ~TestSQLTables() {
         // cleanup any pending stuff, but no exceptions allowed
     }
 
+    SQLHENV m_env = SQL_NULL_HENV;
     SQLHDBC m_conn = SQL_NULL_HDBC;
     SQLHSTMT m_hstmt = SQL_NULL_HSTMT;
 };
@@ -257,16 +263,19 @@ class TestSQLCatalogKeys : public testing::Test {
     TestSQLCatalogKeys() {
     }
     void SetUp() {
-        AllocStatement((SQLTCHAR*)conn_string.c_str(), &m_conn, &m_hstmt, true,
-                       true);
+        AllocStatement((SQLTCHAR*)conn_string.c_str(), &m_env, &m_conn,
+                       &m_hstmt, true, true);
     }
     void TearDown() {
+        SQLFreeHandle(SQL_HANDLE_STMT, m_hstmt);
         SQLDisconnect(m_conn);
+        SQLFreeHandle(SQL_HANDLE_ENV, m_env);
     }
     ~TestSQLCatalogKeys() {
         // cleanup any pending stuff, but no exceptions allowed
     }
 
+    SQLHENV m_env = SQL_NULL_HENV;
     SQLHDBC m_conn = SQL_NULL_HDBC;
     SQLHSTMT m_hstmt = SQL_NULL_HSTMT;
 };
@@ -596,16 +605,19 @@ class TestSQLGetTypeInfo : public testing::Test {
     TestSQLGetTypeInfo() {
     }
     void SetUp() {
-        AllocStatement((SQLTCHAR*)conn_string.c_str(), &m_conn, &m_hstmt, true,
-                       true);
+        AllocStatement((SQLTCHAR*)conn_string.c_str(), &m_env, &m_conn,
+                       &m_hstmt, true, true);
     }
     void TearDown() {
+        SQLFreeHandle(SQL_HANDLE_STMT, m_hstmt);
         SQLDisconnect(m_conn);
+        SQLFreeHandle(SQL_HANDLE_ENV, m_env);
     }
     ~TestSQLGetTypeInfo() {
         // cleanup any pending stuff, but no exceptions allowed
     }
 
+    SQLHENV m_env = SQL_NULL_HENV;
     SQLHDBC m_conn = SQL_NULL_HDBC;
     SQLHSTMT m_hstmt = SQL_NULL_HSTMT;
 };
@@ -634,6 +646,10 @@ TEST_SQL_GET_TYPE_INFO(SingleType, SQL_BIT, 0, sample_data_single_type_info)
 TEST_SQL_GET_TYPE_INFO(UnsupportedType, SQL_DECIMAL, 1, sample_data_empty)
 
 int main(int argc, char** argv) {
+#ifdef __APPLE__
+    // Enable malloc logging for detecting memory leaks.
+    system("export MallocStackLogging=1");
+#endif
     testing::internal::CaptureStdout();
     ::testing::InitGoogleTest(&argc, argv);
 
@@ -645,5 +661,10 @@ int main(int argc, char** argv) {
               << std::endl;
     WriteFileIfSpecified(argv, argv + argc, "-fout", output);
 
+#ifdef __APPLE__
+    // Disable malloc logging and report memory leaks
+    system("unset MallocStackLogging");
+    system("leaks itodbc_catalog > leaks_itodbc_catalog");
+#endif
     return failures;
 }

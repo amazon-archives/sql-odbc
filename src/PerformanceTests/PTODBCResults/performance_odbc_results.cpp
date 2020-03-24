@@ -49,14 +49,15 @@ class TestPerformance : public testing::Test {
     TestPerformance() {
     }
     void SetUp() {
-        AllocStatement((SQLTCHAR*)conn_string.c_str(), &m_conn, &m_hstmt, true,
-                       true);
+        AllocStatement((SQLTCHAR*)conn_string.c_str(), &m_env, &m_conn,
+                       &m_hstmt, true, true);
     }
     void TearDown() {
         SQLDisconnect(m_conn);
     }
 
    protected:
+    SQLHENV m_env = SQL_NULL_HENV;
     SQLHDBC m_conn = SQL_NULL_HDBC;
     SQLHSTMT m_hstmt = SQL_NULL_HSTMT;
 };
@@ -100,9 +101,9 @@ void ReportTime(const std::string test_case, std::vector< long long > data) {
     std::cout << sync_end << std::endl;
 
     std::cout << "Time dump: ";
-    for(size_t i = 0; i < data.size(); i++) {
+    for (size_t i = 0; i < data.size(); i++) {
         std::cout << data[i] << " ms";
-        if(i != (data.size() -1 ))
+        if (i != (data.size() - 1))
             std::cout << ", ";
     }
     std::cout << std::endl;
@@ -281,6 +282,10 @@ TEST_F(TestPerformance, Time_Execute_FetchSingleRow) {
 }
 
 int main(int argc, char** argv) {
+#ifdef __APPLE__
+    // Enable malloc logging for detecting memory leaks.
+    system("export MallocStackLogging=1");
+#endif
     testing::internal::CaptureStdout();
     ::testing::InitGoogleTest(&argc, argv);
 
@@ -292,5 +297,10 @@ int main(int argc, char** argv) {
               << std::endl;
     WriteFileIfSpecified(argv, argv + argc, "-fout", output);
 
+#ifdef __APPLE__
+    // Disable malloc logging and report memory leaks
+    system("unset MallocStackLogging");
+    system("leaks performance_results > leaks_performance_results");
+#endif
     return failures;
 }

@@ -1229,18 +1229,24 @@ static RETCODE SQL_API IRDGetField(DescriptorClass *desc, SQLSMALLINT RecNumber,
             rettype = SQL_IS_SMALLINT;
             ival = SQL_DESC_ALLOC_AUTO;
             break;
-        case SQL_DESC_COUNT:                       /* read-only */
         case SQL_DESC_AUTO_UNIQUE_VALUE:           /* read-only */
         case SQL_DESC_CASE_SENSITIVE:              /* read-only */
-        case SQL_DESC_CONCISE_TYPE:                /* read-only */
-        case SQL_DESC_DATETIME_INTERVAL_CODE:      /* read-only */
         case SQL_DESC_DATETIME_INTERVAL_PRECISION: /* read-only */
-        case SQL_DESC_DISPLAY_SIZE:                /* read-only */
-        case SQL_DESC_FIXED_PREC_SCALE:            /* read-only */
-        case SQL_DESC_LENGTH:                      /* read-only */
-        case SQL_DESC_NULLABLE:                    /* read-only */
         case SQL_DESC_NUM_PREC_RADIX:              /* read-only */
+            rettype = SQL_IS_INTEGER;
+            bCallColAtt = TRUE;
+            break;
+        case SQL_DESC_DISPLAY_SIZE:                /* read-only */
+        case SQL_DESC_LENGTH:                      /* read-only */
         case SQL_DESC_OCTET_LENGTH:                /* read-only */
+            rettype = SQL_IS_LEN;
+            bCallColAtt = TRUE;
+            break;
+        case SQL_DESC_NULLABLE:                    /* read-only */
+        case SQL_DESC_FIXED_PREC_SCALE:            /* read-only */
+        case SQL_DESC_DATETIME_INTERVAL_CODE:      /* read-only */
+        case SQL_DESC_CONCISE_TYPE:                /* read-only */
+        case SQL_DESC_COUNT:                       /* read-only */
         case SQL_DESC_PRECISION:                   /* read-only */
         case SQL_DESC_SCALE:                       /* read-only */
         case SQL_DESC_SEARCHABLE:                  /* read-only */
@@ -1248,6 +1254,7 @@ static RETCODE SQL_API IRDGetField(DescriptorClass *desc, SQLSMALLINT RecNumber,
         case SQL_DESC_UNNAMED:                     /* read-only */
         case SQL_DESC_UNSIGNED:                    /* read-only */
         case SQL_DESC_UPDATABLE:                   /* read-only */
+            rettype = SQL_IS_SMALLINT;
             bCallColAtt = TRUE;
             break;
         case SQL_DESC_BASE_COLUMN_NAME: /* read-only */

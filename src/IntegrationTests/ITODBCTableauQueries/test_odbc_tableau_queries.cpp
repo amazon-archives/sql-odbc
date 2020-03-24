@@ -46,10 +46,11 @@ TEST(TableauQuery, IssueQueriesAll) {
     GetAllLinesInFile(all_queries_file, lines);
 
     // Connect to database
+    SQLHENV env = SQL_NULL_HENV;
     SQLHDBC conn = SQL_NULL_HDBC;
-    SQLHSTMT stmt = SQL_NULL_HDBC;
-    ASSERT_NO_THROW(AllocStatement((SQLTCHAR*)conn_string.c_str(), &conn, &stmt,
-                                   true, false));
+    SQLHSTMT stmt = SQL_NULL_HSTMT;
+    ASSERT_NO_THROW(AllocStatement((SQLTCHAR*)conn_string.c_str(), &env, &conn,
+                                   &stmt, true, false));
 
     // Execute queries
     size_t idx = 1;
@@ -65,9 +66,17 @@ TEST(TableauQuery, IssueQueriesAll) {
             SQLCloseCursor(stmt);
     }
     output.close();
+
+    SQLFreeHandle(SQL_HANDLE_STMT, stmt);
+    SQLDisconnect(conn);
+    SQLFreeHandle(SQL_HANDLE_ENV, env);
 }
 
 int main(int argc, char** argv) {
+#ifdef __APPLE__
+    // Enable malloc logging for detecting memory leaks.
+    system("export MallocStackLogging=1");
+#endif
     testing::internal::CaptureStdout();
     ::testing::InitGoogleTest(&argc, argv);
 
@@ -79,5 +88,10 @@ int main(int argc, char** argv) {
               << std::endl;
     WriteFileIfSpecified(argv, argv + argc, "-fout", output);
 
+#ifdef __APPLE__
+    // Disable malloc logging and report memory leaks
+    system("unset MallocStackLogging");
+    system("leaks itodbc_tableau_queries > leaks_itodbc_tableau_queries");
+#endif
     return failures;
 }

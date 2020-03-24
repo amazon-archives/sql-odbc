@@ -165,11 +165,11 @@ inline void ExtendedFetch(const uint64_t exp_row_cnt,
                           const uint64_t exp_read_cnt, const bool aligned,
                           const uint64_t total_row_cnt, SQLHSTMT* hstmt) {
     SQLULEN row_cnt = 0;
-    SQLUSMALLINT row_stat = 0;
+    SQLUSMALLINT row_stat[10];
     uint64_t read_cnt = 0;
     SQLRETURN ret;
     while (
-        (ret = SQLExtendedFetch(*hstmt, SQL_FETCH_NEXT, 0, &row_cnt, &row_stat))
+        (ret = SQLExtendedFetch(*hstmt, SQL_FETCH_NEXT, 0, &row_cnt, row_stat))
         == SQL_SUCCESS) {
         read_cnt++;
         if (aligned) {
@@ -389,18 +389,22 @@ class TestSQLBindCol : public testing::Test {
     }
 
     void SetUp() {
-        ASSERT_NO_THROW(AllocStatement((SQLTCHAR*)conn_string.c_str(), &m_conn,
-                                       &m_hstmt, true, true));
+        ASSERT_NO_THROW(AllocStatement((SQLTCHAR*)conn_string.c_str(), &m_env,
+                                       &m_conn, &m_hstmt, true, true));
     }
 
     void TearDown() {
         ASSERT_NO_THROW(CloseCursor(&m_hstmt, true, true));
+        SQLFreeHandle(SQL_HANDLE_STMT, m_hstmt);
+        SQLDisconnect(m_conn);
+        SQLFreeHandle(SQL_HANDLE_ENV, m_env);
     }
 
     ~TestSQLBindCol() {
         // cleanup any pending stuff, but no exceptions allowed
     }
 
+    SQLHENV m_env = SQL_NULL_HENV;
     SQLHDBC m_conn = SQL_NULL_HDBC;
     SQLHSTMT m_hstmt = SQL_NULL_HSTMT;
 };
@@ -411,19 +415,24 @@ class TestSQLFetch : public testing::Test {
     }
 
     void SetUp() {
-        ASSERT_NO_THROW(AllocStatement((SQLTCHAR*)conn_string.c_str(), &m_conn,
-                                       &m_hstmt, true, true));
+        ASSERT_NO_THROW(AllocStatement((SQLTCHAR*)conn_string.c_str(), &m_env,
+                                       &m_conn, &m_hstmt, true, true));
     }
 
     void TearDown() {
-        if (m_hstmt != SQL_NULL_HSTMT)
+        if (m_hstmt != SQL_NULL_HSTMT) {
             ASSERT_NO_THROW(CloseCursor(&m_hstmt, true, true));
+            SQLFreeHandle(SQL_HANDLE_STMT, m_hstmt);
+            SQLDisconnect(m_conn);
+            SQLFreeHandle(SQL_HANDLE_ENV, m_env);
+        }
     }
 
     ~TestSQLFetch() {
         // cleanup any pending stuff, but no exceptions allowed
     }
 
+    SQLHENV m_env = SQL_NULL_HENV;
     SQLHDBC m_conn = SQL_NULL_HDBC;
     SQLHSTMT m_hstmt = SQL_NULL_HSTMT;
 };
@@ -434,19 +443,24 @@ class TestSQLExtendedFetch : public testing::Test {
     }
 
     void SetUp() {
-        ASSERT_NO_THROW(AllocStatement((SQLTCHAR*)conn_string.c_str(), &m_conn,
-                                       &m_hstmt, true, true));
+        ASSERT_NO_THROW(AllocStatement((SQLTCHAR*)conn_string.c_str(), &m_env,
+                                       &m_conn, &m_hstmt, true, true));
     }
 
     void TearDown() {
-        if (m_hstmt != SQL_NULL_HSTMT)
+        if (m_hstmt != SQL_NULL_HSTMT) {
             ASSERT_NO_THROW(CloseCursor(&m_hstmt, true, true));
+            SQLFreeHandle(SQL_HANDLE_STMT, m_hstmt);
+            SQLDisconnect(m_conn);
+            SQLFreeHandle(SQL_HANDLE_ENV, m_env);
+        }
     }
 
     ~TestSQLExtendedFetch() {
         // cleanup any pending stuff, but no exceptions allowed
     }
 
+    SQLHENV m_env = SQL_NULL_HENV;
     SQLHDBC m_conn = SQL_NULL_HDBC;
     SQLHSTMT m_hstmt = SQL_NULL_HSTMT;
 };
@@ -457,18 +471,23 @@ class TestSQLGetData : public testing::Test {
     }
 
     void SetUp() {
-        ASSERT_NO_THROW(AllocStatement((SQLTCHAR*)conn_string.c_str(), &m_conn,
-                                       &m_hstmt, true, true));
+        ASSERT_NO_THROW(AllocStatement((SQLTCHAR*)conn_string.c_str(), &m_env,
+                                       &m_conn, &m_hstmt, true, true));
     }
     void TearDown() {
-        if (m_hstmt != SQL_NULL_HSTMT)
+        if (m_hstmt != SQL_NULL_HSTMT) {
             ASSERT_NO_THROW(CloseCursor(&m_hstmt, true, true));
+            SQLFreeHandle(SQL_HANDLE_STMT, m_hstmt);
+            SQLDisconnect(m_conn);
+            SQLFreeHandle(SQL_HANDLE_ENV, m_env);
+        }
     }
 
     ~TestSQLGetData() {
         // cleanup any pending stuff, but no exceptions allowed
     }
 
+    SQLHENV m_env = SQL_NULL_HENV;
     SQLHDBC m_conn = SQL_NULL_HDBC;
     SQLHSTMT m_hstmt = SQL_NULL_HSTMT;
 
@@ -485,19 +504,24 @@ class TestSQLNumResultCols : public testing::Test {
     }
 
     void SetUp() {
-        ASSERT_NO_THROW(AllocStatement((SQLTCHAR*)conn_string.c_str(), &m_conn,
-                                       &m_hstmt, true, true));
+        ASSERT_NO_THROW(AllocStatement((SQLTCHAR*)conn_string.c_str(), &m_env,
+                                       &m_conn, &m_hstmt, true, true));
     }
 
     void TearDown() {
-        if (m_hstmt != SQL_NULL_HSTMT)
+        if (m_hstmt != SQL_NULL_HSTMT) {
             ASSERT_NO_THROW(CloseCursor(&m_hstmt, true, true));
+            SQLFreeHandle(SQL_HANDLE_STMT, m_hstmt);
+            SQLDisconnect(m_conn);
+            SQLFreeHandle(SQL_HANDLE_ENV, m_env);
+        }
     }
 
     ~TestSQLNumResultCols() {
         // cleanup any pending stuff, but no exceptions allowed
     }
 
+    SQLHENV m_env = SQL_NULL_HENV;
     SQLHDBC m_conn = SQL_NULL_HDBC;
     SQLHSTMT m_hstmt = SQL_NULL_HSTMT;
     SQLSMALLINT m_column_count;
@@ -509,19 +533,24 @@ class TestSQLMoreResults : public testing::Test {
     }
 
     void SetUp() {
-        ASSERT_NO_THROW(AllocStatement((SQLTCHAR*)conn_string.c_str(), &m_conn,
-                                       &m_hstmt, true, true));
+        ASSERT_NO_THROW(AllocStatement((SQLTCHAR*)conn_string.c_str(), &m_env,
+                                       &m_conn, &m_hstmt, true, true));
     }
 
     void TearDown() {
-        if (m_hstmt != SQL_NULL_HSTMT)
+        if (m_hstmt != SQL_NULL_HSTMT) {
             ASSERT_NO_THROW(CloseCursor(&m_hstmt, true, true));
+            SQLFreeHandle(SQL_HANDLE_STMT, m_hstmt);
+            SQLDisconnect(m_conn);
+            SQLFreeHandle(SQL_HANDLE_ENV, m_env);
+        }
     }
 
     ~TestSQLMoreResults() {
         // cleanup any pending stuff, but no exceptions allowed
     }
 
+    SQLHENV m_env = SQL_NULL_HENV;
     SQLHDBC m_conn = SQL_NULL_HDBC;
     SQLHSTMT m_hstmt = SQL_NULL_HSTMT;
 };
@@ -532,19 +561,24 @@ class TestSQLDescribeCol : public testing::Test {
     }
 
     void SetUp() {
-        ASSERT_NO_THROW(AllocStatement((SQLTCHAR*)conn_string.c_str(), &m_conn,
-                                       &m_hstmt, true, true));
+        ASSERT_NO_THROW(AllocStatement((SQLTCHAR*)conn_string.c_str(), &m_env,
+                                       &m_conn, &m_hstmt, true, true));
     }
 
     void TearDown() {
-        if (m_hstmt != SQL_NULL_HSTMT)
+        if (m_hstmt != SQL_NULL_HSTMT) {
             ASSERT_NO_THROW(CloseCursor(&m_hstmt, true, true));
+            SQLFreeHandle(SQL_HANDLE_STMT, m_hstmt);
+            SQLDisconnect(m_conn);
+            SQLFreeHandle(SQL_HANDLE_ENV, m_env);
+        }
     }
 
     ~TestSQLDescribeCol() {
         // cleanup any pending stuff, but no exceptions allowed
     }
 
+    SQLHENV m_env = SQL_NULL_HENV;
     SQLHDBC m_conn = SQL_NULL_HDBC;
     SQLHSTMT m_hstmt = SQL_NULL_HSTMT;
     SQLSMALLINT m_column_number;
@@ -899,6 +933,10 @@ TEST_F(TestSQLMoreResults, NoData) {
 }
 
 int main(int argc, char** argv) {
+#ifdef __APPLE__
+    // Enable malloc logging for detecting memory leaks.
+    system("export MallocStackLogging=1");
+#endif
     testing::internal::CaptureStdout();
     ::testing::InitGoogleTest(&argc, argv);
 
@@ -910,5 +948,10 @@ int main(int argc, char** argv) {
               << std::endl;
     WriteFileIfSpecified(argv, argv + argc, "-fout", output);
 
+#ifdef __APPLE__
+    // Disable malloc logging and report memory leaks
+    system("unset MallocStackLogging");
+    system("leaks itodbc_results > leaks_itodbc_results");
+#endif
     return failures;
 }

@@ -36,12 +36,15 @@ class TestSQLExecute : public testing::Test {
     }
 
     void SetUp() {
-        ASSERT_NO_THROW(AllocStatement((SQLTCHAR*)conn_string.c_str(), &m_conn,
-                                       &m_hstmt, true, true));
+        ASSERT_NO_THROW(AllocStatement((SQLTCHAR*)conn_string.c_str(), &m_env,
+                                       &m_conn, &m_hstmt, true, true));
     }
 
     void TearDown() {
         CloseCursor(&m_hstmt, true, true);
+        SQLFreeHandle(SQL_HANDLE_STMT, m_hstmt);
+        SQLDisconnect(m_conn);
+        SQLFreeHandle(SQL_HANDLE_ENV, m_env);
     }
 
     ~TestSQLExecute() {
@@ -50,6 +53,7 @@ class TestSQLExecute : public testing::Test {
 
     std::wstring m_query =
         L"SELECT Origin FROM kibana_sample_data_flights LIMIT 5";
+    SQLHENV m_env = SQL_NULL_HENV;
     SQLHDBC m_conn = SQL_NULL_HDBC;
     SQLHSTMT m_hstmt = SQL_NULL_HSTMT;
 };
@@ -60,12 +64,15 @@ class TestSQLPrepare : public testing::Test {
     }
 
     void SetUp() {
-        ASSERT_NO_THROW(AllocStatement((SQLTCHAR*)conn_string.c_str(), &m_conn,
-                                       &m_hstmt, true, true));
+        ASSERT_NO_THROW(AllocStatement((SQLTCHAR*)conn_string.c_str(), &m_env,
+                                       &m_conn, &m_hstmt, true, true));
     }
 
     void TearDown() {
         CloseCursor(&m_hstmt, true, true);
+        SQLFreeHandle(SQL_HANDLE_STMT, m_hstmt);
+        SQLDisconnect(m_conn);
+        SQLFreeHandle(SQL_HANDLE_ENV, m_env);
     }
 
     ~TestSQLPrepare() {
@@ -84,6 +91,7 @@ class TestSQLPrepare : public testing::Test {
     const SQLSMALLINT m_1_col_cnt = 1;
     const SQLSMALLINT m_2_col_cnt = 2;
     const SQLSMALLINT m_all_col_cnt = 25;
+    SQLHENV m_env = SQL_NULL_HENV;
     SQLHDBC m_conn = SQL_NULL_HDBC;
     SQLHSTMT m_hstmt = SQL_NULL_HSTMT;
 };
@@ -94,12 +102,15 @@ class TestSQLExecDirect : public testing::Test {
     }
 
     void SetUp() {
-        ASSERT_NO_THROW(AllocStatement((SQLTCHAR*)conn_string.c_str(), &m_conn,
-                                       &m_hstmt, true, true));
+        ASSERT_NO_THROW(AllocStatement((SQLTCHAR*)conn_string.c_str(), &m_env,
+                                       &m_conn, &m_hstmt, true, true));
     }
 
     void TearDown() {
         CloseCursor(&m_hstmt, true, true);
+        SQLFreeHandle(SQL_HANDLE_STMT, m_hstmt);
+        SQLDisconnect(m_conn);
+        SQLFreeHandle(SQL_HANDLE_ENV, m_env);
     }
 
     ~TestSQLExecDirect() {
@@ -108,6 +119,7 @@ class TestSQLExecDirect : public testing::Test {
 
     std::wstring m_query =
         L"SELECT Origin FROM kibana_sample_data_flights LIMIT 5";
+    SQLHENV m_env = SQL_NULL_HENV;
     SQLHDBC m_conn = SQL_NULL_HDBC;
     SQLHSTMT m_hstmt = SQL_NULL_HSTMT;
 };
@@ -118,12 +130,15 @@ class TestSQLSetCursorName : public testing::Test {
     }
 
     void SetUp() {
-        ASSERT_NO_THROW(AllocStatement((SQLTCHAR*)conn_string.c_str(), &m_conn,
-                                       &m_hstmt, true, true));
+        ASSERT_NO_THROW(AllocStatement((SQLTCHAR*)conn_string.c_str(), &m_env,
+                                       &m_conn, &m_hstmt, true, true));
     }
 
     void TearDown() {
         CloseCursor(&m_hstmt, true, true);
+        SQLFreeHandle(SQL_HANDLE_STMT, m_hstmt);
+        SQLDisconnect(m_conn);
+        SQLFreeHandle(SQL_HANDLE_ENV, m_env);
     }
 
     ~TestSQLSetCursorName() {
@@ -131,6 +146,7 @@ class TestSQLSetCursorName : public testing::Test {
     }
 
     std::wstring m_cursor_name = L"test_cursor";
+    SQLHENV m_env = SQL_NULL_HENV;
     SQLHDBC m_conn = SQL_NULL_HDBC;
     SQLHSTMT m_hstmt = SQL_NULL_HSTMT;
 };
@@ -141,8 +157,8 @@ class TestSQLGetCursorName : public testing::Test {
     }
 
     void SetUp() {
-        ASSERT_NO_THROW(AllocStatement((SQLTCHAR*)conn_string.c_str(), &m_conn,
-                                       &m_hstmt, true, true));
+        ASSERT_NO_THROW(AllocStatement((SQLTCHAR*)conn_string.c_str(), &m_env,
+                                       &m_conn, &m_hstmt, true, true));
         ASSERT_EQ(SQLSetCursorName(m_hstmt, (SQLTCHAR*)m_cursor_name.c_str(),
                                    SQL_NTS),
                   SQL_SUCCESS);
@@ -150,6 +166,9 @@ class TestSQLGetCursorName : public testing::Test {
 
     void TearDown() {
         CloseCursor(&m_hstmt, true, true);
+        SQLFreeHandle(SQL_HANDLE_STMT, m_hstmt);
+        SQLDisconnect(m_conn);
+        SQLFreeHandle(SQL_HANDLE_ENV, m_env);
     }
 
     ~TestSQLGetCursorName() {
@@ -160,6 +179,7 @@ class TestSQLGetCursorName : public testing::Test {
     SQLSMALLINT m_wrong_buffer_length = 1;
     SQLTCHAR m_cursor_name_buf[20];
     SQLSMALLINT m_cursor_name_length;
+    SQLHENV m_env = SQL_NULL_HENV;
     SQLHDBC m_conn = SQL_NULL_HDBC;
     SQLHSTMT m_hstmt = SQL_NULL_HSTMT;
 };
@@ -170,13 +190,17 @@ class TestSQLCancel : public testing::Test {
     }
 
     void SetUp() {
-        ASSERT_NO_THROW(AllocStatement((SQLTCHAR*)conn_string.c_str(), &m_conn,
-                                       &m_hstmt, true, true));
+        ASSERT_NO_THROW(AllocStatement((SQLTCHAR*)conn_string.c_str(), &m_env,
+                                       &m_conn, &m_hstmt, true, true));
     }
 
     void TearDown() {
-        if (m_hstmt != SQL_NULL_HSTMT)
+        if (m_hstmt != SQL_NULL_HSTMT) {
             CloseCursor(&m_hstmt, true, true);
+            SQLFreeHandle(SQL_HANDLE_STMT, m_hstmt);
+            SQLDisconnect(m_conn);
+            SQLFreeHandle(SQL_HANDLE_ENV, m_env);
+        }
     }
 
     ~TestSQLCancel() {
@@ -192,6 +216,7 @@ class TestSQLCancel : public testing::Test {
     std::wstring m_query =
         L"SELECT * FROM kibana_sample_data_flights AS f WHERE "
         L"f.Origin=f.Origin";
+    SQLHENV m_env = SQL_NULL_HENV;
     SQLHDBC m_conn = SQL_NULL_HDBC;
     SQLHSTMT m_hstmt = SQL_NULL_HSTMT;
 };
@@ -358,6 +383,10 @@ TEST_F(TestSQLCancel, QueryFinished) {
 }
 
 int main(int argc, char** argv) {
+#ifdef __APPLE__
+    // Enable malloc logging for detecting memory leaks.
+    system("export MallocStackLogging=1");
+#endif
     testing::internal::CaptureStdout();
     ::testing::InitGoogleTest(&argc, argv);
 
@@ -369,5 +398,10 @@ int main(int argc, char** argv) {
               << std::endl;
     WriteFileIfSpecified(argv, argv + argc, "-fout", output);
 
+#ifdef __APPLE__
+    // Disable malloc logging and report memory leaks
+    system("unset MallocStackLogging");
+    system("leaks itodbc_execution > leaks_itodbc_execution");
+#endif
     return failures;
 }
