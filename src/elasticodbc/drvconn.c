@@ -105,7 +105,6 @@ dconn_DoDialog(HWND hwnd, ConnInfo *ci) {
 
 LRESULT CALLBACK dconn_FDriverConnectProc(HWND hdlg, UINT wMsg, WPARAM wParam,
                                           LPARAM lParam) {
-    MYLOG(ES_DEBUG, "dconn_FDriverConnectProc\n");
     ConnInfo *ci;
 
     switch (wMsg) {

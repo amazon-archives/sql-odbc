@@ -179,6 +179,10 @@ static SQLRETURN SetupConnString(const SQLCHAR *conn_str_in,
         return SQL_ERROR;
     }
 
+    //This will be used to restore the log output dir fetched from connection string
+    //Since getDSNinfo overrides all available connection attributes
+    std::string conn_log_dir(ci->drivers.output_dir);
+
     // If the ConnInfo in the hdbc is missing anything, this function will fill
     // them in from the registry (assuming of course there is a DSN given -- if
     // not, it does nothing!)
@@ -192,6 +196,16 @@ static SQLRETURN SetupConnString(const SQLCHAR *conn_str_in,
     }
     logs_on_off(1, ci->drivers.loglevel, ci->drivers.loglevel);
 
+    //Sets log output dir to path retrived from connection string
+    //If connection string doesn't have log path then takes value from DSN
+    //If connection string & DSN both doesn't include log path then takes default value
+    if (!conn_log_dir.empty()) {
+        setLogDir(conn_log_dir.c_str());
+        conn_log_dir.clear();
+    } else {
+        setLogDir(ci->drivers.output_dir);
+    }
+    InitializeLogging();
     return SQL_SUCCESS;
 }
 
