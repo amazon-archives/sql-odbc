@@ -52,7 +52,7 @@ int QueryExecutionTime() {
         SQLHENV env = SQL_NULL_HENV;
         SQLHDBC conn = SQL_NULL_HDBC;
         SQLHSTMT hstmt = SQL_NULL_HSTMT;
-        if (SQL_SUCCEEDED(Setup(&env, & conn, &hstmt))) {
+        if (SQL_SUCCEEDED(Setup(&env, &conn, &hstmt))) {
             std::cout << "Time(ms) for query execution:" << std::endl;
             for (int i = 0; i < ITERATION_COUNT; i++) {
                 // Calculate time(ms) for query execution
