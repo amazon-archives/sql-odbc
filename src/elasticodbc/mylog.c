@@ -480,14 +480,29 @@ int writeGlobalLogs() {
     return 0;
 }
 
+void logInstallerError(int ret, const char *dir) {
+    DWORD err = (DWORD)ret;
+    char msg[SQL_MAX_MESSAGE_LENGTH] = "";
+    msg[0] = '\0';
+    ret = SQLInstallerError(1, &err, msg, sizeof(msg), NULL);
+    if (msg[0] != '\0')
+        MYLOG(ES_DEBUG, "Dir= %s ErrorMsg = %s\n", dir, msg);
+}
+
 int getLogDir(char *dir, int dirmax) {
-    return SQLGetPrivateProfileString(DBMS_NAME, INI_LOG_OUTPUT, "", dir, dirmax,
-                                      ODBCINST_INI);
+    int ret = SQLGetPrivateProfileString(DBMS_NAME, INI_LOG_OUTPUT, "",
+                                                dir, dirmax, ODBCINST_INI);
+    if (!ret)
+        logInstallerError(ret, dir);
+    return ret;
 }
 
 int setLogDir(const char *dir) {
-    return SQLWritePrivateProfileString(DBMS_NAME, INI_LOG_OUTPUT, dir,
-                                        ODBCINST_INI);
+    int ret = SQLWritePrivateProfileString(DBMS_NAME, INI_LOG_OUTPUT, dir,
+                                           ODBCINST_INI);
+    if (!ret) 
+        logInstallerError(ret, dir);
+    return ret;
 }
 
 /*
@@ -507,13 +522,13 @@ static void start_logging() {
 
 void InitializeLogging(void) {
     char dir[PATH_MAX];
-
     getLogDir(dir, sizeof(dir));
     if (dir[0])
         logdir = strdup(dir);
     mylog_initialize();
     qlog_initialize();
     start_logging();
+    MYLOG(ES_DEBUG, "Log Output Dir: %s\n", logdir);
 }
 
 void FinalizeLogging(void) {

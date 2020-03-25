@@ -246,8 +246,11 @@ LRESULT logOptionsProc(HWND hdlg, UINT wMsg, WPARAM wParam, LPARAM lParam) {
                             break;
                     }
                     setGlobalCommlog(ci->drivers.loglevel);
+                    setGlobalDebug(ci->drivers.loglevel);
+                    writeGlobalLogs();
                     GetDlgItemText(hdlg, IDC_LOG_PATH, ci->drivers.output_dir,
                                    sizeof(ci->drivers.output_dir));
+                    setLogDir(ci->drivers.output_dir);
                 }
 
                 case IDCANCEL:
