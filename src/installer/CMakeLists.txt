@@ -20,6 +20,9 @@ if(WIN32)
     # This is a unique id for the installer - required for Windows
     # Generated at https://www.guidgen.com/
     set(CPACK_WIX_UPGRADE_GUID "2D325BD7-1176-40E8-8AB8-C52DD2F7B792")
+	set(CPACK_WIX_PRODUCT_ICON "${CMAKE_CURRENT_SOURCE_DIR}/icon.ico")
+	set(CPACK_WIX_UI_BANNER "${CMAKE_CURRENT_SOURCE_DIR}/banner.bmp")
+	set(CPACK_WIX_UI_DIALOG "${CMAKE_CURRENT_SOURCE_DIR}/dialog.bmp")
 else()
     # See https://gitlab.kitware.com/cmake/community/-/wikis/doc/cpack/PackageGenerators for more details on package generators
 endif()
@@ -31,8 +34,8 @@ include(InstallRequiredSystemLibraries)
 install(TARGETS elasticodbc DESTINATION bin)
 
 # General package info - to be updated later
-set(CPACK_PACKAGE_NAME "opendistro-for-elasticsearch-sql-odbc")
-set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Elasticsearch SQL ODBC Driver")
+set(CPACK_PACKAGE_NAME "Opendistro SQL ODBC Driver")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Opendistro SQL ODBC Driver")
 set(CPACK_PACKAGE_DESCRIPTION_FILE "${PROJECT_ROOT}/README.md")
 set(CPACK_PACKAGE_VENDOR "Amazon.com")
 set(CPACK_PACKAGE_CONTACT "someemail@foo.blah")
