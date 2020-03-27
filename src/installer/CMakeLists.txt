@@ -20,9 +20,19 @@ if(WIN32)
     # This is a unique id for the installer - required for Windows
     # Generated at https://www.guidgen.com/
     set(CPACK_WIX_UPGRADE_GUID "2D325BD7-1176-40E8-8AB8-C52DD2F7B792")
+	
+	# The Icon shown next to the program name in Add/Remove programs
 	set(CPACK_WIX_PRODUCT_ICON "${CMAKE_CURRENT_SOURCE_DIR}/icon.ico")
+	
+	# The bitmap will appear at the top of all installer pages other than the welcome and completion dialogs
 	set(CPACK_WIX_UI_BANNER "${CMAKE_CURRENT_SOURCE_DIR}/banner.bmp")
+	
+	# Background bitmap used on the welcome and completion dialogs
 	set(CPACK_WIX_UI_DIALOG "${CMAKE_CURRENT_SOURCE_DIR}/dialog.bmp")
+
+	# This XML file is used for registry setup
+	set(CPACK_WIX_PATCH_FILE "${CMAKE_CURRENT_SOURCE_DIR}/patch.xml")
+	
 else()
     # See https://gitlab.kitware.com/cmake/community/-/wikis/doc/cpack/PackageGenerators for more details on package generators
 endif()
