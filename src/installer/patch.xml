@@ -37,6 +37,6 @@
 			<RegistryValue Type="string" Name="Region" Value="" />
 			<RegistryValue Type="string" Name="LogLevel" Value="0" />
 			<RegistryValue Type="string" Name="LogOutput" Value="C:\" />
-		</RegistryKey>	
+		</RegistryKey>		
 	</CPackWiXFragment>
 </CPackWiXPatch>

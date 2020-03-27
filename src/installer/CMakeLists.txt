@@ -46,7 +46,6 @@ install(TARGETS elasticodbc DESTINATION bin)
 # General package info - to be updated later
 set(CPACK_PACKAGE_NAME "Opendistro SQL ODBC Driver")
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Opendistro SQL ODBC Driver")
-set(CPACK_PACKAGE_DESCRIPTION_FILE "${PROJECT_ROOT}/README.md")
 set(CPACK_PACKAGE_VENDOR "Amazon")
 set(CPACK_PACKAGE_INSTALL_DIRECTORY "${CPACK_PACKAGE_NAME}")
 set(CPACK_SYSTEM_NAME "${CMAKE_SYSTEM_NAME}")
@@ -59,5 +58,17 @@ if(WIN32)
 else()
     # Add license for mac - may be able to use LICENSE directly
 endif()
+
+# Add documentation directory
+install(FILES "${PROJECT_ROOT}/README.md" DESTINATION doc COMPONENT "Docs")
+install(FILES "${PROJECT_ROOT}/LICENSE" DESTINATION doc COMPONENT "Docs")
+install(FILES "${PROJECT_ROOT}/THIRD-PARTY" DESTINATION doc COMPONENT "Docs")
+
+include(CPackComponent)
+
+cpack_add_component(Docs
+	DISPLAY_NAME "Documentation"
+	DESCRIPTION "Documentation about Opendistro SQL ODBC Driver"
+)
 
 include(CPack)
