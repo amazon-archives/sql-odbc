@@ -44,8 +44,8 @@ include(InstallRequiredSystemLibraries)
 install(TARGETS elasticodbc DESTINATION bin)
 
 # General package info - to be updated later
-set(CPACK_PACKAGE_NAME "Opendistro SQL ODBC Driver")
-set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Opendistro SQL ODBC Driver")
+set(CPACK_PACKAGE_NAME "Open Distro for Elasticsearch SQL ODBC Driver")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Open Distro for Elasticsearch SQL ODBC Driver")
 set(CPACK_PACKAGE_VENDOR "Amazon")
 set(CPACK_PACKAGE_INSTALL_DIRECTORY "${CPACK_PACKAGE_NAME}")
 set(CPACK_SYSTEM_NAME "${CMAKE_SYSTEM_NAME}")
@@ -68,7 +68,7 @@ include(CPackComponent)
 
 cpack_add_component(Docs
 	DISPLAY_NAME "Documentation"
-	DESCRIPTION "Documentation about Opendistro SQL ODBC Driver"
+	DESCRIPTION "Documentation about Open Distro for Elasticsearch SQL ODBC Driver"
 )
 
 include(CPack)
