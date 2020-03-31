@@ -113,6 +113,12 @@ fetch_googletest(
     )
 enable_testing()
 
+# If these are not explicitly set to empty, aws-sdk-cpp will take 
+# these and package everything in the user's /usr/local/ directories
+set(CMAKE_INSTALL_BINDIR "")
+set(CMAKE_INSTALL_LIBDIR "")
+set(CMAKE_INSTALL_INCLUDEDIR "")
+
 # Projects to build
 add_subdirectory(${ESODBC_SRC})
 add_subdirectory(${ESENLIST_SRC})

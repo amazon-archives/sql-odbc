@@ -22,6 +22,7 @@ if(WIN32)
     set(CPACK_WIX_UPGRADE_GUID "2D325BD7-1176-40E8-8AB8-C52DD2F7B792")
 else()
     # See https://gitlab.kitware.com/cmake/community/-/wikis/doc/cpack/PackageGenerators for more details on package generators
+    set(CPACK_GENERATOR "TGZ;productbuild")
 endif()
 
 # Include system libraries in installer
@@ -31,8 +32,7 @@ include(InstallRequiredSystemLibraries)
 install(TARGETS elasticodbc DESTINATION bin)
 
 # General package info - to be updated later
-set(CPACK_PACKAGE_NAME "opendistro-for-elasticsearch-sql-odbc")
-set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Elasticsearch SQL ODBC Driver")
+set(CPACK_PACKAGE_NAME "Open Distro for Elasticsearch SQL ODBC Driver")
 set(CPACK_PACKAGE_DESCRIPTION_FILE "${PROJECT_ROOT}/README.md")
 set(CPACK_PACKAGE_VENDOR "Amazon.com")
 set(CPACK_PACKAGE_CONTACT "someemail@foo.blah")
@@ -41,11 +41,16 @@ set(CPACK_SYSTEM_NAME "${CMAKE_SYSTEM_NAME}")
 set(CPACK_PACKAGE_VERSION "${PACKAGE_VERSION}")
 
 # Wix doesn't allow extensionless licenses, need to make a copy with an extension, .txt is appropriate
+# TODO: Apply branding choices to installers (#54) (using reasonable defaults for now)
 if(WIN32)
     configure_file("${PROJECT_ROOT}/LICENSE" "${PROJECT_ROOT}/LICENSE.txt" COPYONLY)
     set(CPACK_RESOURCE_FILE_LICENSE "${PROJECT_ROOT}/LICENSE.txt")
 else()
-    # Add license for mac - may be able to use LICENSE directly
+    configure_file("${PROJECT_ROOT}/LICENSE" "${PROJECT_ROOT}/LICENSE.txt" COPYONLY)
+    set(CPACK_RESOURCE_FILE_LICENSE "${PROJECT_ROOT}/LICENSE.txt")
+    configure_file("${PROJECT_ROOT}/README.md" "${PROJECT_ROOT}/README.txt" COPYONLY)
+    set(CPACK_RESOURCE_FILE_README "${PROJECT_ROOT}/README.txt")
+    set(CPACK_RESOURCE_FILE_WELCOME "${PROJECT_ROOT}/Welcome.txt")
 endif()
 
 include(CPack)
