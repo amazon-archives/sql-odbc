@@ -60,7 +60,11 @@ set(AWS_SDK_CPP "${CMAKE_CURRENT_SOURCE_DIR}/aws-sdk-cpp")
 set(AWS_SDK_CPP_CORE "${AWS_SDK_CPP}/aws-cpp-sdk-core/include")
 set(INSTALL_SRC "${CMAKE_CURRENT_SOURCE_DIR}/installer")
 
+# ODBC Driver version 
 set(PACKAGE_VERSION "0.0.0")
+add_compile_definitions( ES_ODBC_VERSION="${PACKAGE_VERSION}"
+                         # Comma separated version is required for odbc administrator's driver file.
+                         ES_ODBC_DRVFILE_VERSION=0,0,0 )
 
 # Extensions of base directories
 set(PERFORMANCE_TESTS "${CMAKE_CURRENT_SOURCE_DIR}/PerformanceTests")
