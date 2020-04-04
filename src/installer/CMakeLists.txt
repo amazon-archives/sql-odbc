@@ -40,11 +40,13 @@ endif()
 # Include system libraries in installer
 include(InstallRequiredSystemLibraries)
 
+set(CMAKE_INSTALL_PREFIX ${INSTALL_ROOT})
+
 # Add elasticodbc project to installer
 install(TARGETS elasticodbc DESTINATION bin)
 
 # General package info - to be updated later
-set(CPACK_PACKAGE_NAME "Open Distro for Elasticsearch SQL ODBC Driver")
+set(CPACK_PACKAGE_NAME "ODFE SQL ODBC Driver")
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Open Distro for Elasticsearch SQL ODBC Driver")
 set(CPACK_PACKAGE_VENDOR "Amazon")
 set(CPACK_PACKAGE_INSTALL_DIRECTORY "${CPACK_PACKAGE_NAME}")

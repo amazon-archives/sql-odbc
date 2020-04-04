@@ -21,11 +21,13 @@ include_directories(	${UT_HELPER}
 						${IT_HELPER}
 						${ESODBC_SRC}
 						${VLD_SRC}
-						${AWS_SDK_CPP_CORE})
+						${AWSSDK_INCLUDE_DIR}
+						)
 
 # Generate executable
 add_executable(itodbc_aws_auth ${SOURCE_FILES})
 
 # Library dependencies
-target_link_libraries(itodbc_aws_auth elasticodbc itodbc_helper ut_helper gtest_main aws-cpp-sdk-core)
+target_link_libraries(itodbc_aws_auth elasticodbc itodbc_helper ut_helper gtest_main)
 target_compile_definitions(itodbc_aws_auth PUBLIC _UNICODE UNICODE)
+target_link_libraries(itodbc_aws_auth aws-cpp-sdk-core)

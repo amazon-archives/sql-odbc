@@ -19,6 +19,10 @@ cmake_minimum_required(VERSION 3.16)
 else()
 cmake_minimum_required(VERSION 3.13) 
 endif()
+
+# Use shared libraries, which is the default for the AWS C++ SDK build.
+option(BUILD_SHARED_LIBS "Build shared libraries" ON)
+
 project(global_make_list)
 
 # This wasn't being picked up on mac, causes some symbol errors
@@ -56,8 +60,6 @@ set(ESENLIST_SRC "${CMAKE_CURRENT_SOURCE_DIR}/elasticenlist")
 set(INTEGRATION_TESTS "${CMAKE_CURRENT_SOURCE_DIR}/IntegrationTests")
 set(UNIT_TESTS "${CMAKE_CURRENT_SOURCE_DIR}/UnitTests")
 set(LIBRARY_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../libraries)
-set(AWS_SDK_CPP "${CMAKE_CURRENT_SOURCE_DIR}/aws-sdk-cpp")
-set(AWS_SDK_CPP_CORE "${AWS_SDK_CPP}/aws-cpp-sdk-core/include")
 set(INSTALL_SRC "${CMAKE_CURRENT_SOURCE_DIR}/installer")
 
 set(PACKAGE_VERSION "0.0.0")
@@ -72,6 +74,13 @@ set(VLD_SRC ${LIBRARY_DIRECTORY}/VisualLeakDetector/include)
 
 # Without this symbols will be exporting to Unix but not Windows
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS TRUE)	
+
+# Set path for AWS SDK
+set(aws-cpp-sdk-core_DIR "${PROJECT_ROOT}/bin64/Release/AWSSDK/lib/cmake/aws-cpp-sdk-core")
+set(aws-c-event-stream_DIR "${PROJECT_ROOT}/bin64/Release/AWSSDK/lib/aws-c-event-stream/cmake")
+set(aws-c-common_DIR "${PROJECT_ROOT}/bin64/Release/AWSSDK/lib/aws-c-common/cmake")
+set(aws-checksums_DIR "${PROJECT_ROOT}/bin64/Release/AWSSDK/lib/aws-checksums/cmake")
+find_package(AWSSDK REQUIRED core)
 
 # General compiler definitions
 add_compile_definitions		(	_SILENCE_TR1_NAMESPACE_DEPRECATION_WARNING
@@ -119,5 +128,4 @@ add_subdirectory(${ESENLIST_SRC})
 add_subdirectory(${INTEGRATION_TESTS})
 add_subdirectory(${UNIT_TESTS})
 add_subdirectory(${PERFORMANCE_TESTS})
-add_subdirectory(${AWS_SDK_CPP})
 add_subdirectory(${INSTALL_SRC})
