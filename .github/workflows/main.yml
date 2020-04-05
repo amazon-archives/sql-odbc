@@ -54,7 +54,7 @@ jobs:
     - name: add-msbuild-to-path
       uses: microsoft/setup-msbuild@v1.0.0
     - name: aws-sdk-cpp-setup
-    - run: |
+      run: |
         git clone "https://github.com/aws/aws-sdk-cpp.git"
         set prefix_path=%cd%\\bin64\\Release\\AWSSDK\\
         mkdir sdk-build
