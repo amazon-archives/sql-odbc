@@ -56,10 +56,10 @@ jobs:
     - name: aws-sdk-cpp-setup
       run: |
         git clone "https://github.com/aws/aws-sdk-cpp.git"
-        set prefix_path=%cd%\\bin64\\Release\\AWSSDK\\
+        $prefix_path = (pwd).path
         mkdir sdk-build
         cd sdk-build
-        cmake ..\\aws-sdk-cpp\\ -D CMAKE_INSTALL_PREFIX=%prefix_path% -D CMAKE_BUILD_TYPE=Release -D BUILD_ONLY="core" -D CUSTOM_MEMORY_MANAGEMENT="OFF" -D ENABLE_RTTI="OFF"
+        cmake ..\\aws-sdk-cpp\\ -D CMAKE_INSTALL_PREFIX=$prefix_path\\bin64\\Release\\AWSSDK\\ -D CMAKE_BUILD_TYPE=Release -D BUILD_ONLY="core" -D CUSTOM_MEMORY_MANAGEMENT="OFF" -D ENABLE_RTTI="OFF"
         msbuild ALL_BUILD.vcxproj
         msbuild INSTALL.vcxproj /p:Configuration=Release
         cd ..
@@ -68,7 +68,7 @@ jobs:
       run: |
         mkdir cmake-build
         cd cmake-build
-        cmake ..\\src -D CMAKE_INSTALL_PREFIX=%prefix_path%
+        cmake ..\\src -D CMAKE_INSTALL_PREFIX=$prefix_path\\bin64\\Release\\AWSSDK\\
         cd ..
     - name: build-driver
       run: |
