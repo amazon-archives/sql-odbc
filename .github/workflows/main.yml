@@ -23,7 +23,6 @@ jobs:
         make 
         make install 
         cd ..
-        cp ./AWSSDK/lib/*.dylib bin64
     - name: configure
       run: |
         prefix_path=$(pwd)
@@ -75,7 +74,6 @@ jobs:
         msbuild ALL_BUILD.vcxproj /p:Configuration=Release
         msbuild INSTALL.vcxproj /p:Configuration=Release
         cd ..
-        cp .\\AWSSDK\\bin\\*.dll bin64\\Release
     - name: configure
       run: |
         $prefix_path = (pwd).path
