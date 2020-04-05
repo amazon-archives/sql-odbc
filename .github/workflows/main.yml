@@ -23,13 +23,13 @@ jobs:
         sudo make 
         sudo make install 
         cd ..
-        cp ./bin64/Release/AWSSDK/bin/*.dll bin64/Release
+        cp ./bin64/Release/AWSSDK/lib/*.dylib bin64/Release
     - name: configure
       run: |
         prefix_path=$(pwd)
         mkdir cmake-build
         cd cmake-build
-        cmake ../src -D CMAKE_INSTALL_PREFIX=$prefix_path\bin64\Release\AWSSDK\
+        cmake ../src -D CMAKE_INSTALL_PREFIX=$prefix_path/bin64/Release/AWSSDK/
         cd ..
     - name: build-driver
       run: |
