@@ -19,11 +19,11 @@ jobs:
         prefix_path=$(pwd)
         mkdir sdk-build
         cd sdk-build
-        cmake ..\\aws-sdk-cpp\\ -D CMAKE_INSTALL_PREFIX=$prefix_path\bin64\Release\AWSSDK\ -D CMAKE_BUILD_TYPE=Release -D BUILD_ONLY="core" -D CUSTOM_MEMORY_MANAGEMENT="OFF" -D ENABLE_RTTI="OFF" -D ENABLE_TESTING="OFF"
-        sudo make /p:Configuration=Release
-        sudo make install /p:Configuration=Release
+        cmake ../aws-sdk-cpp/ -D CMAKE_INSTALL_PREFIX=$prefix_path/bin64/Release/AWSSDK/ -D CMAKE_BUILD_TYPE=Release -D BUILD_ONLY="core" -D CUSTOM_MEMORY_MANAGEMENT="OFF" -D ENABLE_RTTI="OFF" -D ENABLE_TESTING="OFF"
+        sudo make 
+        sudo make install 
         cd ..
-        cp .\\bin64\\Release\\AWSSDK\\bin\\*.dll bin64\\Release
+        cp ./bin64/Release/AWSSDK/bin/*.dll bin64/Release
     - name: configure
       run: |
         prefix_path=$(pwd)
