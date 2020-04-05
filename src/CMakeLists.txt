@@ -76,10 +76,10 @@ set(VLD_SRC ${LIBRARY_DIRECTORY}/VisualLeakDetector/include)
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS TRUE)	
 
 # Set path for AWS SDK
-set(aws-cpp-sdk-core_DIR "${PROJECT_ROOT}/bin64/Release/AWSSDK/lib/cmake/aws-cpp-sdk-core")
-set(aws-c-event-stream_DIR "${PROJECT_ROOT}/bin64/Release/AWSSDK/lib/aws-c-event-stream/cmake")
-set(aws-c-common_DIR "${PROJECT_ROOT}/bin64/Release/AWSSDK/lib/aws-c-common/cmake")
-set(aws-checksums_DIR "${PROJECT_ROOT}/bin64/Release/AWSSDK/lib/aws-checksums/cmake")
+set(aws-cpp-sdk-core_DIR "${PROJECT_ROOT}/AWSSDK/lib/cmake/aws-cpp-sdk-core")
+set(aws-c-event-stream_DIR "${PROJECT_ROOT}/AWSSDK/lib/aws-c-event-stream/cmake")
+set(aws-c-common_DIR "${PROJECT_ROOT}/AWSSDK/lib/aws-c-common/cmake")
+set(aws-checksums_DIR "${PROJECT_ROOT}/AWSSDK/lib/aws-checksums/cmake")
 find_package(AWSSDK REQUIRED core)
 
 # General compiler definitions
