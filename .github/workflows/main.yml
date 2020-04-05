@@ -59,7 +59,7 @@ jobs:
         $prefix_path = (pwd).path
         mkdir sdk-build
         cd sdk-build
-        cmake ..\\aws-sdk-cpp\\ -D CMAKE_INSTALL_PREFIX=$prefix_path\bin64\Release\AWSSDK\ -D CMAKE_BUILD_TYPE=Release -D BUILD_ONLY="core" -D CUSTOM_MEMORY_MANAGEMENT="OFF" -D ENABLE_RTTI="OFF"
+        cmake ..\\aws-sdk-cpp\\ -D CMAKE_INSTALL_PREFIX=$prefix_path\bin64\Release\AWSSDK\ -D CMAKE_BUILD_TYPE=Release -D BUILD_ONLY="core" -D CUSTOM_MEMORY_MANAGEMENT="OFF" -D ENABLE_RTTI="OFF" -D ENABLE_TESTING="OFF"
         msbuild ALL_BUILD.vcxproj /p:Configuration=Release
         msbuild INSTALL.vcxproj /p:Configuration=Release
         cd ..
