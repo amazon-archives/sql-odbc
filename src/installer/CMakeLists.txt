@@ -73,4 +73,14 @@ cpack_add_component(Docs
 	DESCRIPTION "Documentation about Open Distro for Elasticsearch SQL ODBC Driver"
 )
 
+# Install AWS dependencies
+if(WIN32)
+    install(FILES "${PROJECT_ROOT}/AWSSDK/bin/aws-c-common.dll" DESTINATION bin)
+    install(FILES "${PROJECT_ROOT}/AWSSDK/bin/aws-c-event-stream.dll" DESTINATION bin)
+    install(FILES "${PROJECT_ROOT}/AWSSDK/bin/aws-checksums.dll" DESTINATION bin)
+    install(FILES "${PROJECT_ROOT}/AWSSDK/bin/aws-cpp-sdk-core.dll" DESTINATION bin)
+else()
+    # Add aws dll files for mac
+endif()
+
 include(CPack)
