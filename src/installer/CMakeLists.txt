@@ -80,7 +80,10 @@ if(WIN32)
     install(FILES "${PROJECT_ROOT}/AWSSDK/bin/aws-checksums.dll" DESTINATION bin)
     install(FILES "${PROJECT_ROOT}/AWSSDK/bin/aws-cpp-sdk-core.dll" DESTINATION bin)
 else()
-    # Add aws dll files for mac
+    install(FILES "${PROJECT_ROOT}/AWSSDK/lib/libaws-c-common.dylib" DESTINATION bin)
+    install(FILES "${PROJECT_ROOT}/AWSSDK/lib/libaws-c-event-stream.dylib" DESTINATION bin)
+    install(FILES "${PROJECT_ROOT}/AWSSDK/lib/libaws-checksums.dylib" DESTINATION bin)
+    install(FILES "${PROJECT_ROOT}/AWSSDK/lib/libaws-cpp-sdk-core.dylib" DESTINATION bin)
 endif()
 
 include(CPack)
