@@ -60,8 +60,6 @@ include_directories(
 						${AWSSDK_INCLUDE_DIR}
 					)
 
-# target_compile_features(elasticodbc PUBLIC cxx_std_11)
-
 # Platform specific library dependencies
 if(WIN32)
 	# Windows specifiec
