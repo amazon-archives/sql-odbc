@@ -63,12 +63,12 @@ include_directories(
 # Platform specific library dependencies
 if(WIN32)
 	# Windows specifiec
-	target_link_libraries(elasticodbc aws-cpp-sdk-core wsock32 ws2_32 winmm user32 gdi32 legacy_stdio_definitions kernel32 advapi32 secur32 XOleHlp Wldap32 crypt32 Normaliz odbccp32 odbc32)
+	target_link_libraries(elasticodbc wsock32 ws2_32 winmm user32 gdi32 legacy_stdio_definitions aws-cpp-sdk-core kernel32 advapi32 secur32 XOleHlp Wldap32 crypt32 Normaliz odbccp32 odbc32)
 	target_link_libraries(elasticodbc debug msvcrtd)
 	target_link_libraries(elasticodbc optimized msvcrt)
 elseif(APPLE)
 	# Apple specific
-	target_link_libraries(elasticodbc aws-cpp-sdk-core iodbc iodbcinst)
+	target_link_libraries(elasticodbc iodbc iodbcinst aws-cpp-sdk-core)
 elseif(UNIX)
 	# Unix specific
 	include_directories(/usr/src/linux-headers-5.0.0-27/include)

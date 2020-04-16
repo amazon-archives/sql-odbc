@@ -25,5 +25,5 @@ include_directories(	${UT_HELPER}
 add_executable(ut_aws_sdk_cpp ${SOURCE_FILES})
 
 # Library dependencies
-target_link_libraries(ut_aws_sdk_cpp aws-cpp-sdk-core ut_helper gtest_main ${VLD})
+target_link_libraries(ut_aws_sdk_cpp ut_helper gtest_main aws-cpp-sdk-core ${VLD})
 target_compile_definitions(ut_aws_sdk_cpp PUBLIC _UNICODE UNICODE)

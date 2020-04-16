@@ -28,5 +28,5 @@ include_directories(	${UT_HELPER}
 add_executable(itodbc_aws_auth ${SOURCE_FILES})
 
 # Library dependencies
-target_link_libraries(itodbc_aws_auth aws-cpp-sdk-core elasticodbc itodbc_helper ut_helper gtest_main)
+target_link_libraries(itodbc_aws_auth elasticodbc itodbc_helper ut_helper gtest_main aws-cpp-sdk-core)
 target_compile_definitions(itodbc_aws_auth PUBLIC _UNICODE UNICODE)
