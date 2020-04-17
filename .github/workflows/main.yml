@@ -88,7 +88,7 @@ jobs:
       if: success()
       run: |
         cd cmake-build
-        cmake ..\\src -D CMAKE_INSTALL_PREFIX=$prefix_path\AWSSDK\ -D ENABLE_DRIVER_TESTING=OFF
+        cmake ..\\src -D CMAKE_INSTALL_PREFIX=$prefix_path\AWSSDK\ -D BUILD_WITH_TESTS=OFF
         msbuild .\PACKAGE.vcxproj -p:Configuration=Release
         cd ..
     #- name: test
