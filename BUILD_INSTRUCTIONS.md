@@ -35,15 +35,15 @@ As project uses AWS services for AWS SIGV4 authentication, you must [provide AWS
 
 Setup on Windows 
 * Open developer command prompt for VS.
-* Run aws_sdk_cpp_setup script from the project's root directory.
+* Run aws_sdk_cpp_setup.bat script from the project's root directory.
 
 Setup on Mac 
-* Run aws_sdk_cpp_setup script from the project's root directory.
+* Run aws_sdk_cpp_setup.sh script from the project's root directory.
 
 ### Generating the Build Files
 
 Open the project's root directory in a command line interface of your choice. Execute
->**cmake ./src -D CMAKE_INSTALL_PREFIX=<project_root_dir>/AWSSDK/**
+>**cmake ./src -D CMAKE_INSTALL_PREFIX=\<Project Directory>/AWSSDK/**
 
 **Note:** It is desirable to not run cmake directly in the 'src' directory, because it will generate build files inline with code.
 
