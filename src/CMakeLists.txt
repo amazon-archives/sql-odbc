@@ -22,6 +22,7 @@ endif()
 
 # Use shared libraries, which is the default for the AWS C++ SDK build.
 option(BUILD_SHARED_LIBS "Build shared libraries" ON)
+option(ENABLE_DRIVER_TESTING "Enable testing" ON)
 
 project(global_make_list)
 
@@ -114,6 +115,7 @@ elseif(UNIX)
 							)
 endif()
 
+if(ENABLE_DRIVER_TESTING)
 # GTest import
 include(gtest/googletest.cmake)
 fetch_googletest(
@@ -121,11 +123,14 @@ fetch_googletest(
     ${PROJECT_BINARY_DIR}/googletest
     )
 enable_testing()
+endif()
 
 # Projects to build
 add_subdirectory(${ESODBC_SRC})
 add_subdirectory(${ESENLIST_SRC})
+add_subdirectory(${INSTALL_SRC})
+if(ENABLE_DRIVER_TESTING)
 add_subdirectory(${INTEGRATION_TESTS})
 add_subdirectory(${UNIT_TESTS})
 add_subdirectory(${PERFORMANCE_TESTS})
-add_subdirectory(${INSTALL_SRC})
+endif()
