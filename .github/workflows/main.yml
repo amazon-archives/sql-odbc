@@ -13,11 +13,22 @@ jobs:
         brew install curl
         brew install cmake
         brew install libiodbc
+    - name: aws-sdk-cpp-setup
+      run: |
+        git clone "https://github.com/aws/aws-sdk-cpp.git"
+        prefix_path=$(pwd)
+        mkdir sdk-build
+        cd sdk-build
+        cmake ../aws-sdk-cpp/ -D CMAKE_INSTALL_PREFIX=$prefix_path/AWSSDK/ -D CMAKE_BUILD_TYPE=Release -D BUILD_ONLY="core" -D CUSTOM_MEMORY_MANAGEMENT="OFF" -D ENABLE_RTTI="OFF" -D ENABLE_TESTING="OFF"
+        make 
+        make install 
+        cd ..
     - name: configure
       run: |
+        prefix_path=$(pwd)
         mkdir cmake-build
         cd cmake-build
-        cmake ../src
+        cmake ../src -D CMAKE_INSTALL_PREFIX=$prefix_path/AWSSDK/
         cd ..
     - name: build-driver
       run: |
@@ -51,14 +62,25 @@ jobs:
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v1
-    - name: configure
-      run: |
-        mkdir cmake-build
-        cd cmake-build
-        cmake ..\\src
-        cd ..
     - name: add-msbuild-to-path
       uses: microsoft/setup-msbuild@v1.0.0
+    - name: aws-sdk-cpp-setup
+      run: |
+        git clone "https://github.com/aws/aws-sdk-cpp.git"
+        $prefix_path = (pwd).path
+        mkdir sdk-build
+        cd sdk-build
+        cmake ..\\aws-sdk-cpp\\ -D CMAKE_INSTALL_PREFIX=$prefix_path\AWSSDK\ -D CMAKE_BUILD_TYPE=Release -D BUILD_ONLY="core" -D CUSTOM_MEMORY_MANAGEMENT="OFF" -D ENABLE_RTTI="OFF" -D ENABLE_TESTING="OFF"
+        msbuild ALL_BUILD.vcxproj /p:Configuration=Release
+        msbuild INSTALL.vcxproj /p:Configuration=Release
+        cd ..
+    - name: configure
+      run: |
+        $prefix_path = (pwd).path
+        mkdir cmake-build
+        cd cmake-build
+        cmake ..\\src -D CMAKE_INSTALL_PREFIX=$prefix_path\AWSSDK\
+        cd ..
     - name: build-driver
       run: |
         cmake --build cmake-build --config Release

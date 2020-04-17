@@ -18,7 +18,7 @@ project(ut_aws_sdk_cpp)
 # Source, headers, and include dirs
 set(SOURCE_FILES test_aws_sdk_cpp.cpp)
 include_directories(	${UT_HELPER}
-						${AWS_SDK_CPP_CORE}
+						${AWSSDK_INCLUDE_DIR}
 						${VLD_SRC})
 
 # Generate executable
