@@ -34,8 +34,8 @@ As project uses AWS services for AWS SIGV4 authentication, you must [provide AWS
 ### Setting up AWS SDK 
 
 #### Windows 
-* Open Developer Command Prompt for VS.
-* Run aws_sdk_cpp_setup.bat script from the project's root directory.
+* Open Developer PowerShell for VS.
+* Run aws_sdk_cpp_setup.ps1 script from the project's root directory.
 
 #### Mac 
 * Run aws_sdk_cpp_setup.sh script from the project's root directory.
