@@ -38,6 +38,12 @@ Open the project's root directory in a command line interface of your choice. Ex
 
 **Note:** It is desirable to not run cmake directly in the 'src' directory, because it will generate build files inline with code.
 
+### General CMake Options
+
+**BUILD_WITH_TESTS**
+
+(Defaults to ON) If disabled, all tests and and test dependencies will be excluded from build which will optimize the installer package size. This option can set with the command line (using `-D`).
+
 ### Building with Windows
 
 Building the driver on Windows is done using **Visual Studio**.
