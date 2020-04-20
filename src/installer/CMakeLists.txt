@@ -51,7 +51,7 @@ set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Open Distro for Elasticsearch SQL ODBC Dr
 set(CPACK_PACKAGE_VENDOR "Amazon")
 set(CPACK_PACKAGE_INSTALL_DIRECTORY "${CPACK_PACKAGE_NAME}")
 set(CPACK_SYSTEM_NAME "${CMAKE_SYSTEM_NAME}")
-set(CPACK_PACKAGE_VERSION "${PACKAGE_VERSION}")
+set(CPACK_PACKAGE_VERSION "${DRIVER_PACKAGE_VERSION}")
 
 # Wix doesn't allow extensionless licenses, need to make a copy with an extension, .txt is appropriate
 if(WIN32)

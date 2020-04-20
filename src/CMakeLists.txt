@@ -62,7 +62,12 @@ set(UNIT_TESTS "${CMAKE_CURRENT_SOURCE_DIR}/UnitTests")
 set(LIBRARY_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../libraries)
 set(INSTALL_SRC "${CMAKE_CURRENT_SOURCE_DIR}/installer")
 
-set(PACKAGE_VERSION "0.0.0")
+# ODBC Driver version 
+set(DRIVER_PACKAGE_VERSION "0.0.0")
+set(DRIVER_PACKAGE_VERSION_COMMA_SEPARATED "0,0,0")
+add_compile_definitions( ES_ODBC_VERSION="${DRIVER_PACKAGE_VERSION}"
+                         # Comma separated version is required for odbc administrator's driver file.
+                         ES_ODBC_DRVFILE_VERSION=${DRIVER_PACKAGE_VERSION_COMMA_SEPARATED} )
 
 # Extensions of base directories
 set(PERFORMANCE_TESTS "${CMAKE_CURRENT_SOURCE_DIR}/PerformanceTests")
