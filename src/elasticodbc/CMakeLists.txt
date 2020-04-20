@@ -46,7 +46,7 @@ set(					HEADER_FILES
 # Generate dll (SHARED)
 if(WIN32)
 set(RESOURCE_FILES es_odbc.rc)
-add_library(elasticodbc SHARED ${SOURCE_FILES} ${HEADER_FILES} ${RESOURCE_FILES})
+add_library(elasticodbc SHARED ${SOURCE_FILES} ${HEADER_FILES} ${RESOURCE_FILES} ${AWSSDK_LIB_DIR})
 else()
 add_library(elasticodbc SHARED ${SOURCE_FILES} ${HEADER_FILES})
 endif()
@@ -57,7 +57,7 @@ include_directories(
 						${ESENLIST_SRC} 
 						${RABBIT_SRC}
 						${RAPIDJSON_SRC}
-						${AWS_SDK_CPP_CORE}
+						${AWSSDK_INCLUDE_DIR}
 					)
 
 # Platform specific library dependencies
@@ -72,5 +72,5 @@ elseif(APPLE)
 elseif(UNIX)
 	# Unix specific
 	include_directories(/usr/src/linux-headers-5.0.0-27/include)
-	target_link_libraries(elasticodbc odbc odbcinst)
+	target_link_libraries(elasticodbc aws-cpp-sdk-core odbc odbcinst)
 endif()

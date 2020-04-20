@@ -21,7 +21,8 @@ include_directories(	${UT_HELPER}
 						${IT_HELPER}
 						${ESODBC_SRC}
 						${VLD_SRC}
-						${AWS_SDK_CPP_CORE})
+						${AWSSDK_INCLUDE_DIR}
+						)
 
 # Generate executable
 add_executable(itodbc_aws_auth ${SOURCE_FILES})

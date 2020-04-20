@@ -41,16 +41,18 @@ endif()
 # Include system libraries in installer
 include(InstallRequiredSystemLibraries)
 
+set(CMAKE_INSTALL_PREFIX ${INSTALL_ROOT})
+
 # Add elasticodbc project to installer
 install(TARGETS elasticodbc DESTINATION bin)
 
 # General package info - to be updated later
-set(CPACK_PACKAGE_NAME "Open Distro for Elasticsearch SQL ODBC Driver")
+set(CPACK_PACKAGE_NAME "ODFE SQL ODBC Driver")
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Open Distro for Elasticsearch SQL ODBC Driver")
 set(CPACK_PACKAGE_VENDOR "Amazon")
 set(CPACK_PACKAGE_INSTALL_DIRECTORY "${CPACK_PACKAGE_NAME}")
 set(CPACK_SYSTEM_NAME "${CMAKE_SYSTEM_NAME}")
-set(CPACK_PACKAGE_VERSION "${PACKAGE_VERSION}")
+set(CPACK_PACKAGE_VERSION "${DRIVER_PACKAGE_VERSION}")
 
 # Wix doesn't allow extensionless licenses, need to make a copy with an extension, .txt is appropriate
 # TODO: Apply branding choices to installers (#54) (using reasonable defaults for now)
@@ -76,5 +78,18 @@ cpack_add_component(Docs
 	DISPLAY_NAME "Documentation"
 	DESCRIPTION "Documentation about Open Distro for Elasticsearch SQL ODBC Driver"
 )
+
+# Install AWS dependencies
+if(WIN32)
+    install(FILES "${PROJECT_ROOT}/AWSSDK/bin/aws-c-common.dll" DESTINATION bin)
+    install(FILES "${PROJECT_ROOT}/AWSSDK/bin/aws-c-event-stream.dll" DESTINATION bin)
+    install(FILES "${PROJECT_ROOT}/AWSSDK/bin/aws-checksums.dll" DESTINATION bin)
+    install(FILES "${PROJECT_ROOT}/AWSSDK/bin/aws-cpp-sdk-core.dll" DESTINATION bin)
+else()
+    install(FILES "${PROJECT_ROOT}/AWSSDK/lib/libaws-c-common.dylib" DESTINATION bin)
+    install(FILES "${PROJECT_ROOT}/AWSSDK/lib/libaws-c-event-stream.dylib" DESTINATION bin)
+    install(FILES "${PROJECT_ROOT}/AWSSDK/lib/libaws-checksums.dylib" DESTINATION bin)
+    install(FILES "${PROJECT_ROOT}/AWSSDK/lib/libaws-cpp-sdk-core.dylib" DESTINATION bin)
+endif()
 
 include(CPack)
