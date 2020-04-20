@@ -31,10 +31,19 @@ Before building the driver, the build files for the system must be generated, th
 
 As project uses AWS services for AWS SIGV4 authentication, you must [provide AWS credentials](https://docs.aws.amazon.com/sdk-for-cpp/v1/developer-guide/credentials.html). 
 
+### Setting up AWS SDK 
+
+#### Windows 
+* Open Developer PowerShell for VS.
+* Run aws_sdk_cpp_setup.ps1 script from the project's root directory.
+
+#### Mac 
+* Run aws_sdk_cpp_setup.sh script from the project's root directory.
+
 ### Generating the Build Files
 
 Open the project's root directory in a command line interface of your choice. Execute
->**cmake ./src**
+>**cmake ./src -D CMAKE_INSTALL_PREFIX=\<Project Directory>/AWSSDK/**
 
 **Note:** It is desirable to not run cmake directly in the 'src' directory, because it will generate build files inline with code.
 
