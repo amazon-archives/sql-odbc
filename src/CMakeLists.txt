@@ -59,6 +59,7 @@ set(LIBRARY_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../libraries)
 set(AWS_SDK_CPP "${CMAKE_CURRENT_SOURCE_DIR}/aws-sdk-cpp")
 set(AWS_SDK_CPP_CORE "${AWS_SDK_CPP}/aws-cpp-sdk-core/include")
 set(INSTALL_SRC "${CMAKE_CURRENT_SOURCE_DIR}/installer")
+set(DSN_INSTALLER_SRC "${CMAKE_CURRENT_SOURCE_DIR}/DSNInstaller")
 
 set(PACKAGE_VERSION "0.0.0")
 
@@ -127,3 +128,4 @@ add_subdirectory(${UNIT_TESTS})
 add_subdirectory(${PERFORMANCE_TESTS})
 add_subdirectory(${AWS_SDK_CPP})
 add_subdirectory(${INSTALL_SRC})
+add_subdirectory(${DSN_INSTALLER_SRC})
