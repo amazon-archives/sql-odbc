@@ -42,7 +42,7 @@ Open the project's root directory in a command line interface of your choice. Ex
 
 **BUILD_WITH_TESTS**
 
-(Defaults to ON) If disabled, all tests will be excluded from build which will optimize the installer package size. This option can set with the command line via -D.
+(Defaults to ON) If disabled, all tests and and test dependencies will be excluded from build which will optimize the installer package size. This option can set with the command line (using `-D`).
 
 ### Building with Windows
 

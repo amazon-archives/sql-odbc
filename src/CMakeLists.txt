@@ -117,21 +117,22 @@ elseif(UNIX)
 endif()
 
 if(BUILD_WITH_TESTS)
-# GTest import
-include(gtest/googletest.cmake)
-fetch_googletest(
-    ${PROJECT_SOURCE_DIR}/gtest
-    ${PROJECT_BINARY_DIR}/googletest
-    )
-enable_testing()
+	# GTest import
+	include(gtest/googletest.cmake)
+	fetch_googletest(
+		${PROJECT_SOURCE_DIR}/gtest
+		${PROJECT_BINARY_DIR}/googletest
+		)
+	enable_testing()
 endif()
 
 # Projects to build
 add_subdirectory(${ESODBC_SRC})
 add_subdirectory(${ESENLIST_SRC})
 add_subdirectory(${INSTALL_SRC})
+
 if(BUILD_WITH_TESTS)
-add_subdirectory(${INTEGRATION_TESTS})
-add_subdirectory(${UNIT_TESTS})
-add_subdirectory(${PERFORMANCE_TESTS})
+	add_subdirectory(${INTEGRATION_TESTS})
+	add_subdirectory(${UNIT_TESTS})
+	add_subdirectory(${PERFORMANCE_TESTS})
 endif()
