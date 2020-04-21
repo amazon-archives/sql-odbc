@@ -18,6 +18,8 @@
 #include "pch.h"
 #include "unit_test_helper.h"
 #include "it_odbc_helper.h"
+#include "version.h"
+#include <codecvt>
 #ifndef WIN32
 #include <climits>
 #endif
@@ -136,7 +138,10 @@ int Ver1GEVer2(std::wstring ver_1_str, std::wstring ver_2_str) {
 /////////////////
 
 TEST_SQL_GET_INFO_STRING(SQLDriverODBCVer, SQL_DRIVER_ODBC_VER, L"03.51");
-TEST_SQL_GET_INFO_STRING(SQLDriverVer, SQL_DRIVER_VER, L"0.1.0");
+
+std::wstring version = std::wstring_convert< std::codecvt_utf8_utf16< wchar_t >, wchar_t >{}
+        .from_bytes(ELASTICSEARCHDRIVERVERSION);
+TEST_SQL_GET_INFO_STRING(SQLDriverVer, SQL_DRIVER_VER, version);
 
 //////////////////////
 // Data Source Info //
