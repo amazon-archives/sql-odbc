@@ -15,19 +15,15 @@
  */
 
 // clang-format off
-#include "unit_test_helper.h"
-#include "it_odbc_helper.h"
-
-#ifdef WIN32
-#include <windows.h>
-#endif
-#include <codecvt>
 #include <sql.h>
 #include <sqlext.h>
 #include <iodbcinst.h>
+#include <codecvt>
+#include <string>
+#include <vector>
 #include <iostream>
-#include <chrono>
 // clang-format on
+
 std::wstring driver_name = L"ODFE SQL ODBC Driver";
 std::wstring driver_filename = L"libelasticodbc.dylib";
 std::wstring dsn_name = L"ODFE SQL ODBC DSN";
@@ -225,13 +221,13 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    // // Add DSN entry
+    // Add DSN entry
     bool install_dsn_success = install_dsn();
     if (!install_dsn_success) {
         return 1;
     }
 
-    // // Add DSN properties
+    // Add DSN properties
     bool add_properties_success =
         add_properties_to_dsn(dsn_options, user_install_path + driver_filename);
     if (!add_properties_success) {

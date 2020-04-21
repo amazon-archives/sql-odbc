@@ -16,7 +16,7 @@
 project(dsn_installer)
 
 set(SOURCE_FILES dsn_installer.cpp)
-include_directories(${ESODBC_SRC} ${UT_HELPER} ${IT_HELPER})
+include_directories(${ESODBC_SRC})
 
 add_executable(dsn_installer ${SOURCE_FILES})
 

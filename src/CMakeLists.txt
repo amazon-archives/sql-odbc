@@ -132,17 +132,15 @@ if(BUILD_WITH_TESTS)
 	enable_testing()
 endif()
 
-# If these are not explicitly set to empty, aws-sdk-cpp will take 
-# these and package everything in the user's /usr/local/ directories
-set(CMAKE_INSTALL_BINDIR "")
-set(CMAKE_INSTALL_LIBDIR "")
-set(CMAKE_INSTALL_INCLUDEDIR "")
-
 # Projects to build
 add_subdirectory(${ESODBC_SRC})
 add_subdirectory(${ESENLIST_SRC})
 add_subdirectory(${INSTALL_SRC})
-add_subdirectory(${DSN_INSTALLER_SRC})
+
+# Only build & package DSN installer for Mac platforms
+if(APPLE)
+	add_subdirectory(${DSN_INSTALLER_SRC})
+endif()
 
 if(BUILD_WITH_TESTS)
 	add_subdirectory(${INTEGRATION_TESTS})
