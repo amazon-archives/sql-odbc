@@ -1,5 +1,3 @@
-#!/bin/bash
-
 #
 #   Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 #
@@ -15,18 +13,12 @@
 #   permissions and limitations under the License.
 #
 
-git clone "https://github.com/aws/aws-sdk-cpp.git"
+project(dsn_installer)
 
-prefix_path=$(pwd)
+set(SOURCE_FILES dsn_installer.cpp)
+include_directories(${ESODBC_SRC})
 
-mkdir sdk-build
+add_executable(dsn_installer ${SOURCE_FILES})
 
-cd sdk-build
-
-cmake ../aws-sdk-cpp/ -D CMAKE_INSTALL_PREFIX=$prefix_path/AWSSDK/ -D CMAKE_BUILD_TYPE=Release -D BUILD_ONLY="core" -D CUSTOM_MEMORY_MANAGEMENT="OFF" -D ENABLE_RTTI="OFF" -D ENABLE_TESTING="OFF"
-
-make 
-
-make install 
-
-cd ..
+target_link_libraries(dsn_installer elasticodbc)
+target_compile_definitions(dsn_installer PUBLIC _UNICODE UNICODE)

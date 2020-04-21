@@ -63,6 +63,7 @@ set(INTEGRATION_TESTS "${CMAKE_CURRENT_SOURCE_DIR}/IntegrationTests")
 set(UNIT_TESTS "${CMAKE_CURRENT_SOURCE_DIR}/UnitTests")
 set(LIBRARY_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../libraries)
 set(INSTALL_SRC "${CMAKE_CURRENT_SOURCE_DIR}/installer")
+set(DSN_INSTALLER_SRC "${CMAKE_CURRENT_SOURCE_DIR}/DSNInstaller")
 
 # ODBC Driver version 
 set(DRIVER_PACKAGE_VERSION "0.0.0")
@@ -135,6 +136,11 @@ endif()
 add_subdirectory(${ESODBC_SRC})
 add_subdirectory(${ESENLIST_SRC})
 add_subdirectory(${INSTALL_SRC})
+
+# Only build & package DSN installer for Mac platforms
+if(APPLE)
+	add_subdirectory(${DSN_INSTALLER_SRC})
+endif()
 
 if(BUILD_WITH_TESTS)
 	add_subdirectory(${INTEGRATION_TESTS})
