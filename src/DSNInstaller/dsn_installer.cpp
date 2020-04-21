@@ -24,9 +24,14 @@
 #include <iostream>
 // clang-format on
 
+// Necessary for installing driver, since the driver description needs to
+// maintain null characters.
+using namespace std::string_literals;
+
 std::wstring driver_name = L"ODFE SQL ODBC Driver";
 std::wstring driver_filename = L"libelasticodbc.dylib";
 std::wstring dsn_name = L"ODFE SQL ODBC DSN";
+std::wstring dsn_ini_filename = L"odfesqlodbc.ini";
 
 std::wstring driver_name_placeholder = L"%DRIVER_NAME%";
 std::wstring driver_path_placeholder = L"%DRIVER_PATH%";
@@ -41,8 +46,6 @@ std::vector< std::pair< std::wstring, std::wstring > > dsn_options = {
     {L"Auth", L"NONE"},
     {L"UseSSL", L"0"},
     {L"ResponseTimeout", L"10"}};
-
-#define PRINTLN(s) std::wcout << (s) << std::endl;
 
 void print_error_message(DWORD error_code, wchar_t *error_message) {
     switch (error_code) {
@@ -74,7 +77,7 @@ void print_error_message(DWORD error_code, wchar_t *error_message) {
             printf("\t[INVALID_PATH] %S\n", error_message);
             break;
         default:
-            printf("??? Error code is %d\n", error_code);
+            printf("\t%d\n", error_code);
     }
 }
 
@@ -96,26 +99,6 @@ void print_installer_error() {
     } while (ret != SQL_NO_DATA);
 }
 
-#define PRINT_IF_ERROR(b)        \
-    if (!(b)) {                  \
-        print_installer_error(); \
-    }
-
-void print_installed_drivers() {
-    PRINTLN("== Getting Installed Drivers [SQLGetInstalledDrivers]");
-    SQLWCHAR driver_list[256];
-    WORD list_size;
-    bool driver_get_success =
-        SQLGetInstalledDriversW(driver_list, 256, &list_size);
-    PRINT_IF_ERROR(driver_get_success);
-
-    for (LPWSTR pszz = driver_list; *pszz; pszz += wcslen(pszz) + 1) {
-        printf("Driver List: %S\n", pszz);
-    }
-}
-
-using namespace std::string_literals;
-
 void replace_placeholder(std::wstring &source, std::wstring placeholder,
                          std::wstring contents) {
     size_t index = source.find(placeholder);
@@ -129,27 +112,19 @@ bool install_driver(std::wstring install_path) {
         L"%DRIVER_NAME%\0"
         L"Driver=%DRIVER_PATH%\0"
         L"Setup=%SETUP_PATH%\0\0"s;
-
     std::wstring driver_path = install_path + driver_filename;
 
-    // replace driver name
     replace_placeholder(driver_install_str, driver_name_placeholder,
                         driver_name);
     replace_placeholder(driver_install_str, driver_path_placeholder,
                         driver_path);
     replace_placeholder(driver_install_str, setup_path_placeholder,
                         driver_path);
-    // size_t index = driver_install_str.find(L"%DRIVER_NAME%");
-    // if (index != std::string::npos) {
-    //     driver_install_str.replace(index, driver_name.size(), driver_name);
-    // }
 
     SQLWCHAR out_path[512];
     WORD out_path_length = 512;
     WORD num_out_path_bytes;
     DWORD out_usage_count = 0;
-    PRINTLN("== Installing driver [SQLInstallDriverExW]");
-    printf("Install path: %S\n", install_path.c_str());
     bool success =
         SQLInstallDriverExW(driver_install_str.c_str(), install_path.c_str(),
                             out_path, out_path_length, &num_out_path_bytes,
@@ -159,14 +134,10 @@ bool install_driver(std::wstring install_path) {
         return 1;
     }
 
-    printf("Out path: %S [%d][%d]\n", out_path, out_path_length,
-           num_out_path_bytes);
-    printf("Usage count: %d\n", out_usage_count);
     return success;
 }
 
 bool install_dsn() {
-    PRINTLN("== Adding DSN entry [SQLWriteDSNToIni]");
     bool success = SQLWriteDSNToIniW(dsn_name.c_str(), driver_name.c_str());
     if (!success) {
         print_installer_error();
@@ -178,7 +149,6 @@ bool install_dsn() {
 bool add_properties_to_dsn(
     std::vector< std::pair< std::wstring, std::wstring > > options,
     std::wstring driver_path) {
-    PRINTLN("== Adding DSN properties [SQLWritePrivateProfileStringW]");
     bool success = false;
     for (auto dsn_config_option : options) {
         std::wstring key = dsn_config_option.first;
@@ -188,9 +158,9 @@ bool add_properties_to_dsn(
             replace_placeholder(value, driver_path_placeholder, driver_path);
         }
 
-        printf("-- Writing %S = %S to .odbc.ini\n", key.c_str(), value.c_str());
-        success = SQLWritePrivateProfileStringW(
-            dsn_name.c_str(), key.c_str(), value.c_str(), L"odfesqlodbc.ini");
+        success = SQLWritePrivateProfileStringW(dsn_name.c_str(), key.c_str(),
+                                                value.c_str(),
+                                                dsn_ini_filename.c_str());
         if (!success) {
             print_installer_error();
             return 1;
@@ -200,24 +170,18 @@ bool add_properties_to_dsn(
 }
 
 int main(int argc, char *argv[]) {
-    std::cout << "=== Installing ODFE SQL ODBC Driver ===" << std::endl;
-
     // Get install path from args
     if (!argv || argc != 2) {
         printf("Error! Driver path not supplied\n");
         return 1;
     }
-    // std::string arg1 = ;
     std::wstring user_install_path =
         std::wstring_convert< std::codecvt_utf8_utf16< wchar_t >, wchar_t >{}
             .from_bytes(argv[1]);
 
-    // printf("driver_path = %s\n", driver_path.c_str());
-
     // Install Driver entry
     bool install_driver_success = install_driver(user_install_path);
     if (!install_driver_success) {
-        printf("!@# %d\n", install_driver_success);
         return 1;
     }
 
