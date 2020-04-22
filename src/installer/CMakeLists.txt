@@ -34,8 +34,9 @@ if(WIN32)
     set(CPACK_WIX_PATCH_FILE "${CMAKE_CURRENT_SOURCE_DIR}/patch.xml")
 	
 else()
-    # See https://gitlab.kitware.com/cmake/community/-/wikis/doc/cpack/PackageGenerators for more details on package generators
-    set(CPACK_GENERATOR "TGZ;productbuild")
+    set(CPACK_GENERATOR "productbuild")
+
+    set(CPACK_POSTFLIGHT_DRIVER_SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/postinstall")
 endif()
 
 # Include system libraries in installer
@@ -44,7 +45,8 @@ include(InstallRequiredSystemLibraries)
 set(CMAKE_INSTALL_PREFIX ${INSTALL_ROOT})
 
 # Add elasticodbc project to installer
-install(TARGETS elasticodbc DESTINATION bin)
+install(TARGETS elasticodbc DESTINATION bin COMPONENT "Driver")
+install(FILES "${PROJECT_ROOT}/bin64/dsn_installer" DESTINATION bin COMPONENT "Driver")
 
 # General package info - to be updated later
 set(CPACK_PACKAGE_NAME "ODFE SQL ODBC Driver")
@@ -78,18 +80,22 @@ cpack_add_component(Docs
 	DISPLAY_NAME "Documentation"
 	DESCRIPTION "Documentation about Open Distro for Elasticsearch SQL ODBC Driver"
 )
+cpack_add_component(Driver
+	DISPLAY_NAME "Driver"
+	DESCRIPTION "Library files for running the Open Distro for Elasticsearch SQL ODBC Driver"
+)
 
 # Install AWS dependencies
 if(WIN32)
-    install(FILES "${PROJECT_ROOT}/AWSSDK/bin/aws-c-common.dll" DESTINATION bin)
-    install(FILES "${PROJECT_ROOT}/AWSSDK/bin/aws-c-event-stream.dll" DESTINATION bin)
-    install(FILES "${PROJECT_ROOT}/AWSSDK/bin/aws-checksums.dll" DESTINATION bin)
-    install(FILES "${PROJECT_ROOT}/AWSSDK/bin/aws-cpp-sdk-core.dll" DESTINATION bin)
+    install(FILES "${PROJECT_ROOT}/AWSSDK/bin/aws-c-common.dll" DESTINATION bin COMPONENT "Driver")
+    install(FILES "${PROJECT_ROOT}/AWSSDK/bin/aws-c-event-stream.dll" DESTINATION bin COMPONENT "Driver")
+    install(FILES "${PROJECT_ROOT}/AWSSDK/bin/aws-checksums.dll" DESTINATION bin COMPONENT "Driver")
+    install(FILES "${PROJECT_ROOT}/AWSSDK/bin/aws-cpp-sdk-core.dll" DESTINATION bin COMPONENT "Driver")
 else()
-    install(FILES "${PROJECT_ROOT}/AWSSDK/lib/libaws-c-common.dylib" DESTINATION bin)
-    install(FILES "${PROJECT_ROOT}/AWSSDK/lib/libaws-c-event-stream.dylib" DESTINATION bin)
-    install(FILES "${PROJECT_ROOT}/AWSSDK/lib/libaws-checksums.dylib" DESTINATION bin)
-    install(FILES "${PROJECT_ROOT}/AWSSDK/lib/libaws-cpp-sdk-core.dylib" DESTINATION bin)
+    install(FILES "${PROJECT_ROOT}/AWSSDK/lib/libaws-c-common.dylib" DESTINATION bin COMPONENT "Driver")
+    install(FILES "${PROJECT_ROOT}/AWSSDK/lib/libaws-c-event-stream.dylib" DESTINATION bin COMPONENT "Driver")
+    install(FILES "${PROJECT_ROOT}/AWSSDK/lib/libaws-checksums.dylib" DESTINATION bin COMPONENT "Driver")
+    install(FILES "${PROJECT_ROOT}/AWSSDK/lib/libaws-cpp-sdk-core.dylib" DESTINATION bin COMPONENT "Driver")
 endif()
 
 include(CPack)
