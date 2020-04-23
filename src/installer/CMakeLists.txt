@@ -36,6 +36,19 @@ if(WIN32)
 else()
     # See https://gitlab.kitware.com/cmake/community/-/wikis/doc/cpack/PackageGenerators for more details on package generators
     set(CPACK_GENERATOR "TGZ;productbuild")
+
+    # The productbuild generator copies files from this directory
+    set(CPACK_PRODUCTBUILD_RESOURCES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Resources")
+
+    # Background setup to Distribution XML
+    set(CPACK_PRODUCTBUILD_BACKGROUND "background.bmp")
+    set(CPACK_PRODUCTBUILD_BACKGROUND_ALIGNMENT "bottomleft")
+    set(CPACK_PRODUCTBUILD_BACKGROUND_SCALING "none")
+
+    # Background setup for the Dark Aqua theme to Distribution XML
+    set(CPACK_PRODUCTBUILD_BACKGROUND_DARKAQUA "background_darkaqua.bmp")
+    set(CPACK_PRODUCTBUILD_BACKGROUND_DARKAQUA_ALIGNMENT "bottomleft")
+    set(CPACK_PRODUCTBUILD_BACKGROUND_DARKAQUA_SCALING "none")
 endif()
 
 # Include system libraries in installer
@@ -62,9 +75,8 @@ if(WIN32)
 else()
     configure_file("${PROJECT_ROOT}/LICENSE" "${PROJECT_ROOT}/LICENSE.txt" COPYONLY)
     set(CPACK_RESOURCE_FILE_LICENSE "${PROJECT_ROOT}/LICENSE.txt")
-    configure_file("${PROJECT_ROOT}/README.md" "${PROJECT_ROOT}/README.txt" COPYONLY)
-    set(CPACK_RESOURCE_FILE_README "${PROJECT_ROOT}/README.txt")
-    set(CPACK_RESOURCE_FILE_WELCOME "${PROJECT_ROOT}/Welcome.txt")
+    set(CPACK_RESOURCE_FILE_README "${CMAKE_CURRENT_SOURCE_DIR}/Resources/README.txt")
+    set(CPACK_RESOURCE_FILE_WELCOME "${CMAKE_CURRENT_SOURCE_DIR}/Resources/Welcome.txt")
 endif()
 
 # Add documentation directory
