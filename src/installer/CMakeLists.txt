@@ -13,6 +13,20 @@
 #   permissions and limitations under the License.
 #
 
+include(InstallRequiredSystemLibraries)
+include(CPackComponent)
+
+set(CMAKE_INSTALL_PREFIX ${INSTALL_ROOT})
+
+# General package info
+set(CPACK_PACKAGE_NAME "ODFE SQL ODBC Driver")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Open Distro for Elasticsearch SQL ODBC Driver")
+set(CPACK_PACKAGE_VENDOR "Amazon")
+set(CPACK_PACKAGE_INSTALL_DIRECTORY "${CPACK_PACKAGE_NAME}")
+set(CPACK_SYSTEM_NAME "${CMAKE_SYSTEM_NAME}")
+set(CPACK_PACKAGE_VERSION "${DRIVER_PACKAGE_VERSION}")
+
+# OS-specific package info
 if(WIN32)
     # Set generator to WIX
     set(CPACK_GENERATOR "WIX")
@@ -32,36 +46,17 @@ if(WIN32)
 
     # This XML file is used for registry setup
     set(CPACK_WIX_PATCH_FILE "${CMAKE_CURRENT_SOURCE_DIR}/patch.xml")
-	
-else()
-    set(CPACK_GENERATOR "productbuild")
 
-    set(CPACK_POSTFLIGHT_DRIVER_SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/postinstall")
-endif()
-
-# Include system libraries in installer
-include(InstallRequiredSystemLibraries)
-
-set(CMAKE_INSTALL_PREFIX ${INSTALL_ROOT})
-
-# Add elasticodbc project to installer
-install(TARGETS elasticodbc DESTINATION bin COMPONENT "Driver")
-install(FILES "${PROJECT_ROOT}/bin64/dsn_installer" DESTINATION bin COMPONENT "Driver")
-
-# General package info - to be updated later
-set(CPACK_PACKAGE_NAME "ODFE SQL ODBC Driver")
-set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Open Distro for Elasticsearch SQL ODBC Driver")
-set(CPACK_PACKAGE_VENDOR "Amazon")
-set(CPACK_PACKAGE_INSTALL_DIRECTORY "${CPACK_PACKAGE_NAME}")
-set(CPACK_SYSTEM_NAME "${CMAKE_SYSTEM_NAME}")
-set(CPACK_PACKAGE_VERSION "${DRIVER_PACKAGE_VERSION}")
-
-# Wix doesn't allow extensionless licenses, need to make a copy with an extension, .txt is appropriate
-# TODO: Apply branding choices to installers (#54) (using reasonable defaults for now)
-if(WIN32)
+    # CPack doesn't allow extensionless licenses, need to make a copy with an extension, .txt is appropriate
     configure_file("${PROJECT_ROOT}/LICENSE" "${PROJECT_ROOT}/LICENSE.txt" COPYONLY)
     set(CPACK_RESOURCE_FILE_LICENSE "${PROJECT_ROOT}/LICENSE.txt")
 else()
+    set(CPACK_GENERATOR "productbuild")
+
+    # This script will be run once the Driver component has finished installing.
+    set(CPACK_POSTFLIGHT_DRIVER_SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/postinstall")
+
+    # CPack doesn't allow extensionless licenses, need to make a copy with an extension, .txt is appropriate
     configure_file("${PROJECT_ROOT}/LICENSE" "${PROJECT_ROOT}/LICENSE.txt" COPYONLY)
     set(CPACK_RESOURCE_FILE_LICENSE "${PROJECT_ROOT}/LICENSE.txt")
     configure_file("${PROJECT_ROOT}/README.md" "${PROJECT_ROOT}/README.txt" COPYONLY)
@@ -69,13 +64,7 @@ else()
     set(CPACK_RESOURCE_FILE_WELCOME "${PROJECT_ROOT}/Welcome.txt")
 endif()
 
-# Add documentation directory
-install(FILES "${PROJECT_ROOT}/README.md" DESTINATION doc COMPONENT "Docs")
-install(FILES "${PROJECT_ROOT}/LICENSE" DESTINATION doc COMPONENT "Docs")
-install(FILES "${PROJECT_ROOT}/THIRD-PARTY" DESTINATION doc COMPONENT "Docs")
-
-include(CPackComponent)
-
+# Set up components for installer
 cpack_add_component(Docs
 	DISPLAY_NAME "Documentation"
 	DESCRIPTION "Documentation about Open Distro for Elasticsearch SQL ODBC Driver"
@@ -84,6 +73,17 @@ cpack_add_component(Driver
 	DISPLAY_NAME "Driver"
 	DESCRIPTION "Library files for running the Open Distro for Elasticsearch SQL ODBC Driver"
 )
+
+# Install driver files
+install(TARGETS elasticodbc DESTINATION bin COMPONENT "Driver")
+if(APPLE)
+    install(FILES "${PROJECT_ROOT}/bin64/dsn_installer" DESTINATION bin COMPONENT "Driver")
+endif()
+
+# Install documentation files
+install(FILES "${PROJECT_ROOT}/README.md" DESTINATION doc COMPONENT "Docs")
+install(FILES "${PROJECT_ROOT}/LICENSE" DESTINATION doc COMPONENT "Docs")
+install(FILES "${PROJECT_ROOT}/THIRD-PARTY" DESTINATION doc COMPONENT "Docs")
 
 # Install AWS dependencies
 if(WIN32)
