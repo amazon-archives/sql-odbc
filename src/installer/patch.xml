@@ -1,5 +1,5 @@
 <CPackWiXPatch>
-	<CPackWiXFragment Id="CM_CP_Unspecified.bin.elasticodbc.dll">
+	<CPackWiXFragment Id="CM_CP_Driver.bin.elasticodbc.dll">
 		<!-- Add driver entry in Software -->
 		<RegistryKey Root="HKLM" Key="SOFTWARE\Amazon\ODFE SQL ODBC Driver\Driver" >
 			<RegistryValue Type="string" Name="InstallPath" Value="[INSTALL_ROOT]" />
