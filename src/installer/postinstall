@@ -1,0 +1,13 @@
+#!/bin/bash
+
+PKG_INSTALL_DIR=/Applications
+FINAL_INSTALL_DIR=/usr/local/lib/odfe-sql-odbc
+
+# Move PKG installed folders to intended install directory
+mkdir -p ${FINAL_INSTALL_DIR}
+mv ${PKG_INSTALL_DIR}/bin ${FINAL_INSTALL_DIR}/bin
+mv ${PKG_INSTALL_DIR}/doc ${FINAL_INSTALL_DIR}/doc
+
+# Run DSN installer to configurate driver and DSN for system for easy setup.
+chmod u+x ${FINAL_INSTALL_DIR}/bin/dsn_installer
+${FINAL_INSTALL_DIR}/bin/dsn_installer ${FINAL_INSTALL_DIR}/bin/ > /tmp/dsn_installer.log

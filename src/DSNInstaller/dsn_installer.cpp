@@ -131,7 +131,7 @@ bool install_driver(std::wstring install_path) {
                             ODBC_INSTALL_COMPLETE, &out_usage_count);
     if (!success) {
         print_installer_error();
-        return 1;
+        return false;
     }
 
     return success;
@@ -141,7 +141,7 @@ bool install_dsn() {
     bool success = SQLWriteDSNToIniW(dsn_name.c_str(), driver_name.c_str());
     if (!success) {
         print_installer_error();
-        return 1;
+        return false;
     }
     return success;
 }
@@ -163,7 +163,7 @@ bool add_properties_to_dsn(
                                                 dsn_ini_filename.c_str());
         if (!success) {
             print_installer_error();
-            return 1;
+            return false;
         }
     }
     return success;

@@ -29,14 +29,24 @@ jobs:
     #- name: test
     #  run: | 
     #    bash ./run_test_runner.sh
+    - name: build-installer
+      if: success()
+      run: |
+        cd cmake-build
+        cmake ../src -D CMAKE_INSTALL_PREFIX=$prefix_path/AWSSDK/ -D BUILD_WITH_TESTS=OFF
+        make
+        cpack .
+        cd ..
     - name: create-output
       if: always()
       run: |
         mkdir build
         mkdir test-output
+        mkdir installer
         cp ./lib64/*.dylib build
         cp ./lib64/*.a build
         cp $(ls -d bin64/* | grep -v "\.") build
+        cp ./cmake-build/*.pkg installer
     #    cp ./bin64/*.html test-output
     #    cp ./bin64/*.log test-output
     - name: upload-build
@@ -45,6 +55,12 @@ jobs:
       with:
         name: mac-build
         path: build
+    - name: upload-installer
+      if: always()
+      uses: actions/upload-artifact@v1
+      with:
+        name: mac-installer
+        path: installer
     #- name: upload-test-results
     #  if: always()
     #  uses: actions/upload-artifact@v1
