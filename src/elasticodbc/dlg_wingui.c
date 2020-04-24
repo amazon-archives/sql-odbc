@@ -162,6 +162,7 @@ LRESULT CALLBACK advancedOptionsProc(HWND hdlg, UINT wMsg, WPARAM wParam,
             CheckDlgButton(hdlg, IDC_USESSL, ci->use_ssl);
             CheckDlgButton(hdlg, IDC_HOST_VER, ci->verify_server);
             SetDlgItemText(hdlg, IDC_CONNTIMEOUT, ci->response_timeout);
+            SetDlgItemText(hdlg, IDC_FETCH_SIZE, ci->fetch_size);
             break;
         }
 
@@ -174,7 +175,8 @@ LRESULT CALLBACK advancedOptionsProc(HWND hdlg, UINT wMsg, WPARAM wParam,
                     ci->verify_server = (IsDlgButtonChecked(hdlg, IDC_HOST_VER) ? 1 : 0);
                     GetDlgItemText(hdlg, IDC_CONNTIMEOUT, ci->response_timeout,
                                    sizeof(ci->response_timeout));
-
+                    GetDlgItemText(hdlg, IDC_FETCH_SIZE, ci->fetch_size,
+                                   sizeof(ci->fetch_size));
                 case IDCANCEL:
                     EndDialog(hdlg, FALSE);
                     return TRUE;
