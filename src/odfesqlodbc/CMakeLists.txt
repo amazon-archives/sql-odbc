@@ -13,9 +13,9 @@
 #   permissions and limitations under the License.
 #
 
-project(elasticodbc)
+project(odfesqlodbc)
 
-# Source files for elasticodbc
+# Source files for odfesqlodbc
 set(					SOURCE_FILES 
 							bind.c					columninfo.c			connection.c 				convert.c
 							descriptor.c			dlg_specific.c			drvconn.c					options.c	
@@ -46,9 +46,9 @@ set(					HEADER_FILES
 # Generate dll (SHARED)
 if(WIN32)
 set(RESOURCE_FILES es_odbc.rc)
-add_library(elasticodbc SHARED ${SOURCE_FILES} ${HEADER_FILES} ${RESOURCE_FILES} ${AWSSDK_LIB_DIR})
+add_library(odfesqlodbc SHARED ${SOURCE_FILES} ${HEADER_FILES} ${RESOURCE_FILES} ${AWSSDK_LIB_DIR})
 else()
-add_library(elasticodbc SHARED ${SOURCE_FILES} ${HEADER_FILES})
+add_library(odfesqlodbc SHARED ${SOURCE_FILES} ${HEADER_FILES})
 endif()
 
 include_directories(
@@ -63,14 +63,14 @@ include_directories(
 # Platform specific library dependencies
 if(WIN32)
 	# Windows specifiec
-	target_link_libraries(elasticodbc wsock32 ws2_32 winmm user32 gdi32 legacy_stdio_definitions aws-cpp-sdk-core kernel32 advapi32 secur32 XOleHlp Wldap32 crypt32 Normaliz odbccp32 odbc32)
-	target_link_libraries(elasticodbc debug msvcrtd)
-	target_link_libraries(elasticodbc optimized msvcrt)
+	target_link_libraries(odfesqlodbc wsock32 ws2_32 winmm user32 gdi32 legacy_stdio_definitions aws-cpp-sdk-core kernel32 advapi32 secur32 XOleHlp Wldap32 crypt32 Normaliz odbccp32 odbc32)
+	target_link_libraries(odfesqlodbc debug msvcrtd)
+	target_link_libraries(odfesqlodbc optimized msvcrt)
 elseif(APPLE)
 	# Apple specific
-	target_link_libraries(elasticodbc iodbc iodbcinst aws-cpp-sdk-core)
+	target_link_libraries(odfesqlodbc iodbc iodbcinst aws-cpp-sdk-core)
 elseif(UNIX)
 	# Unix specific
 	include_directories(/usr/src/linux-headers-5.0.0-27/include)
-	target_link_libraries(elasticodbc aws-cpp-sdk-core odbc odbcinst)
+	target_link_libraries(odfesqlodbc aws-cpp-sdk-core odbc odbcinst)
 endif()

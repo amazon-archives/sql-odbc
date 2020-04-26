@@ -26,5 +26,5 @@ include_directories(	${UT_HELPER}
 add_executable(itodbc_results ${SOURCE_FILES})
 
 # Library dependencies
-target_link_libraries(itodbc_results elasticodbc itodbc_helper ut_helper gtest_main)
+target_link_libraries(itodbc_results odfesqlodbc itodbc_helper ut_helper gtest_main)
 target_compile_definitions(itodbc_results PUBLIC _UNICODE UNICODE)

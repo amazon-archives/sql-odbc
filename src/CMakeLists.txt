@@ -57,7 +57,7 @@ endif()
 
 # Base directories
 set(PROJECT_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/..")
-set(ESODBC_SRC "${CMAKE_CURRENT_SOURCE_DIR}/elasticodbc")
+set(ESODBC_SRC "${CMAKE_CURRENT_SOURCE_DIR}/odfesqlodbc")
 set(ESENLIST_SRC "${CMAKE_CURRENT_SOURCE_DIR}/elasticenlist")
 set(INTEGRATION_TESTS "${CMAKE_CURRENT_SOURCE_DIR}/IntegrationTests")
 set(UNIT_TESTS "${CMAKE_CURRENT_SOURCE_DIR}/UnitTests")

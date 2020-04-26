@@ -23,5 +23,5 @@ include_directories(${ESODBC_SRC})
 add_executable(performance_execution ${SOURCE_FILES})
 
 # Library dependencies
-target_link_libraries(performance_execution elasticodbc)
+target_link_libraries(performance_execution odfesqlodbc)
 target_compile_definitions(performance_execution PUBLIC _UNICODE UNICODE)

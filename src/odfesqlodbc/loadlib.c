@@ -52,13 +52,13 @@
 #ifdef UNICODE_SUPPORT
 CSTR elasticenlist = "elasticenlist";
 CSTR elasticenlistdll = "elasticenlist.dll";
-CSTR elasticodbc = "elasticodbc35w";
-CSTR elasticodbcdll = "elasticodbc35w.dll";
+CSTR elasticodbc = "odfesqlodbc35w";
+CSTR elasticodbcdll = "odfesqlodbc35w.dll";
 #else
 CSTR elasticenlist = "elasticenlista";
 CSTR elasticenlistdll = "elasticenlista.dll";
-CSTR elasticodbc = "elasticodbc30a";
-CSTR elasticodbcdll = "elasticodbc30a.dll";
+CSTR elasticodbc = "odfesqlodbc30a";
+CSTR elasticodbcdll = "odfesqlodbc30a.dll";
 #endif /* UNICODE_SUPPORT */
 #if defined(_MSC_VER) && (_MSC_VER >= 1200)
 #define _MSC_DELAY_LOAD_IMPORT

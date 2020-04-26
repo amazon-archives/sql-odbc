@@ -33,5 +33,5 @@ target_link_libraries(ut_helper ${VLD})
 endif()
 
 # Library dependencies
-target_link_libraries(ut_helper elasticodbc gtest_main)
+target_link_libraries(ut_helper odfesqlodbc gtest_main)
 target_compile_definitions(ut_helper PUBLIC _UNICODE UNICODE)

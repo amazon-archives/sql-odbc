@@ -16,7 +16,7 @@
 
 #include "es_communication.h"
 
-// elasticodbc needs to be included before mylog, otherwise mylog will generate
+// odfesqlodbc needs to be included before mylog, otherwise mylog will generate
 // compiler warnings
 // clang-format off
 #include "es_odbc.h"

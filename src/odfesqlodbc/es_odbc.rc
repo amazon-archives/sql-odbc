@@ -182,10 +182,10 @@ BEGIN
             VALUE "CompanyName", "Amazon"
             VALUE "FileDescription", "Elasticsearch ODBC Driver (English)"
             VALUE "FileVersion", ES_ODBC_VERSION
-            VALUE "InternalName", "elasticodbc"
+            VALUE "InternalName", "odfesqlodbc"
             VALUE "LegalCopyright", "Copyright"
             VALUE "LegalTrademarks", "ODBC(TM) is a trademark of Microsoft Corporation.  Microsoft? is a registered trademark of Microsoft Corporation. Windows(TM) is a trademark of Microsoft Corporation."
-            VALUE "OriginalFilename", "elasticodbc.dll"
+            VALUE "OriginalFilename", "odfesqlodbc.dll"
             VALUE "ProductName", "Elasticsearch"
             VALUE "ProductVersion", ES_ODBC_VERSION
         END
