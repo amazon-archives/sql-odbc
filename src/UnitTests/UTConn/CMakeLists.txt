@@ -18,7 +18,7 @@ project(ut_conn)
 # Source, headers, and include dirs
 set(SOURCE_FILES test_conn.cpp test_query_execution.cpp)
 include_directories(	${UT_HELPER}
-						${ESODBC_SRC} 
+						${ODFEODBC_SRC} 
 						${RAPIDJSON_SRC} 
 						${RABBIT_SRC}		
 						${LIBCURL_SRC}

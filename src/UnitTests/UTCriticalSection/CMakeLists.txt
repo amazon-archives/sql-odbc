@@ -18,7 +18,7 @@ project(ut_critical_section)
 # Source, headers, and include dirs
 set(SOURCE_FILES test_critical_section.cpp)
 include_directories(	${UT_HELPER}
-						${ESODBC_SRC}
+						${ODFEODBC_SRC}
 						${RAPIDJSON_SRC}
 						${VLD_SRC}
 						${RABBIT_SRC}  )

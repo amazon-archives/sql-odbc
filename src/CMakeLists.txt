@@ -57,8 +57,8 @@ endif()
 
 # Base directories
 set(PROJECT_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/..")
-set(ESODBC_SRC "${CMAKE_CURRENT_SOURCE_DIR}/odfesqlodbc")
-set(ESENLIST_SRC "${CMAKE_CURRENT_SOURCE_DIR}/elasticenlist")
+set(ODFEODBC_SRC "${CMAKE_CURRENT_SOURCE_DIR}/odfesqlodbc")
+set(ODFEENLIST_SRC "${CMAKE_CURRENT_SOURCE_DIR}/odfeenlist")
 set(INTEGRATION_TESTS "${CMAKE_CURRENT_SOURCE_DIR}/IntegrationTests")
 set(UNIT_TESTS "${CMAKE_CURRENT_SOURCE_DIR}/UnitTests")
 set(LIBRARY_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../libraries)
@@ -133,8 +133,8 @@ if(BUILD_WITH_TESTS)
 endif()
 
 # Projects to build
-add_subdirectory(${ESODBC_SRC})
-add_subdirectory(${ESENLIST_SRC})
+add_subdirectory(${ODFEODBC_SRC})
+add_subdirectory(${ODFEENLIST_SRC})
 add_subdirectory(${INSTALL_SRC})
 
 # Only build & package DSN installer for Mac platforms

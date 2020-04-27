@@ -19,7 +19,7 @@ project(itodbc_tableau_queries)
 set(SOURCE_FILES test_odbc_tableau_queries.cpp)
 include_directories(	${UT_HELPER}
 						${IT_HELPER}
-						${ESODBC_SRC}
+						${ODFEODBC_SRC}
 						${VLD_SRC}  )
 
 # Generate executable

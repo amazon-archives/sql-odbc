@@ -19,7 +19,7 @@ project(itodbc_aws_auth)
 set(SOURCE_FILES test_odbc_aws_auth.cpp)
 include_directories(	${UT_HELPER}
 						${IT_HELPER}
-						${ESODBC_SRC}
+						${ODFEODBC_SRC}
 						${VLD_SRC}
 						${AWSSDK_INCLUDE_DIR}
 						)

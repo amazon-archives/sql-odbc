@@ -19,7 +19,7 @@ project(performance_info)
 set(SOURCE_FILES performance_odbc_info.cpp)
 include_directories(	${UT_HELPER}
 						${IT_HELPER}
-						${ESODBC_SRC}
+						${ODFEODBC_SRC}
 						${VLD_SRC}  
 						${RABBIT_SRC}
 						${RAPIDJSON_SRC})

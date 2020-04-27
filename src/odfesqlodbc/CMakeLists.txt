@@ -54,7 +54,7 @@ endif()
 include_directories(
 						${LIBRARY_DIRECTORY}/../src
 						${CMAKE_CURRENT_SOURCE_DIR}
-						${ESENLIST_SRC} 
+						${ODFEENLIST_SRC} 
 						${RABBIT_SRC}
 						${RAPIDJSON_SRC}
 						${AWSSDK_INCLUDE_DIR}
