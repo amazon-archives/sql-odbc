@@ -208,8 +208,10 @@ BOOL dconn_get_attributes(copyfunc func, const char *connect_string,
     char *last = NULL;
 #endif /* HAVE_STRTOK_R */
 
-    if (our_connect_string = strdup(connect_string), NULL == our_connect_string)
-        return FALSE;
+    if (our_connect_string = strdup(connect_string), NULL == our_connect_string) {
+        ret = FALSE;
+        goto cleanup;
+    }
     strtok_arg = our_connect_string;
 
 #ifdef FORCE_PASSWORD_DISPLAY
