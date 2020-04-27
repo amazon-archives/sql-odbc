@@ -19,12 +19,12 @@ project(itodbc_tableau_queries)
 set(SOURCE_FILES test_odbc_tableau_queries.cpp)
 include_directories(	${UT_HELPER}
 						${IT_HELPER}
-						${ESODBC_SRC}
+						${ODFEODBC_SRC}
 						${VLD_SRC}  )
 
 # Generate executable
 add_executable(itodbc_tableau_queries ${SOURCE_FILES})
 
 # Library dependencies
-target_link_libraries(itodbc_tableau_queries elasticodbc itodbc_helper ut_helper gtest_main)
+target_link_libraries(itodbc_tableau_queries odfesqlodbc itodbc_helper ut_helper gtest_main)
 target_compile_definitions(itodbc_tableau_queries PUBLIC _UNICODE UNICODE)

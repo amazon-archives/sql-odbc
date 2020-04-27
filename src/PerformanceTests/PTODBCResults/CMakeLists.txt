@@ -19,12 +19,12 @@ project(performance_results)
 set(SOURCE_FILES performance_odbc_results.cpp)
 include_directories(	${UT_HELPER}
 						${IT_HELPER}
-						${ESODBC_SRC}
+						${ODFEODBC_SRC}
 						${VLD_SRC}  )
 
 # Generate executable
 add_executable(performance_results ${SOURCE_FILES})
 
 # Library dependencies
-target_link_libraries(performance_results elasticodbc itodbc_helper ut_helper gtest_main)
+target_link_libraries(performance_results odfesqlodbc itodbc_helper ut_helper gtest_main)
 target_compile_definitions(performance_results PUBLIC _UNICODE UNICODE)

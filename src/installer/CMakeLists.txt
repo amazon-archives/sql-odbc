@@ -84,10 +84,15 @@ cpack_add_component(Docs
 cpack_add_component(Driver
 	DISPLAY_NAME "Driver"
 	DESCRIPTION "Library files for running the Open Distro for Elasticsearch SQL ODBC Driver"
+    REQUIRED 
+)
+cpack_add_component(Resources
+	DISPLAY_NAME "Resources"
+	DESCRIPTION "Resources for Open Distro for Elasticsearch SQL ODBC Driver"
 )
 
 # Install driver files
-install(TARGETS elasticodbc DESTINATION bin COMPONENT "Driver")
+install(TARGETS odfesqlodbc DESTINATION bin COMPONENT "Driver")
 if(APPLE)
     install(FILES "${PROJECT_ROOT}/bin64/dsn_installer" DESTINATION bin COMPONENT "Driver")
 endif()
@@ -96,6 +101,9 @@ endif()
 install(FILES "${PROJECT_ROOT}/README.md" DESTINATION doc COMPONENT "Docs")
 install(FILES "${PROJECT_ROOT}/LICENSE" DESTINATION doc COMPONENT "Docs")
 install(FILES "${PROJECT_ROOT}/THIRD-PARTY" DESTINATION doc COMPONENT "Docs")
+
+# Install resource files
+install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/Resources/odfe_sql_odbc.tdc" DESTINATION resources COMPONENT "Resources")
 
 # Install AWS dependencies
 if(WIN32)
