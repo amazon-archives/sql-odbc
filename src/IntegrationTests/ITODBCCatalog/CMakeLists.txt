@@ -19,12 +19,12 @@ project(itodbc_catalog)
 set(SOURCE_FILES test_odbc_catalog.cpp)
 include_directories(	${UT_HELPER}
 						${IT_HELPER}
-						${ESODBC_SRC}
+						${ODFEODBC_SRC}
 						${VLD_SRC}  )
 
 # Generate executable
 add_executable(itodbc_catalog ${SOURCE_FILES})
 
 # Library dependencies
-target_link_libraries(itodbc_catalog elasticodbc itodbc_helper ut_helper gtest_main)
+target_link_libraries(itodbc_catalog odfesqlodbc itodbc_helper ut_helper gtest_main)
 target_compile_definitions(itodbc_catalog PUBLIC _UNICODE UNICODE)

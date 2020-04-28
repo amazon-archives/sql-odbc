@@ -9,8 +9,8 @@ The driver is compatible with ODBC 3.51.
 ## Using the Driver
 
 The driver comes in the form of a library file:
-    elasticsearch.dll for Window
-    libelasticsearch.dylib for Mac
+    odfesqlodbc.dll for Window
+    libodfesqlodbc.dylib for Mac
 
 If using with ODBC compatible BI tools,refer to the tool documentation on configuring a new ODBC driver. Typically, all that's required is to make the tool aware of the location of the driver library file and then use it to setup database (i.e Elasticsearch) connections.
 

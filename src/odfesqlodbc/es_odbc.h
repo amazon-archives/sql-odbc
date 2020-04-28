@@ -366,15 +366,15 @@ SQLULEN ucs2strlen(const SQLWCHAR *);
 #endif /* DBMS_NAME */
 #ifdef WIN32
 #ifdef UNICODE_SUPPORT
-#define DRIVER_FILE_NAME "elasticodbc.dll"
+#define DRIVER_FILE_NAME "odfesqlodbc.dll"
 #else
-#define DRIVER_FILE_NAME "elasticodbc.dll"
+#define DRIVER_FILE_NAME "odfesqlodbc.dll"
 #endif /* UNICODE_SUPPORT */
 #else
 #ifdef UNICODE_SUPPORT
-#define DRIVER_FILE_NAME "libelasticodbc.dylib"
+#define DRIVER_FILE_NAME "libodfesqlodbc.dylib"
 #else
-#define DRIVER_FILE_NAME "libelasticodbc.dylib"
+#define DRIVER_FILE_NAME "libodfesqlodbc.dylib"
 #endif
 #endif /* WIN32 */
 BOOL isMsAccess(void);

@@ -19,12 +19,12 @@ project(itodbc_descriptors)
 set(SOURCE_FILES test_odbc_descriptors.cpp)
 include_directories(	${UT_HELPER}
 						${IT_HELPER}
-						${ESODBC_SRC}
+						${ODFEODBC_SRC}
 						${VLD_SRC}  )
 
 # Generate executable
 add_executable(itodbc_descriptors ${SOURCE_FILES})
 
 # Library dependencies
-target_link_libraries(itodbc_descriptors elasticodbc itodbc_helper ut_helper gtest_main)
+target_link_libraries(itodbc_descriptors odfesqlodbc itodbc_helper ut_helper gtest_main)
 target_compile_definitions(itodbc_descriptors PUBLIC _UNICODE UNICODE)
