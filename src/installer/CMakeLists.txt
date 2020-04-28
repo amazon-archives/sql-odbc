@@ -95,6 +95,7 @@ cpack_add_component(Resources
 install(TARGETS odfesqlodbc DESTINATION bin COMPONENT "Driver")
 if(APPLE)
     install(FILES "${PROJECT_ROOT}/bin64/dsn_installer" DESTINATION bin COMPONENT "Driver")
+    install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/remove-odfe-dsn.sh" DESTINATION bin COMPONENT "Driver")
 endif()
 
 # Install documentation files

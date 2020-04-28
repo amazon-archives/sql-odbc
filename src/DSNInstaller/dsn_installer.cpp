@@ -169,6 +169,19 @@ bool add_properties_to_dsn(
     return success;
 }
 
+bool uninstall_driver() {
+    bool remove_dsns = true;
+    DWORD out_usage_count = 0;
+
+    bool success =
+        SQLRemoveDriverW(driver_name.c_str(), remove_dsns, &out_usage_count);
+    if (!success) {
+        print_installer_error();
+        return false;
+    }
+    return success;
+}
+
 int main(int argc, char *argv[]) {
     // Get install path from args
     if (!argv || argc != 2) {
@@ -178,6 +191,11 @@ int main(int argc, char *argv[]) {
     std::wstring user_install_path =
         std::wstring_convert< std::codecvt_utf8_utf16< wchar_t >, wchar_t >{}
             .from_bytes(argv[1]);
+
+    if (!user_install_path.compare(L"uninstall")) {
+        bool uninstall_driver_success = uninstall_driver();
+        return uninstall_driver_success;
+    }
 
     // Install Driver entry
     bool install_driver_success = install_driver(user_install_path);
