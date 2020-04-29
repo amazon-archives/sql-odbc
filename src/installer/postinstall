@@ -7,6 +7,7 @@ FINAL_INSTALL_DIR=/usr/local/lib/odfe-sql-odbc
 mkdir -p ${FINAL_INSTALL_DIR}
 mv ${PKG_INSTALL_DIR}/bin ${FINAL_INSTALL_DIR}/bin
 mv ${PKG_INSTALL_DIR}/doc ${FINAL_INSTALL_DIR}/doc
+mv ${PKG_INSTALL_DIR}/resources ${FINAL_INSTALL_DIR}/resources
 
 # Run DSN installer to configurate driver and DSN for system for easy setup.
 chmod u+x ${FINAL_INSTALL_DIR}/bin/dsn_installer
