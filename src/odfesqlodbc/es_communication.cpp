@@ -253,11 +253,8 @@ void ESCommunication::IssueRequest(
     if (!query.empty()) {
         rabbit::object body;
         body["query"] = query;
-        if (!fetch_size.empty()) {
+        if (!fetch_size.empty()) 
             body["fetch_size"] = fetch_size;
-            m_error_message = "fetch size: " + fetch_size;
-            LogMsg(ES_DEBUG, m_error_message.c_str());
-        }
         std::shared_ptr< Aws::StringStream > aws_ss =
             Aws::MakeShared< Aws::StringStream >("RabbitStream");
         *aws_ss << std::string(body.str());

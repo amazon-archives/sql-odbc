@@ -60,10 +60,11 @@ class TestPagination : public testing::Test {
             ret = SQLBindCol(m_hstmt, (SQLUSMALLINT)i + 1, SQL_C_CHAR,
                              (SQLPOINTER)&cols[i][0].data_dat[i], 255,
                              &cols[i][0].data_len);
+
+        // Get total number of rows
         int row_count = 0;
         while (SQLFetch(m_hstmt) == SQL_SUCCESS)
             row_count++;
-
         return row_count;
     }
 
@@ -80,8 +81,8 @@ class TestPagination : public testing::Test {
         L"SELECT Origin FROM kibana_sample_data_flights";
 };
 
-TEST_F(TestPagination, FetchSize15) {
-    int fetch_size = 15;
+TEST_F(TestPagination, Fetch15Rows) {
+    int total_rows = 15;
     std::wstring fetch_size_15_conn_string =
         use_ssl ? L"Driver={Elasticsearch ODBC};"
                   L"host=https://localhost;port=9200;"
@@ -98,12 +99,12 @@ TEST_F(TestPagination, FetchSize15) {
                   m_conn, NULL, (SQLTCHAR*)fetch_size_15_conn_string.c_str(),
                   SQL_NTS, m_out_conn_string, IT_SIZEOF(m_out_conn_string),
                   &m_out_conn_string_length, SQL_DRIVER_PROMPT));
-    EXPECT_EQ(fetch_size, GetTotalRowsAfterQueryExecution());
+    EXPECT_EQ(total_rows, GetTotalRowsAfterQueryExecution());
 }
 
 TEST_F(TestPagination, NoFetchSize) {
-    // Defualt size when fetch_size is zero i.e. disable pagination
-    int fetch_size = 200;
+    // Default size when pagination is disabled i.e. fetch size is 0.
+    int total_rows = 200;
     std::wstring fetch_size_15_conn_string =
         use_ssl ? L"Driver={Elasticsearch ODBC};"
                   L"host=https://localhost;port=9200;"
@@ -120,7 +121,7 @@ TEST_F(TestPagination, NoFetchSize) {
                   m_conn, NULL, (SQLTCHAR*)fetch_size_15_conn_string.c_str(),
                   SQL_NTS, m_out_conn_string, IT_SIZEOF(m_out_conn_string),
                   &m_out_conn_string_length, SQL_DRIVER_PROMPT));
-    EXPECT_EQ(fetch_size, GetTotalRowsAfterQueryExecution());
+    EXPECT_EQ(total_rows, GetTotalRowsAfterQueryExecution());
 }
 
 int main(int argc, char** argv) {

@@ -18,7 +18,7 @@ project(itodbc_pagination)
 # Source, headers, and include dirs
 set(SOURCE_FILES test_odbc_pagination.cpp)
 include_directories(	${UT_HELPER}
-						${IT_HELPER}
+                        ${IT_HELPER}
 						${ODFEODBC_SRC}
 						${VLD_SRC}  )
 
