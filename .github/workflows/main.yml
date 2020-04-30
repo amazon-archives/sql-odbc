@@ -8,7 +8,7 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: run-cppcheck
-      run: /
+      run: |
         sh run_cppcheck.sh
     - name: upload-cppcheck-results
       if: failure()
