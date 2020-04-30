@@ -9,6 +9,7 @@ jobs:
     - uses: actions/checkout@v1
     - name: run-cppcheck
       run: |
+        brew install cppcheck
         sh run_cppcheck.sh
     - name: upload-cppcheck-results
       if: failure()
