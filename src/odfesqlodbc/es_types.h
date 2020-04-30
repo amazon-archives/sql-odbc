@@ -260,6 +260,7 @@ typedef struct connection_options {
     std::string server;
     std::string port;
     std::string timeout;
+    std::string fetch_size;
 } connection_options;
 
 typedef struct runtime_options {

@@ -233,7 +233,8 @@ void ESCommunication::InitializeConnection() {
 void ESCommunication::IssueRequest(
     const std::string& endpoint, const Aws::Http::HttpMethod request_type,
     const std::string& content_type, const std::string& query,
-    std::shared_ptr< Aws::Http::HttpResponse >& response) {
+    std::shared_ptr< Aws::Http::HttpResponse >& response,
+    const std::string& fetch_size) {
     // Generate http request
     std::shared_ptr< Aws::Http::HttpRequest > request =
         Aws::Http::CreateHttpRequest(
@@ -252,6 +253,11 @@ void ESCommunication::IssueRequest(
     if (!query.empty()) {
         rabbit::object body;
         body["query"] = query;
+        if (!fetch_size.empty()) {
+            body["fetch_size"] = fetch_size;
+            m_error_message = "fetch size: " + fetch_size;
+            LogMsg(ES_DEBUG, m_error_message.c_str());
+        }
         std::shared_ptr< Aws::StringStream > aws_ss =
             Aws::MakeShared< Aws::StringStream >("RabbitStream");
         *aws_ss << std::string(body.str());
@@ -339,7 +345,7 @@ bool ESCommunication::EstablishConnection() {
     LogMsg(ES_ALL, "Checking for SQL plugin");
     std::shared_ptr< Aws::Http::HttpResponse > response = nullptr;
     IssueRequest(PLUGIN_ENDPOINT_FORMAT_JSON, Aws::Http::HttpMethod::HTTP_GET,
-                 "", "", response);
+                 "", "", response, "");
     if (response == nullptr) {
         m_error_message =
             "The SQL plugin must be installed in order to use this driver. "
@@ -369,7 +375,7 @@ bool ESCommunication::EstablishConnection() {
     return false;
 }
 
-int ESCommunication::ExecDirect(const char* query) {
+int ESCommunication::ExecDirect(const char* query, const char* fetch_size_) {
     if (!query) {
         m_error_message = "Query is NULL";
         LogMsg(ES_ERROR, m_error_message.c_str());
@@ -382,13 +388,14 @@ int ESCommunication::ExecDirect(const char* query) {
 
     // Prepare statement
     std::string statement(query);
+    std::string fetch_size(fetch_size_);
     std::string msg = "Attempting to execute a query \"" + statement + "\"";
     LogMsg(ES_DEBUG, msg.c_str());
 
     // Issue request
     std::shared_ptr< Aws::Http::HttpResponse > response = nullptr;
     IssueRequest(SQL_ENDPOINT_FORMAT_JDBC, Aws::Http::HttpMethod::HTTP_POST,
-                 ctype, statement, response);
+                 ctype, statement, response, fetch_size);
 
     // Validate response
     if (response == nullptr) {
@@ -508,7 +515,7 @@ std::string ESCommunication::GetServerVersion() {
 
     // Issue request
     std::shared_ptr< Aws::Http::HttpResponse > response = nullptr;
-    IssueRequest("", Aws::Http::HttpMethod::HTTP_GET, "", "", response);
+    IssueRequest("", Aws::Http::HttpMethod::HTTP_GET, "", "", response, "");
     if (response == nullptr) {
         m_error_message =
             "Failed to receive response from query. "

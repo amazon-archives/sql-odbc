@@ -38,7 +38,7 @@ void XPlatformEnterCriticalSection(void* critical_section_helper);
 void XPlatformLeaveCriticalSection(void* critical_section_helper);
 void XPlatformDeleteCriticalSection(void** critical_section_helper);
 ConnStatusType ESStatus(void* es_conn);
-int ESExecDirect(void* es_conn, const char* statement);
+int ESExecDirect(void* es_conn, const char* statement, const char* fetch_size);
 void ESDisconnect(void* es_conn);
 #ifdef __cplusplus
 }

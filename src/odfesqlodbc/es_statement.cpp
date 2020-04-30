@@ -203,7 +203,7 @@ QResultClass *SendQueryGetResult(StatementClass *stmt, BOOL commit) {
 
     // Send command
     ConnectionClass *conn = SC_get_conn(stmt);
-    if (ESExecDirect(conn->esconn, stmt->statement) != 0) {
+    if (ESExecDirect(conn->esconn, stmt->statement, conn->connInfo.fetch_size) != 0) {
         QR_Destructor(res);
         return NULL;
     }
