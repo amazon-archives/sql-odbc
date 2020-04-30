@@ -7,6 +7,15 @@ jobs:
     runs-on: macos-latest
     steps:
     - uses: actions/checkout@v1
+    - name: run-cppcheck
+      run: /
+        sh run_cppcheck.sh
+    - name: upload-cppcheck-results
+      if: failure()
+      uses: actions/upload-artifact@v1
+      with:
+        name: cppcheck-results
+        path: cppcheck-results.log
     - name: get-dependencies
       run: |
         brew unlink unixodbc
@@ -38,7 +47,7 @@ jobs:
         cpack .
         cd ..
     - name: create-output
-      if: always()
+      if: success()
       run: |
         mkdir build
         mkdir test-output
@@ -50,19 +59,19 @@ jobs:
     #    cp ./bin64/*.html test-output
     #    cp ./bin64/*.log test-output
     - name: upload-build
-      if: always()
+      if: success()
       uses: actions/upload-artifact@v1
       with:
         name: mac-build
         path: build
     - name: upload-installer
-      if: always()
+      if: success()
       uses: actions/upload-artifact@v1
       with:
         name: mac-installer
         path: installer
     #- name: upload-test-results
-    #  if: always()
+    #  if: success()
     #  uses: actions/upload-artifact@v1
     #  with:
     #    name: mac-test-results
