@@ -12,6 +12,7 @@
 #define IDC_DSNAME                      400
 #define IDC_DSNAMETEXT                  401
 #define IDC_DESC                        404
+#define IDC_FETCH_SIZE_STATIC           404
 #define IDC_SERVER                      407
 #define IDC_NOTICE_USER                 414
 #define IDS_AUTHTYPE_NONE               417
@@ -50,6 +51,7 @@
 #define DLG_ADVANCED_OPTIONS            1129
 #define IDC_CONNTIMEOUT                 1130
 #define DLG_LOG_OPTIONS                 1131
+#define IDC_FETCH_SIZE                  1131
 #define IDC_LOG_LEVEL                   1132
 #define IDC_LOG_PATH                    1133
 

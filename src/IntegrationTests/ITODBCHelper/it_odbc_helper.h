@@ -47,7 +47,8 @@ std::vector< std::pair< std::wstring, std::wstring > > conn_str_pair = {
     {L"hostnameVerification", L"0"},
     {L"logLevel", L"0"},
     {L"logOutput", L"C:\\"},
-    {L"responseTimeout", L"10"}};
+    {L"responseTimeout", L"10"},
+    {L"fetchSize", L"0"}};
 
 std::wstring conn_string = []() {
     std::wstring temp;

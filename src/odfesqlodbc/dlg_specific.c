@@ -60,12 +60,12 @@ void makeConnectString(char *connect_string, const ConnInfo *ci, UWORD len) {
         "database=elasticsearch;" INI_PORT "=%s;" INI_USERNAME_ABBR
         "=%s;" INI_PASSWORD_ABBR "=%s;" INI_AUTH_MODE "=%s;" INI_REGION
         "=%s;" INI_SSL_USE "=%d;" INI_SSL_HOST_VERIFY "=%d;" INI_LOG_LEVEL
-        "=%d;" INI_LOG_OUTPUT "=%s;" INI_TIMEOUT "=%s;",
+        "=%d;" INI_LOG_OUTPUT "=%s;" INI_TIMEOUT "=%s;" INI_FETCH_SIZE "=%s;",
         got_dsn ? "DSN" : "DRIVER", got_dsn ? ci->dsn : ci->drivername,
         ci->server, ci->port, ci->username, encoded_item, ci->authtype,
         ci->region, (int)ci->use_ssl, (int)ci->verify_server,
         (int)ci->drivers.loglevel, ci->drivers.output_dir,
-        ci->response_timeout);
+        ci->response_timeout, ci->fetch_size);
     if (olen < 0 || olen >= nlen) {
         connect_string[0] = '\0';
         return;
@@ -135,6 +135,8 @@ BOOL copyConnAttributes(ConnInfo *ci, const char *attribute,
         STRCPY_FIXED(ci->drivers.output_dir, value);
     else if (stricmp(attribute, INI_TIMEOUT) == 0)
         STRCPY_FIXED(ci->response_timeout, value);
+    else if (stricmp(attribute, INI_FETCH_SIZE) == 0)
+        STRCPY_FIXED(ci->fetch_size, value);
     else
         found = FALSE;
 
@@ -151,6 +153,8 @@ static void getCiDefaults(ConnInfo *ci) {
     strncpy(ci->server, DEFAULT_HOST, MEDIUM_REGISTRY_LEN);
     strncpy(ci->port, DEFAULT_PORT, SMALL_REGISTRY_LEN);
     strncpy(ci->response_timeout, DEFAULT_RESPONSE_TIMEOUT_STR,
+            SMALL_REGISTRY_LEN);
+    strncpy(ci->fetch_size, DEFAULT_FETCH_SIZE_STR,
             SMALL_REGISTRY_LEN);
     strncpy(ci->authtype, DEFAULT_AUTHTYPE, MEDIUM_REGISTRY_LEN);
     if (ci->password.name != NULL)
@@ -282,6 +286,10 @@ void getDSNinfo(ConnInfo *ci, const char *configDrvrname) {
                                    sizeof(temp), ODBC_INI)
         > 0)
         STRCPY_FIXED(ci->response_timeout, temp);
+    if (SQLGetPrivateProfileString(DSN, INI_FETCH_SIZE, NULL_STRING, temp,
+                                   sizeof(temp), ODBC_INI)
+        > 0)
+        STRCPY_FIXED(ci->fetch_size, temp);
     STR_TO_NAME(ci->drivers.drivername, drivername);
 }
 /*
@@ -322,6 +330,9 @@ void writeDSNinfo(const ConnInfo *ci) {
                                  ODBC_INI);
     SQLWritePrivateProfileString(DSN, INI_TIMEOUT, ci->response_timeout,
                                  ODBC_INI);
+    SQLWritePrivateProfileString(DSN, INI_FETCH_SIZE, ci->fetch_size,
+                                 ODBC_INI);
+
 }
 
 static void encode(const esNAME in, char *out, int outlen) {
@@ -451,6 +462,8 @@ void CC_conninfo_init(ConnInfo *conninfo, UInt4 option) {
     strncpy(conninfo->port, DEFAULT_PORT, SMALL_REGISTRY_LEN);
     strncpy(conninfo->response_timeout, DEFAULT_RESPONSE_TIMEOUT_STR,
             SMALL_REGISTRY_LEN);
+    strncpy(conninfo->fetch_size, DEFAULT_FETCH_SIZE_STR,
+            SMALL_REGISTRY_LEN);
     strncpy(conninfo->authtype, DEFAULT_AUTHTYPE, MEDIUM_REGISTRY_LEN);
     if (conninfo->password.name != NULL)
         free(conninfo->password.name);
@@ -502,6 +515,7 @@ void CC_copy_conninfo(ConnInfo *ci, const ConnInfo *sci) {
     CORR_VALCPY(verify_server);
     CORR_STRCPY(port);
     CORR_STRCPY(response_timeout);
+    CORR_STRCPY(fetch_size);
     copy_globals(&(ci->drivers), &(sci->drivers));
 }
 #undef CORR_STRCPY
