@@ -52,19 +52,22 @@ class TestPagination : public testing::Test {
         SQLSMALLINT total_columns = -1;
         SQLNumResultCols(m_hstmt, &total_columns);
         std::vector< std::vector< Col > > cols(total_columns);
-        for (size_t i = 0; i < cols.size(); i++)
+        for (size_t i = 0; i < cols.size(); i++) {
             cols[i].resize(SINGLE_ROW);
+        }
 
         // Bind and fetch
-        for (size_t i = 0; i < cols.size(); i++)
+        for (size_t i = 0; i < cols.size(); i++) {
             ret = SQLBindCol(m_hstmt, (SQLUSMALLINT)i + 1, SQL_C_CHAR,
                              (SQLPOINTER)&cols[i][0].data_dat[i], 255,
                              &cols[i][0].data_len);
+        }
 
         // Get total number of rows
         int row_count = 0;
-        while (SQLFetch(m_hstmt) == SQL_SUCCESS)
+        while (SQLFetch(m_hstmt) == SQL_SUCCESS) {
             row_count++;
+        }
         return row_count;
     }
 
@@ -143,7 +146,7 @@ int main(int argc, char** argv) {
 #ifdef __APPLE__
     // Disable malloc logging and report memory leaks
     system("unset MallocStackLogging");
-    system("leaks itodbc_info > leaks_itodbc_info");
+    system("leaks itodbc_pagination > leaks_itodbc_pagination");
 #endif
     return failures;
 }
