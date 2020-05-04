@@ -6,10 +6,10 @@
     </connection-builder>
     <connection-normalizer>
       <required-attributes>
-        <setImpersonateAttributes/>
         <attribute-list>
           <attr>server</attr>
           <attr>port</attr>
+          <attr>authentication</attr>
           <attr>username</attr>
           <attr>password</attr>
           <attr>sslmode</attr>

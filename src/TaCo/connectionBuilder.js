@@ -6,10 +6,15 @@
     params["PORT"] = attr[connectionHelper.attributePort];
     params["UID"] = attr[connectionHelper.attributeUsername];
     params["PWD"] = attr[connectionHelper.attributePassword];
-    params["BOOLSASCHAR"] = "0";
-    params["LFCONVERSION"] = "0";
-    params["UseDeclareFetch"] = "1";
-    params["Fetch"] = "2048";
+
+    var authAttrValue = attr[connectionHelper.attributeAuthentication];
+    if (authAttrValue == "auth-none"){
+        // no-op
+    } else if (authAttrValue == "basic")
+    {
+        params["UID"] = attr[connectionHelper.attributeUsername];
+        params["PWD"] = attr[connectionHelper.attributePassword];
+    }
 
     if (attr[connectionHelper.attributeSSLMode] == "require")
     {

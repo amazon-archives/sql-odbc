@@ -1,9 +1,10 @@
 <connection-dialog class='odfe_odbc'>
   <connection-config>
-    <authentication-mode value='Basic' />
-    <authentication-options>
-      <option name="UsernameAndPassword" default="true" />
-    </authentication-options>
+    <authentication-mode value='ComboBoxIntegrated' />
+        <authentication-options>
+            <option name="None" value="auth-none" />
+            <option name="UsernameAndPassword" value="basic" default="true" />
+        </authentication-options>
     <has-pre-connect-database value="false" />
     <port-prompt value="Port: " default="5432" />
     <show-ssl-checkbox value="true" />
