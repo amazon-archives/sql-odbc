@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<dialect name='SimplePostgres'
-         class='odfe_odbc'
-         base='PostgreSQL90Dialect'
+<dialect name='OdfeSqlOdbcDialect'
+         class='odfe_sql_odbc'
+         base='MySQL41UnicodeDriverDialect'
          version='18.1'>
    <function-map>
     <function name='FLOAT' group='cast' return-type='real'>

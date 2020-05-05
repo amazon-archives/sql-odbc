@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8' ?>
-<tdr class='odfe_odbc'>
+<tdr class='odfe_sql_odbc'>
   <connection-resolver>
     <connection-builder>
       <script file='connectionBuilder.js'/>
@@ -21,7 +21,7 @@
   </connection-resolver>
   <driver-resolver>
     <driver-match >
-      <driver-name type='regex'>ODFE*</driver-name>
+      <driver-name type='regex'>ODFE SQL ODBC*</driver-name>
     </driver-match>
   </driver-resolver>
 </tdr>
