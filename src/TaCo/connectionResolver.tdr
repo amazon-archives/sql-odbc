@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8' ?>
 <tdr class='odfe_odbc'>
-	<connection-resolver>
+  <connection-resolver>
     <connection-builder>
       <script file='connectionBuilder.js'/>
     </connection-builder>
@@ -18,8 +18,8 @@
         </attribute-list>
       </required-attributes>
     </connection-normalizer>
-	</connection-resolver>
-	<driver-resolver>
+  </connection-resolver>
+  <driver-resolver>
     <driver-match >
       <driver-name type='regex'>ODFE*</driver-name>
     </driver-match>
