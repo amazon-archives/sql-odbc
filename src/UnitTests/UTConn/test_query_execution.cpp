@@ -35,11 +35,11 @@ const std::string some_columns_flights_query =
 const std::string invalid_query = "SELECT";
 const int EXECUTION_SUCCESS = 0;
 const int EXECUTION_ERROR = -1;
-
+const std::string fetch_size = "0";
 const int all_columns_flights_count = 25;
 const int some_columns_flights_count = 2;
 runtime_options valid_conn_opt_val = {
-    {valid_host, valid_port, "1"},
+    {valid_host, valid_port, "1", "0"},
     {"BASIC", valid_user, valid_pw, valid_region},
     {use_ssl, false, "", "", "", ""}};
 
@@ -48,18 +48,19 @@ TEST(TestESExecDirect, ValidQuery) {
     ASSERT_TRUE(conn.ConnectionOptions(valid_conn_opt_val, false, 0, 0));
     ASSERT_TRUE(conn.ConnectDBStart());
     EXPECT_EQ(EXECUTION_SUCCESS,
-              ESExecDirect(&conn, some_columns_flights_query.c_str()));
+        ESExecDirect(&conn, some_columns_flights_query.c_str(), fetch_size.c_str()));
 }
 
 TEST(TestESExecDirect, MissingQuery) {
     ESCommunication conn;
     ASSERT_TRUE(conn.ConnectionOptions(valid_conn_opt_val, false, 0, 0));
     ASSERT_TRUE(conn.ConnectDBStart());
-    EXPECT_EQ(EXECUTION_ERROR, ESExecDirect(&conn, NULL));
+    EXPECT_EQ(EXECUTION_ERROR, ESExecDirect(&conn, NULL, fetch_size.c_str()));
 }
 
 TEST(TestESExecDirect, MissingConnection) {
-    EXPECT_EQ(EXECUTION_ERROR, ESExecDirect(NULL, query.c_str()));
+    EXPECT_EQ(EXECUTION_ERROR,
+              ESExecDirect(NULL, query.c_str(), fetch_size.c_str()));
 }
 
 // Conn::ExecDirect
@@ -69,7 +70,7 @@ TEST(TestConnExecDirect, ValidQueryAllColumns) {
     ASSERT_TRUE(conn.ConnectionOptions(valid_conn_opt_val, false, 0, 0));
     ASSERT_TRUE(conn.ConnectDBStart());
 
-    conn.ExecDirect(all_columns_flights_query.c_str());
+    conn.ExecDirect(all_columns_flights_query.c_str(), fetch_size.c_str());
     ESResult* result = conn.PopResult();
     EXPECT_EQ("SELECT", result->command_type);
     EXPECT_FALSE(result->result_json.empty());
@@ -82,7 +83,7 @@ TEST(TestConnExecDirect, ValidQuerySomeColumns) {
     ASSERT_TRUE(conn.ConnectionOptions(valid_conn_opt_val, false, 0, 0));
     ASSERT_TRUE(conn.ConnectDBStart());
 
-    conn.ExecDirect(some_columns_flights_query.c_str());
+    conn.ExecDirect(some_columns_flights_query.c_str(), fetch_size.c_str());
     ESResult* result = conn.PopResult();
     EXPECT_EQ("SELECT", result->command_type);
     EXPECT_FALSE(result->result_json.empty());
@@ -95,7 +96,7 @@ TEST(TestConnExecDirect, InvalidQuery) {
     ASSERT_TRUE(conn.ConnectionOptions(valid_conn_opt_val, false, 0, 0));
     ASSERT_TRUE(conn.ConnectDBStart());
 
-    conn.ExecDirect(invalid_query.c_str());
+    conn.ExecDirect(invalid_query.c_str(), fetch_size.c_str());
     ESResult* result = conn.PopResult();
     EXPECT_EQ(NULL, (void*)result);
 }
@@ -116,8 +117,8 @@ TEST(TestConnPopResult, PopTwoQueryResults) {
     ASSERT_TRUE(conn.ConnectionOptions(valid_conn_opt_val, false, 0, 0));
     ASSERT_TRUE(conn.ConnectDBStart());
 
-    conn.ExecDirect(some_columns_flights_query.c_str());
-    conn.ExecDirect(all_columns_flights_query.c_str());
+    conn.ExecDirect(some_columns_flights_query.c_str(), fetch_size.c_str());
+    conn.ExecDirect(all_columns_flights_query.c_str(), fetch_size.c_str());
 
     // Pop some_columns
     ESResult* result = conn.PopResult();

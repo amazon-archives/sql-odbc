@@ -67,9 +67,10 @@ void* InitializeESConn() {
     return new ESCommunication();
 }
 
-int ESExecDirect(void* es_conn, const char* statement) {
+int ESExecDirect(void* es_conn, const char* statement, const char* fetch_size) {
     return (es_conn && statement)
-               ? static_cast< ESCommunication* >(es_conn)->ExecDirect(statement)
+               ? static_cast< ESCommunication* >(es_conn)->ExecDirect(
+                   statement, fetch_size)
                : -1;
 }
 
