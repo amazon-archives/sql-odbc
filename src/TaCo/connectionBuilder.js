@@ -11,7 +11,7 @@
         params["Auth"] = "NONE";
     } else if (authAttrValue == "AWS_SIGV4"){
         params["Auth"] = "AWS_SIGV4";
-        params["Region"] = attr[connectionHelper.attributeVendor2];
+        params["Region"] = attr[connectionHelper.attributeVendor1];
     } else if (authAttrValue == "BASIC"){
         params["Auth"] = "BASIC";
         params["UID"] = attr[connectionHelper.attributeUsername];
@@ -25,7 +25,7 @@
 
     // Parse additional options and add in connection string
     var odbcConnectStringExtrasMap = {};
-    const attributeODBCConnectStringExtras = "vendor1";
+    const attributeODBCConnectStringExtras = "vendor2";
     if (attributeODBCConnectStringExtras in attr){
         odbcConnectStringExtrasMap = connectionHelper.ParseODBCConnectString(attr[attributeODBCConnectStringExtras]);
     }
