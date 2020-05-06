@@ -192,7 +192,7 @@ int main(int argc, char *argv[]) {
         std::wstring_convert< std::codecvt_utf8_utf16< wchar_t >, wchar_t >{}
             .from_bytes(argv[1]);
 
-    printf("User install path: %S", user_install_path);
+    printf("User install path: %S", user_install_path.c_str());
     if (!user_install_path.compare(L"uninstall")) {
         bool uninstall_driver_success = uninstall_driver();
         return uninstall_driver_success;
