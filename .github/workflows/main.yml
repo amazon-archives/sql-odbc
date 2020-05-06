@@ -46,6 +46,8 @@ jobs:
         cmake ../src -D CMAKE_INSTALL_PREFIX=$prefix_path/AWSSDK/ -D BUILD_WITH_TESTS=OFF
         make
         chmod a+x ../bin64/dsn_installer
+        echo "bin64 permissions: ==="
+        ls -l ../bin64
         cpack .
         cd ..
     - name: create-output
