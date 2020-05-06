@@ -15,8 +15,10 @@
 
 project(dsn_installer)
 
+# explicitly setting to help with uninstall process
+set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+
 set(SOURCE_FILES dsn_installer.cpp)
-include_directories(${ODFEODBC_SRC})
 
 add_executable(dsn_installer ${SOURCE_FILES})
 
