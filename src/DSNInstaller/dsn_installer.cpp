@@ -184,6 +184,7 @@ bool uninstall_driver() {
 
 int main(int argc, char *argv[]) {
     // Get install path from args
+    printf("Should get at least this...");
     if (!argv || argc != 2) {
         printf("Error! Driver path not supplied\n");
         return 1;
