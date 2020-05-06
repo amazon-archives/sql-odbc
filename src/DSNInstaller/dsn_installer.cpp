@@ -184,7 +184,6 @@ bool uninstall_driver() {
 
 int main(int argc, char *argv[]) {
     // Get install path from args
-    printf("Should get at least this...");
     if (!argv || argc != 2) {
         printf("Error! Driver path not supplied\n");
         return 1;
@@ -193,34 +192,34 @@ int main(int argc, char *argv[]) {
         std::wstring_convert< std::codecvt_utf8_utf16< wchar_t >, wchar_t >{}
             .from_bytes(argv[1]);
 
-    printf("User install path: %S", user_install_path.c_str());
+    printf("User install path: %S\n", user_install_path.c_str());
     if (!user_install_path.compare(L"uninstall")) {
         bool uninstall_driver_success = uninstall_driver();
         return uninstall_driver_success;
     }
 
     // Install Driver entry
-    printf("Installing Driver entry...");
+    printf("Installing Driver entry...\n");
     bool install_driver_success = install_driver(user_install_path);
     if (!install_driver_success) {
         return 1;
     }
 
     // Add DSN entry
-    printf("Adding DSN entry...");
+    printf("Adding DSN entry...\n");
     bool install_dsn_success = install_dsn();
     if (!install_dsn_success) {
         return 1;
     }
 
     // Add DSN properties
-    printf("Adding DSN properties...");
+    printf("Adding DSN properties...\n");
     bool add_properties_success =
         add_properties_to_dsn(dsn_options, user_install_path + driver_filename);
     if (!add_properties_success) {
         return 1;
     }
 
-    printf("Finished adding DSN!");
+    printf("Finished adding DSN!\n");
     return 0;
 }
