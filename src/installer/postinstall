@@ -9,6 +9,12 @@ mv ${PKG_INSTALL_DIR}/bin ${FINAL_INSTALL_DIR}/bin
 mv ${PKG_INSTALL_DIR}/doc ${FINAL_INSTALL_DIR}/doc
 mv ${PKG_INSTALL_DIR}/resources ${FINAL_INSTALL_DIR}/resources
 
+# TODO: look into why DSN installer is not working for fresh Mac install
+#   Current issue: "General installer error" when adding driver entry
+
 # Run DSN installer to configurate driver and DSN for system for easy setup.
-chmod u+x ${FINAL_INSTALL_DIR}/bin/dsn_installer
-${FINAL_INSTALL_DIR}/bin/dsn_installer ${FINAL_INSTALL_DIR}/bin/ > /tmp/dsn_installer.log
+# chmod a+x ${FINAL_INSTALL_DIR}/bin/dsn_installer
+# chmod a+x ${FINAL_INSTALL_DIR}/bin/remove-odfe-dsn.sh
+# echo "I can write to this file" > /tmp/dsn_installer.log
+# ${FINAL_INSTALL_DIR}/bin/dsn_installer ${FINAL_INSTALL_DIR}/bin/ >> /tmp/dsn_installer.log
+# echo "After DSN Installer finishes" >> /tmp/dsn_installer.log
