@@ -16,5 +16,5 @@
 #
 
 cd src
-git clone "https://github.com/aws/aws-sdk-cpp.git"
+git clone -b "1.7.329" "https://github.com/aws/aws-sdk-cpp.git"
 cd ..
