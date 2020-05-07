@@ -6,6 +6,55 @@ ElasticsearchODBC is a read-only ODBC driver for Windows and Mac for connecting 
 
 The driver is compatible with ODBC 3.51.
 
+## Installing the Driver
+
+You can use the installers generated as part of the most recent release.
+
+### Windows
+
+1. Run the `.msi` installer to install the ODFE SQL ODBC Driver.
+
+To use the driver with Tableau:
+1. Copy the `.tdc` file from `<driver-install-dir>/resources` to `<windows-user-dir>/Documents/My Tableau Repository/Datasources`.
+
+This will customize the connection from Tableau to ODFE, ensuring that the correct forms of queries are used. 
+
+### Mac
+
+iODBC Driver Manager should be installed before installing the ODFE SQL ODBC Driver on Mac.
+
+1. Run the `.pkg` installer to install the ODFE SQL ODBC Driver.
+2. Open **iODBC Administrator** using the following command (this gives the application permissions to save the Driver & DSN configurations):
+	1. `sudo /Applications/iODBC/iODBC\ Administrator64.app/Contents/MacOS/iODBC\ Administrator64`
+    * **iODBC Administrator** is installed with **iODBC Driver Manager**.
+3. Go to the **ODBC Drivers** tab.
+3. Click **Add a Driver**
+	* **Description of the Driver**: The driver name used for ODBC connections (ex. `ODFE SQL ODBC Driver`)
+	* **Driver File Name**: The path to the driver file (default: `<driver-install-dir>/bin/libodfesqlodbc.dylib`)
+	* **Setup File Name**: The path to the driver file (default: `<driver-install-dir>/bin/libodfesqlodbc.dylib`)
+	* Set as a **User** driver
+	* Click **OK** to save the options.
+4. Go to the **User DSN** tab
+5. Select **Add**.
+	* Choose the Driver that was added above.
+	* **Data Source Name (DSN)**: The name of the DSN used to store connection options (ex. `ODFE SQL ODBC DSN`)
+	* **Comment**: Not required
+	* Add key-value pairs by using the **'+'** button. The following is the recommended set of options for a default local ODFE installation:
+		* **Host** | **localhost** //  ODFE server endpoint
+		* **Port** | **9200** // ODFE server port
+		* **Auth** | **NONE** // Authentication mode
+		* **Username** | **(blank)** //  username used for BASIC auth
+		* **Password** | **(blank)** //   password used for BASIC auth
+		* **ResponseTimeout** | **10** // number of seconds to wait for a response from the server
+		* **UseSSL** | **0** // do not use SSL for connections
+    * Click **OK** to save the DSN configuration.
+6. Click **OK** to exit the iODBC Administrator.
+
+To use the driver with Tableau:
+1. Copy the `.tdc` file from `<driver-install-dir>/resources` to `<mac-user-dir>/Documents/My Tableau Repository/Datasources`.
+
+This will customize the connection from Tableau to ODFE, ensuring that the correct forms of queries are used.
+
 ## Using the Driver
 
 The driver comes in the form of a library file:
