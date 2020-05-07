@@ -20,7 +20,7 @@ Import-Certificate -FilePath .\code_signing.crt -Cert Cert:\CurrentUser\Root
   - Sign installer using [SignTool](https://docs.microsoft.com/en-us/windows/msix/package/sign-app-package-using-signtool)
 
 ```
-  signtool sign /sha1 CertificateHash '.\ODFE SQL ODBC Driver-<version>-Windows.msi' 
+  signtool sign /sha1 <CertificateHash> '.\ODFE SQL ODBC Driver-<version>-Windows.msi' 
 ```
   
   - Alternatively, [Set-AuthenticodeSignature](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.security/set-authenticodesignature?view=powershell-7) can be used for adding digital signature.
