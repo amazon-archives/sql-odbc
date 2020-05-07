@@ -23,7 +23,7 @@ mkdir sdk-build
 
 cd sdk-build
 
-cmake ../aws-sdk-cpp/ -D CMAKE_INSTALL_PREFIX=$prefix_path/AWSSDK/ -D CMAKE_BUILD_TYPE=Release -D BUILD_ONLY="core" -D CUSTOM_MEMORY_MANAGEMENT="OFF" -D ENABLE_RTTI="OFF" -D ENABLE_TESTING="OFF"
+cmake ../aws-sdk-cpp/ -D CMAKE_INSTALL_PREFIX=$prefix_path/AWSSDK/ -D CMAKE_BUILD_TYPE=Release -D BUILD_ONLY="core" -D CUSTOM_MEMORY_MANAGEMENT="OFF" -D ENABLE_TESTING="OFF"
 
 make 
 
