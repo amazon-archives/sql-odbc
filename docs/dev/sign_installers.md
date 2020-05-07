@@ -41,9 +41,9 @@ Import-Certificate -FilePath .\code_signing.crt -Cert Cert:\CurrentUser\Root
 productsign -sign "Developer ID Installer: Your Apple Account Name (**********)" "~/Desktop/ODFE SQL ODBC Driver-<version>-Darwin.pkg" "~/Desktop/signed-ODFE SQL ODBC Driver-<version>-Darwin.pkg"
 ```
 
-- Test installer package. 
-  - Using [spctl](https://help.apple.com/xcode/mac/current/#/deve51ce7c3d)
+- Test installer package using [spctl](http://www.manpagez.com/man/8/spctl/)
   ```
   spctl -a -v --type install "Desktop/ODFE SQL ODBC Driver-<version>-Darwin.pkg"
   ```
 
+Reference: https://help.apple.com/xcode/mac/current/#/deve51ce7c3d
