@@ -19,15 +19,15 @@ Import-Certificate -FilePath .\code_signing.crt -Cert Cert:\CurrentUser\Root
 - Sign the .msi file. 
   - Sign installer using [SignTool](https://docs.microsoft.com/en-us/windows/msix/package/sign-app-package-using-signtool)
 
-  ```
+```
   signtool sign /sha1 CertificateHash '.\ODFE SQL ODBC Driver-1.7.0.0-Windows.msi' 
-  ```
+```
   
   - Alternatively, [Set-AuthenticodeSignature](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.security/set-authenticodesignature?view=powershell-7) can be used for adding digital signature.
 
-  ```
+```
   Set-AuthenticodeSignature '.\ODFE SQL ODBC Driver-<version>-Windows.msi' -Certificate (Get-ChildItem Cert:\CurrentUser\My -CodeSigningCert) -TimestampServer "http://timestamp.verisign.com/scripts/timstamp.dll"
-  ```
+```
 
 [Note](https://stackoverflow.com/questions/50956108/codesign-software-still-gives-a-warning-on-windows-10): If you have a standard code signing certificate, some time will be needed for your application to build trust. Microsoft affirms that an Extended Validation (EV) Code Signing Certificate allows to skip this period of trust building. According to Microsoft, extended validation certificates allow the developer to immediately establish reputation with SmartScreen. Otherwise, the users will see a warning like "Windows Defender Smartscreen prevented an unrecognized app from starting. Running this app might put your PC at risk.", with the two buttons: "Run anyway" and "Don't run". 
 
@@ -42,8 +42,8 @@ productsign -sign "Developer ID Installer: Your Apple Account Name (**********)"
 ```
 
 - Test installer package using [spctl](http://www.manpagez.com/man/8/spctl/)
-  ```
+```
   spctl -a -v --type install "Desktop/ODFE SQL ODBC Driver-<version>-Darwin.pkg"
-  ```
+```
 
 Reference: https://help.apple.com/xcode/mac/current/#/deve51ce7c3d
