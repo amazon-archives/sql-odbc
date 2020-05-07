@@ -48,7 +48,7 @@ if(WIN32)
 set(RESOURCE_FILES es_odbc.rc)
 add_library(odfesqlodbc SHARED ${SOURCE_FILES} ${HEADER_FILES} ${RESOURCE_FILES} ${AWSSDK_LIB_DIR})
 else()
-add_library(odfesqlodbc SHARED ${SOURCE_FILES} ${HEADER_FILES})
+add_library(odfesqlodbc SHARED ${SOURCE_FILES} ${HEADER_FILES} ${AWSSDK_LIB_DIR})
 endif()
 
 include_directories(
