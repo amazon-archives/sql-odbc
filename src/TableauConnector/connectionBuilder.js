@@ -7,7 +7,7 @@
 
     // Set authentication values in connection string
     var authAttrValue = attr[connectionHelper.attributeAuthentication];
-    if (authAttrValue == "auth-none"){
+    if (authAttrValue == "NONE"){
         params["Auth"] = attr[connectionHelper.attributeAuthentication];
     } else if (authAttrValue == "AWS_SIGV4"){
         params["Auth"] = attr[connectionHelper.attributeAuthentication];
