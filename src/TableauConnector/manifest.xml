@@ -12,7 +12,6 @@
     <customizations>
       <customization name="CAP_CREATE_TEMP_TABLES" value="no"/>
       <customization name="CAP_SUPPRESS_DISCOVERY_QUERIES" value="yes" />
-      <customization name="SQL_IDENTIFIER_QUOTE_CHAR" value="`" />  
       <customization name="CAP_SELECT_INTO" value="no"/>
       <customization name="CAP_SELECT_TOP_INTO" value="no"/>
       <customization name="CAP_QUERY_BOOLEXPR_TO_INTEXPR" value="no"/>

@@ -8,12 +8,12 @@
     // Set authentication values in connection string
     var authAttrValue = attr[connectionHelper.attributeAuthentication];
     if (authAttrValue == "auth-none"){
-        params["Auth"] = "NONE";
+        params["Auth"] = attr[connectionHelper.attributeAuthentication];
     } else if (authAttrValue == "AWS_SIGV4"){
-        params["Auth"] = "AWS_SIGV4";
+        params["Auth"] = attr[connectionHelper.attributeAuthentication];
         params["Region"] = attr[connectionHelper.attributeVendor1];
     } else if (authAttrValue == "BASIC"){
-        params["Auth"] = "BASIC";
+        params["Auth"] = attr[connectionHelper.attributeAuthentication];
         params["UID"] = attr[connectionHelper.attributeUsername];
         params["PWD"] = attr[connectionHelper.attributePassword];
     }
@@ -21,6 +21,8 @@
     // Set SSL value in connection string 
     if (attr[connectionHelper.attributeSSLMode] == "require"){
         params["useSSL"] = "1";
+    } else {
+        params["useSSL"] = "0";
     }
 
     // Parse additional options and add in connection string
