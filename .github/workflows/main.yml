@@ -31,7 +31,7 @@ jobs:
         prefix_path=$(pwd)
         mkdir cmake-build
         cd cmake-build
-        cmake ../src -D CMAKE_INSTALL_PREFIX=$prefix_path/AWSSDK/
+        cmake ../src -DCMAKE_INSTALL_PREFIX=$prefix_path/AWSSDK/ -DCMAKE_BUILD_TYPE=Release -DBUILD_ONLY="core" -DCUSTOM_MEMORY_MANAGEMENT="OFF" -DENABLE_RTTI="OFF" -DENABLE_TESTING="OFF"
         cd ..
     - name: build-driver
       run: |
@@ -43,7 +43,7 @@ jobs:
       if: success()
       run: |
         cd cmake-build
-        cmake ../src -D CMAKE_INSTALL_PREFIX=$prefix_path/AWSSDK/ -D BUILD_WITH_TESTS=OFF
+        cmake ../src 
         make
         cpack .
         cd ..
