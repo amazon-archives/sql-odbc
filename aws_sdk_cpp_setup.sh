@@ -15,18 +15,6 @@
 #   permissions and limitations under the License.
 #
 
-git clone "https://github.com/aws/aws-sdk-cpp.git"
-
-prefix_path=$(pwd)
-
-mkdir sdk-build
-
-cd sdk-build
-
-cmake ../aws-sdk-cpp/ -D CMAKE_INSTALL_PREFIX=$prefix_path/AWSSDK/ -D CMAKE_BUILD_TYPE=Release -D BUILD_ONLY="core" -D CUSTOM_MEMORY_MANAGEMENT="OFF" -D ENABLE_RTTI="OFF" -D ENABLE_TESTING="OFF"
-
-make 
-
-make install 
-
+cd src
+git clone -b "1.7.329" "https://github.com/aws/aws-sdk-cpp.git"
 cd ..
