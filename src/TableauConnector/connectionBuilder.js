@@ -7,13 +7,10 @@
 
     // Set authentication values in connection string
     var authAttrValue = attr[connectionHelper.attributeAuthentication];
-    if (authAttrValue == "NONE"){
-        params["Auth"] = attr[connectionHelper.attributeAuthentication];
-    } else if (authAttrValue == "AWS_SIGV4"){
-        params["Auth"] = attr[connectionHelper.attributeAuthentication];
+    params["Auth"] = attr[connectionHelper.attributeAuthentication];
+    if (authAttrValue == "AWS_SIGV4"){
         params["Region"] = attr[connectionHelper.attributeVendor1];
     } else if (authAttrValue == "BASIC"){
-        params["Auth"] = attr[connectionHelper.attributeAuthentication];
         params["UID"] = attr[connectionHelper.attributeUsername];
         params["PWD"] = attr[connectionHelper.attributePassword];
     }
