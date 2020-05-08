@@ -2,8 +2,8 @@ name: Build and Release SQL-ODBC
 # This workflow is triggered on creating tags to master or an opendistro release branch
 on:
   push:
-    tags:
-      - 'v*'
+    branch:
+      - 'abbas*'
 
 jobs:
   build-mac:
@@ -40,7 +40,7 @@ jobs:
           prefix_path=$(pwd)
           mkdir cmake-build
           cd cmake-build
-          cmake ../src -D CMAKE_INSTALL_PREFIX=$prefix_path/AWSSDK/
+          cmake ../src -DCMAKE_INSTALL_PREFIX=$prefix_path/AWSSDK/ -DCMAKE_BUILD_TYPE=Release -DBUILD_ONLY="core" -DCUSTOM_MEMORY_MANAGEMENT="OFF" -DENABLE_RTTI="OFF" -DENABLE_TESTING="OFF"
           cd ..
       - name: build-driver
         run: |
@@ -49,7 +49,7 @@ jobs:
         if: success()
         run: |
           cd cmake-build
-          cmake ../src -D CMAKE_INSTALL_PREFIX=$prefix_path/AWSSDK/ -D BUILD_WITH_TESTS=OFF
+          cmake ../src
           make
           cpack .
           cd ..
@@ -81,7 +81,7 @@ jobs:
           cd installer
           mac_installer=`ls -1t *.pkg | grep "ODFE SQL ODBC Driver" | head -1`
           echo $mac_installer
-          aws s3 cp "$mac_installer" s3://artifacts.opendistroforelasticsearch.amazon.com/downloads/elasticsearch-clients/opendistro-sql-odbc/mac/
+          aws s3 cp "$mac_installer" s3://artifacts.opendistroforelasticsearch.amazon.com/abbas-test/elasticsearch-clients/odbc/mac/
 
   build-windows:
     runs-on: windows-latest
@@ -144,4 +144,4 @@ jobs:
           cd installer
           windows_installer=`ls -1t *.msi | grep "ODFE SQL ODBC Driver" | head -1`
           echo $windows_installer
-          aws s3 cp "$windows_installer" s3://artifacts.opendistroforelasticsearch.amazon.com/downloads/elasticsearch-clients/opendistro-sql-odbc/windows/
+          aws s3 cp "$windows_installer" s3://artifacts.opendistroforelasticsearch.amazon.com/abbas-test/elasticsearch-clients/odbc/windows/
