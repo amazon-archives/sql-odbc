@@ -12,7 +12,7 @@ The driver is compatible with ODBC 3.51.
   | Operating System  | Version |
   | ------------- |-------------|
   |  Windows    |  Windows 10 |
-  |  MacOS    |  Mojave 10.14.6 |
+  |  MacOS    |  Catalina 10.15.4, Mojave 10.14.6 |
 
 ## Installing the Driver
 
