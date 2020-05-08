@@ -6,6 +6,14 @@ ElasticsearchODBC is a read-only ODBC driver for Windows and Mac for connecting 
 
 The driver is compatible with ODBC 3.51.
 
+## Supported Versions
+
+
+  | Operating System  | Version |
+  | ------------- |-------------|
+  |  Windows    |  Windows 10 |
+  |  MacOS    |  Catalina 10.15.4, Mojave 10.14.6 |
+
 ## Installing the Driver
 
 You can use the installers generated as part of the most recent release.
