@@ -80,7 +80,7 @@ The driver can be obtained by downloading the bundled distribution installer fro
 5. Currently the **DSN** is not setup as part of installation and need to be configured manually.
 
 
-### Connecting to Tableau
+## Connecting to Tableau
 
 Pre-requisites:
 
@@ -113,10 +113,10 @@ To list all the indices, click the search icon under **Table**.
   <img src="img/tableau_sample_viz.png" width="745" height="500">
 </p>
 
-#### Troubleshooting
+### Troubleshooting
 
 
-### Connecting to Excel
+###Connecting to Excel
 
 Pre-requisites:
 
@@ -124,7 +124,7 @@ Pre-requisites:
 - Make sure Elasticsearch is running on _host_ and _port_ as configured in DSN
 - Make sure the `.tdc` is copied to `<user_home_directory>/Documents/My Tableau Repository/Datasources` in both MacOS and Windows.
 
-#### Troubleshooting
+### Troubleshooting
 
 
 
