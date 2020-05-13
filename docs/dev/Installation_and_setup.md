@@ -115,11 +115,25 @@ To list all the indices, click the search icon under **Table**.
 
 ### Troubleshooting
 
+#### Unable to connect to server
+**Problem:** A error window after signing in as below.
+
+<p align="center">
+  <img src="img/tableau_connection_error.png" width="360" height="220">
+</p>
+
+**Workaround:**
+
+This is most likely due to Elasticsearch server not running on **host** and **post** configured in DSN.
+Confirm **host** and **post** are correct and Elasticsearch server is running with ODFE SQL plugin.
+Also make sure `.tdc` that was downloaded with installer is copied correctly to `<user_home_directory>/Documents/My Tableau Repository/Datasources` directory.
+
 
 ## Connecting to Excel
 
 Pre-requisites:
 
+- Microsoft Excel 2016 or higher.
 - Make sure DSN is already setup.
 - Make sure Elasticsearch is running on _host_ and _port_ as configured in DSN
 - Make sure the `.tdc` is copied to `<user_home_directory>/Documents/My Tableau Repository/Datasources` in both MacOS and Windows.
