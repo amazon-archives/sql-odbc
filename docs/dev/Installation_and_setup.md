@@ -116,7 +116,7 @@ To list all the indices, click the search icon under **Table**.
 ### Troubleshooting
 
 
-### Connecting to Excel
+## Connecting to Excel
 
 Pre-requisites:
 
