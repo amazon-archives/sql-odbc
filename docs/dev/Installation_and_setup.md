@@ -36,7 +36,10 @@ The driver can be obtained by downloading the bundled distribution installer fro
 
 1. Double click the downlaoded `ODFE SQL ODBC Driver-<version>-Darwin.pkg` installer. Click **Continue**.
 
-<img src="img/mac_installer_home.png" width="400" height="400">
+
+<p align="center">
+  <img src="img/mac_installer_home.png" width="506" height="397">
+</p>
 
 
 2. Click **Continue** to move past the **Introduction** and **Readme** .
