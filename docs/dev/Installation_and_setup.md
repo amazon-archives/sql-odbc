@@ -1,16 +1,21 @@
-
+## Overview
 
 The Open Database Connectivity (ODBC) driver lets you integrate Open Distro for Elasticsearch with your favorite Business Intelligence (BI) applications.
 
-
 The driver is currently supported for MacOS and Windows platform. The latest version of driver is compatible with ODBC 3.51 specification.
 
+### Supported Versions
 
+  | Operating System  | Version |
+  | ------------- |-------------|
+  |  Windows    |  Windows 10 |
+  |  MacOS    |  Catalina 10.15.4, Mojave 10.14.6 |
+  
 ## Driver Installation
 
 The driver can be obtained by downloading the bundled distribution installer from [here](https://opendistro.github.io/for-elasticsearch/downloads.html) or by building from source.
 
-###  Using Installer
+###  Via Installer
 
 #### Windows
 
@@ -23,11 +28,12 @@ The driver can be obtained by downloading the bundled distribution installer fro
 
 2. Accept the agreement and click **Next**.
 
+3. The installer comes bundled with documentation and useful resources files to connect with various BI tools, for example `.tdc` file for Tableau. You can choose to keep the documentation and resources, or remove it. You can also choose the download location. Click **Next**.
+
 <p align="center">
   <img src="img/windows_installer_select_and_browse.png" width="506" height="397">
 </p>
 
-3. The installer comes bundled with documentation and useful resources files to connect with various BI tools, for example `.tdc` file for Tableau. You can choose to keep the documentation and resources, or remove it. You can also choose the download location. Click **Next**.
 
 4. Click **Install** and then **Finish**.
 
@@ -59,7 +65,7 @@ The driver can be obtained by downloading the bundled distribution installer fro
 
 4. Choose **Destination** to install driver files.
 
-5. The installer comes bundled with documentation and useful resources files to connect with various BI tools, for example `.tdc` file for Tableau. You can choose to keep the documentation and resources, or remove it. Click **Customize** to choose need files. Click **Continue**.
+5. The installer comes bundled with documentation and useful resources files to connect with various BI tools, for example `.tdc` file for Tableau. You can choose to keep the documentation and resources, or remove it. Click **Customize** to choose needed files. Click **Continue**.
 
 <p align="center">
   <img src="img/mac_installer_select_and_browse.png" width="506" height="397">
@@ -98,7 +104,7 @@ Pre-requisites:
 To list all the indices, click the search icon under **Table**. 
 
 <p align="center">
-  <img src="img/tableau_sample_data.png" width="620" height="424">
+  <img src="img/tableau_sample_data.png" width="303" height="470">
 </p>
 
 4. Start playing with data by dragging table to connection area. Click **Update Now** or **Automatically Update** to populate table data.
@@ -106,6 +112,9 @@ To list all the indices, click the search icon under **Table**.
 <p align="center">
   <img src="img/tableau_sample_viz.png" width="745" height="500">
 </p>
+
+#### Troubleshooting
+
 
 ### Connecting to Excel
 
@@ -115,7 +124,7 @@ Pre-requisites:
 - Make sure Elasticsearch is running on _host_ and _port_ as configured in DSN
 - Make sure the `.tdc` is copied to `<user_home_directory>/Documents/My Tableau Repository/Datasources` in both MacOS and Windows.
 
-
+#### Troubleshooting
 
 
 
