@@ -3,7 +3,7 @@
 The Open Database Connectivity (ODBC) driver lets you integrate Open Distro for Elasticsearch with your favorite business intelligence (BI) applications.
 
 
-The driver is currently supported for MacOS and Windows platform. The lastest version of driver is compatibel with ODBC 3.51 specification.
+The driver is currently supported for MacOS and Windows platform. The lastest version of driver is compatible with ODBC 3.51 specification.
 
 
 ## Driver Installation
@@ -36,7 +36,7 @@ The driver can be obtained by downloading the bundled distribution installer fro
 
 1. Double click the downlaoded `ODFE SQL ODBC Driver-<version>-Darwin.pkg` installer. Click **Continue**.
 
-![MacOS installer screen one](img/mac_installer_home.png)
+![MacOS installer screen one](img/mac_installer_home.png) {:height="50px" width="50px"}
 
 2. Click **Continue** to move past the **Introduction** and **Readme** .
 
