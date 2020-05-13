@@ -1,9 +1,9 @@
 
 
-The Open Database Connectivity (ODBC) driver lets you integrate Open Distro for Elasticsearch with your favorite business intelligence (BI) applications.
+The Open Database Connectivity (ODBC) driver lets you integrate Open Distro for Elasticsearch with your favorite Business Intelligence (BI) applications.
 
 
-The driver is currently supported for MacOS and Windows platform. The lastest version of driver is compatible with ODBC 3.51 specification.
+The driver is currently supported for MacOS and Windows platform. The latest version of driver is compatible with ODBC 3.51 specification.
 
 
 ## Driver Installation
@@ -84,16 +84,28 @@ Pre-requisites:
 
 1. Start Tableau. Under **Connect** section , go to **To a Server** and choose **Other Databases (ODBC)**.
 
-// TODO: add image
+<p align="center">
+  <img src="img/tableau_connection.png" width="733" height="516">
+</p>
 
-2. Once connected, you will directed to  **Datasource** window. The _Database_ will be already populated with name of Elasticsearch cluster.
-To list all the indices, click the search icon under _Table_. \
+2. In the **DSN drop-down**, select the Elasticsearch DSN you set up in the previous set of steps. The options you added will be automatically filled into the **Connection Attributes**
+ 
+<p align="center">
+  <img src="img/tableau_dsn.png" width="455" height="705">
+</p>
+ 
+3.Select Sign In. After a few seconds, Tableau will connect to your Elasticsearch server. Once connected, you will directed to  **Datasource** window. The _Database_ will be already populated with name of Elasticsearch cluster.
+To list all the indices, click the search icon under **Table**. 
 
-// TODO: add image
+<p align="center">
+  <img src="img/tableau_sample_data.png" width="620" height="424">
+</p>
 
-3. Start playing with data by dragging table to connection area. Click **Update Now** or **Automatically Update** to populate table data.
+4. Start playing with data by dragging table to connection area. Click **Update Now** or **Automatically Update** to populate table data.
 
-// TODO: add image
+<p align="center">
+  <img src="img/tableau_sample_viz.png" width="745" height="500">
+</p>
 
 ### Connecting to Excel
 
