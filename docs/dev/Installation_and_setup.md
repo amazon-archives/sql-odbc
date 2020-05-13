@@ -16,17 +16,25 @@ The driver can be obtained by downloading the bundled distribution installer fro
 
 1. Double click the downlaoded `ODFE SQL ODBC Driver-<version>-Windows.msi` installer. Click **Next**.
 
-![Windows installer screen one](img/windows_installer_home.png)
+<p align="center">
+  <img src="img/windows_installer_home.png" width="506" height="397">
+</p>
+
 
 2. Accept the agreement and click **Next**.
 
-![Windows installer screen two](img/windows_installer_select_and_browse.png)
+<p align="center">
+  <img src="img/windows_installer_select_and_browse.png" width="506" height="397">
+</p>
 
 3. The installer comes bundled with documentation and useful resources files to connect with various BI tools, for example `.tdc` file for Tableau. You can choose to keep the documentation and resources, or remove it. You can also choose the download location. Click **Next**.
 
 4. Click **Install** and then **Finish**.
 
-![Windows installer screen three](img/windows_installer_install.png)
+<p align="center">
+  <img src="img/windows_installer_install.png" width="506" height="397">
+</p>
+
 
 5. The **DSN** come already setup with the installation. The following connection information is setup as part of default DSN
 
@@ -36,27 +44,32 @@ The driver can be obtained by downloading the bundled distribution installer fro
 
 1. Double click the downlaoded `ODFE SQL ODBC Driver-<version>-Darwin.pkg` installer. Click **Continue**.
 
-
 <p align="center">
   <img src="img/mac_installer_home.png" width="506" height="397">
 </p>
-
 
 2. Click **Continue** to move past the **Introduction** and **Readme** .
 
 3. Accept the agreement and click **Continue**.
 
-![MacOS installer screen two](img/mac_installer_license.png)
+<p align="center">
+  <img src="img/mac_installer_license.png" width="506" height="397">
+</p>
+
 
 4. Choose **Destination** to install driver files.
 
 5. The installer comes bundled with documentation and useful resources files to connect with various BI tools, for example `.tdc` file for Tableau. You can choose to keep the documentation and resources, or remove it. Click **Customize** to choose need files. Click **Continue**.
 
-![MacOS installer screen five](img/mac_installer_select_and_browse.png)
+<p align="center">
+  <img src="img/mac_installer_select_and_browse.png" width="506" height="397">
+</p>
 
 4. Click **Install** and then **Close**.
 
-![MacOS installer screen seven](img/mac_installer_succesful.png)
+<p align="center">
+  <img src="img/mac_installer_succesful.png" width="506" height="397">
+</p>
 
 5. Currently the **DSN** is not setup as part of installation and need to be configured manually.
 
