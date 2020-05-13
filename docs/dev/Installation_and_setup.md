@@ -97,14 +97,14 @@ Pre-requisites:
 2. In the **DSN drop-down**, select the Elasticsearch DSN you set up in the previous set of steps. The options you added will be automatically filled into the **Connection Attributes**
  
 <p align="center">
-  <img src="img/tableau_dsn.png" width="455" height="705">
+  <img src="img/tableau_dsn.png" width="303" height="470">
 </p>
  
 3.Select Sign In. After a few seconds, Tableau will connect to your Elasticsearch server. Once connected, you will directed to  **Datasource** window. The _Database_ will be already populated with name of Elasticsearch cluster.
 To list all the indices, click the search icon under **Table**. 
 
 <p align="center">
-  <img src="img/tableau_sample_data.png" width="303" height="470">
+  <img src="img/tableau_sample_data.png" width="620" height="424">
 </p>
 
 4. Start playing with data by dragging table to connection area. Click **Update Now** or **Automatically Update** to populate table data.
