@@ -301,12 +301,14 @@ typedef struct ESResult {
                          // several qresults.
     uint16_t num_fields;
     std::vector< ColumnInfo > column_info;
+    std::string cursor;
     std::string result_json;
     std::string command_type;  // SELECT / FETCH / etc
     rabbit::document es_result_doc;
     ESResult() {
         ref_count = 0;
         num_fields = 0;
+        cursor = "";
         result_json = "";
         command_type = "";
     }

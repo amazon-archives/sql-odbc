@@ -66,6 +66,7 @@ static const std::string JSON_KW_SIZE = "size";
 static const std::string JSON_KW_STATUS = "status";
 static const std::string JSON_KW_DATAROWS = "datarows";
 static const std::string JSON_KW_ERROR = "error";
+static const std::string JSON_KW_CURSOR = "cursor";
 
 // clang-format on
 const std::unordered_map< std::string, OID > type_to_oid_map = {

@@ -33,6 +33,8 @@
 static const std::string ctype = "application/json";
 static const std::string SQL_ENDPOINT_FORMAT_JDBC =
     "/_opendistro/_sql?format=jdbc";
+static const std::string SQL_ENDPOINT_CLOSE_CURSOR =
+    "/_opendistro/_sql/close";
 static const std::string PLUGIN_ENDPOINT_FORMAT_JSON =
     "/_cat/plugins?format=json";
 static const std::string OPENDISTRO_SQL_PLUGIN_NAME = "opendistro_sql";
@@ -54,6 +56,7 @@ static const std::string JSON_SCHEMA =
     "\"required\": [ \"name\", \"type\" ]"
     "}]"
     "},"
+    "\"cursor\": { \"type\": \"string\" },"
     "\"total\": { \"type\": \"integer\" },"
     "\"datarows\": {"
     "\"type\": \"array\","
@@ -234,7 +237,7 @@ void ESCommunication::IssueRequest(
     const std::string& endpoint, const Aws::Http::HttpMethod request_type,
     const std::string& content_type, const std::string& query,
     std::shared_ptr< Aws::Http::HttpResponse >& response,
-    const std::string& fetch_size) {
+    const std::string& fetch_size, const std::string& cursor) {
     // Generate http request
     std::shared_ptr< Aws::Http::HttpRequest > request =
         Aws::Http::CreateHttpRequest(
@@ -250,11 +253,15 @@ void ESCommunication::IssueRequest(
         request->SetHeaderValue(Aws::Http::CONTENT_TYPE_HEADER, ctype);
 
     // Set body
-    if (!query.empty()) {
+    if (!query.empty() || !cursor.empty()) {
         rabbit::object body;
-        body["query"] = query;
-        if (!fetch_size.empty()) 
-            body["fetch_size"] = fetch_size;
+        if (!query.empty()) {
+            body["query"] = query;
+            if (!fetch_size.empty())
+                body["fetch_size"] = fetch_size;
+        } else if (!cursor.empty()) {
+            body["cursor"] = cursor;
+        }
         std::shared_ptr< Aws::StringStream > aws_ss =
             Aws::MakeShared< Aws::StringStream >("RabbitStream");
         *aws_ss << std::string(body.str());
@@ -342,7 +349,7 @@ bool ESCommunication::EstablishConnection() {
     LogMsg(ES_ALL, "Checking for SQL plugin");
     std::shared_ptr< Aws::Http::HttpResponse > response = nullptr;
     IssueRequest(PLUGIN_ENDPOINT_FORMAT_JSON, Aws::Http::HttpMethod::HTTP_GET,
-                 "", "", response, "");
+                 "", "", response, "", "");
     if (response == nullptr) {
         m_error_message =
             "The SQL plugin must be installed in order to use this driver. "
@@ -392,7 +399,7 @@ int ESCommunication::ExecDirect(const char* query, const char* fetch_size_) {
     // Issue request
     std::shared_ptr< Aws::Http::HttpResponse > response = nullptr;
     IssueRequest(SQL_ENDPOINT_FORMAT_JDBC, Aws::Http::HttpMethod::HTTP_POST,
-                 ctype, statement, response, fetch_size);
+                 ctype, statement, response, fetch_size, "");
 
     // Validate response
     if (response == nullptr) {
@@ -438,7 +445,54 @@ int ESCommunication::ExecDirect(const char* query, const char* fetch_size_) {
         return -1;
     }
     m_result_queue.push(std::unique_ptr< ESResult >(result));
+    if (result->cursor.size() > 0) {
+        GetResultWithCursor(result->cursor, response->GetResponseCode());
+    } 
     return 0;
+}
+
+void ESCommunication::GetResultWithCursor(std::string cursor,
+                                          Aws::Http::HttpResponseCode response_code) {
+    std::promise< ESResult > promise_result;
+    std::future< ESResult > future_result = promise_result.get_future();
+
+    ESResult* result = new ESResult;
+    std::thread data_processing_thread(SendCursorQueries, 
+                                       std::move(promise_result),cursor, result);
+}
+
+void ESCommunication::SendCursorQueries(
+    std::promise< ESResult >& accumulate_promise, std::string cursor,
+    ESResult& result) {
+    std::shared_ptr< Aws::Http::HttpResponse > response = nullptr;
+    IssueRequest(SQL_ENDPOINT_FORMAT_JDBC, Aws::Http::HttpMethod::HTTP_POST,
+                 ctype, "", response, "", cursor);
+    if (response == nullptr) {
+        m_error_message =
+            "Failed to receive response from query. "
+            "Received NULL response.";
+        LogMsg(ES_ERROR, m_error_message.c_str());
+    }
+    AwsHttpResponseToString(response, result.result_json);
+
+    accumulate_promise.set_value(result);
+}
+
+void ESCommunication::DataProcessing(ESResult& result) {
+    try {
+        result.column_info = m_result_queue.back()->column_info;
+        result.command_type = m_result_queue.back()->command_type;
+        result.num_fields = m_result_queue.back()->num_fields;
+        GetJsonSchema(result);
+        if (result.es_result_doc.has("cursor")) {
+            result.cursor = result.es_result_doc["cursor"].as_string();
+        }
+        m_result_queue.push(std::unique_ptr< ESResult >(&result));
+    }
+    catch (std::runtime_error& e) {
+        m_error_message = "Received runtime exception: " + std::string(e.what());
+        LogMsg(ES_ERROR, m_error_message.c_str());
+    }
 }
 
 void ESCommunication::ConstructESResult(ESResult& result) {
@@ -459,7 +513,9 @@ void ESCommunication::ConstructESResult(ESResult& result) {
 
         result.column_info.push_back(col_info);
     }
-
+    if (result.es_result_doc.has("cursor")) {
+        result.cursor = result.es_result_doc["cursor"].as_string();
+    }
     result.command_type = "SELECT";
     result.num_fields = (uint16_t)schema_array.size();
 }
@@ -512,7 +568,7 @@ std::string ESCommunication::GetServerVersion() {
 
     // Issue request
     std::shared_ptr< Aws::Http::HttpResponse > response = nullptr;
-    IssueRequest("", Aws::Http::HttpMethod::HTTP_GET, "", "", response, "");
+    IssueRequest("", Aws::Http::HttpMethod::HTTP_GET, "", "", response, "", "");
     if (response == nullptr) {
         m_error_message =
             "Failed to receive response from query. "
