@@ -2,7 +2,7 @@
 
 The Open Database Connectivity (ODBC) driver lets you integrate Open Distro for Elasticsearch with your favorite Business Intelligence (BI) applications.
 
-The driver is currently supported for MacOS and Windows platform. The latest version of driver is compatible with ODBC 3.51 specification.
+The driver is currently supported for MacOS and Windows platform. The latest version of driver is compatible with ODBC **3.51** specification.
 
 ### Supported Versions
 
@@ -19,8 +19,8 @@ The driver can be obtained by downloading the bundled distribution installer fro
 
 #### Windows
 
-1. Double click the downlaoded `ODFE SQL ODBC Driver-<version>-Windows.msi` installer. In the case installer is unsigned it will show the following pop up. Click on **More info** and click on **Run anyway**. 
-Then click **Next** to procedd installation.
+1. Double click the downloaded `ODFE SQL ODBC Driver-<version>-Windows.msi` installer. In the case installer is unsigned it will show the following pop up. Click on **More info** and click on **Run anyway**. 
+Then click **Next** to proceed installation.
 
 <p align="center">
   <img src="img/windows_signing_error_1.png" width="400" height="400">
@@ -55,7 +55,14 @@ Then click **Next** to procedd installation.
 ----
 #### MacOS
 
-1. Double click the downloaded `ODFE SQL ODBC Driver-<version>-Darwin.pkg` installer. Click **Continue**.
+1. Double click the downloaded `ODFE SQL ODBC Driver-<version>-Darwin.pkg` installer. In the case installer is unsigned it will show the following pop up. Right click on installer and select **Open**. 
+Click **Continue** to proceed installation.
+
+<p align="center">
+  <img src="img/mac_signing_error_1.png" width="417" height="211">
+  <img src="img/mac_signing_error_2.png" width="417" height="211">
+</p>
+
 
 <p align="center">
   <img src="img/mac_installer_home.png" width="506" height="397">
@@ -107,7 +114,7 @@ Pre-requisites:
   <img src="img/tableau_dsn.png" width="303" height="470">
 </p>
  
-3.Select Sign In. After a few seconds, Tableau will connect to your Elasticsearch server. Once connected, you will directed to  **Datasource** window. The _Database_ will be already populated with name of Elasticsearch cluster.
+3. Select **Sign In**. After a few seconds, Tableau will connect to your Elasticsearch server. Once connected, you will directed to  **Datasource** window. The **Database** will be already populated with name of Elasticsearch cluster.
 To list all the indices, click the search icon under **Table**. 
 
 <p align="center">
@@ -153,5 +160,5 @@ Pre-requisites:
 
  |      |   |
  | ------------- |-------------|
- |  DSN    | A Data Source Name is used to store driver information in the system. By storing the information in the system, the information does not need to be specified each time the driver connects. |
- |  `.tdc` file    | The TDC file contains configuration information that Tableau applies to any connection matching the database vendor name and driver name defined in the file. This configuration allows customers to fine-tune parts of their ODBC data connection, turn on/off certain features not supported by data source|
+ |  **DSN**    | A Data Source Name is used to store driver information in the system. By storing the information in the system, the information does not need to be specified each time the driver connects. |
+ |  **.tdc** file    | The TDC file contains configuration information that Tableau applies to any connection matching the database vendor name and driver name defined in the file. This configuration allows customers to fine-tune parts of their ODBC data connection, turn on/off certain features not supported by data source|
