@@ -10,6 +10,14 @@ The driver is currently supported for MacOS and Windows platform. The latest ver
   | ------------- |-------------|
   |  Windows    |  Windows 10 |
   |  MacOS    |  Catalina 10.15.4, Mojave 10.14.6 |
+
+## Concepts
+
+ |      |   |
+ | ------------- |-------------|
+ |  **DSN**    | A Data Source Name is used to store driver information in the system. By storing the information in the system, the information does not need to be specified each time the driver connects. |
+ |  **.tdc** file    | The TDC file contains configuration information that Tableau applies to any connection matching the database vendor name and driver name defined in the file. This configuration allows customers to fine-tune parts of their ODBC data connection, turn on/off certain features not supported by data source|
+
   
 ## Driver Installation
 
@@ -142,23 +150,3 @@ This is most likely due to Elasticsearch server not running on **host** and **po
 Confirm **host** and **post** are correct and Elasticsearch server is running with ODFE SQL plugin.
 Also make sure `.tdc` that was downloaded with installer is copied correctly to `<user_home_directory>/Documents/My Tableau Repository/Datasources` directory.
 
-
-## Connecting to Microsoft Excel
-
-Pre-requisites:
-
-- Microsoft Excel 2016 or higher.
-- Make sure DSN is already setup.
-- Make sure Elasticsearch is running on _host_ and _port_ as configured in DSN
-- Make sure the `.tdc` is copied to `<user_home_directory>/Documents/My Tableau Repository/Datasources` in both MacOS and Windows.
-
-### Troubleshooting
-
-
-
-## Concepts
-
- |      |   |
- | ------------- |-------------|
- |  **DSN**    | A Data Source Name is used to store driver information in the system. By storing the information in the system, the information does not need to be specified each time the driver connects. |
- |  **.tdc** file    | The TDC file contains configuration information that Tableau applies to any connection matching the database vendor name and driver name defined in the file. This configuration allows customers to fine-tune parts of their ODBC data connection, turn on/off certain features not supported by data source|
