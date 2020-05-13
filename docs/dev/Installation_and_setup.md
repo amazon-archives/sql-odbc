@@ -19,7 +19,13 @@ The driver can be obtained by downloading the bundled distribution installer fro
 
 #### Windows
 
-1. Double click the downlaoded `ODFE SQL ODBC Driver-<version>-Windows.msi` installer. Click **Next**.
+1. Double click the downlaoded `ODFE SQL ODBC Driver-<version>-Windows.msi` installer. In the case installer is unsigned it will show the following pop up. Click on **More info** and click on **Run anyway**. 
+Then click **Next** to procedd installation.
+
+<p align="center">
+  <img src="img/windows_signing_error_1.png" width="400" height="400">
+  <img src="img/windows_singing_error_2.png" width="400" height="400">
+</p>
 
 <p align="center">
   <img src="img/windows_installer_home.png" width="506" height="397">
@@ -46,9 +52,10 @@ The driver can be obtained by downloading the bundled distribution installer fro
 
 //TODO; add config
 
+----
 #### MacOS
 
-1. Double click the downlaoded `ODFE SQL ODBC Driver-<version>-Darwin.pkg` installer. Click **Continue**.
+1. Double click the downloaded `ODFE SQL ODBC Driver-<version>-Darwin.pkg` installer. Click **Continue**.
 
 <p align="center">
   <img src="img/mac_installer_home.png" width="506" height="397">
@@ -129,7 +136,7 @@ Confirm **host** and **post** are correct and Elasticsearch server is running wi
 Also make sure `.tdc` that was downloaded with installer is copied correctly to `<user_home_directory>/Documents/My Tableau Repository/Datasources` directory.
 
 
-## Connecting to Excel
+## Connecting to Microsoft Excel
 
 Pre-requisites:
 
