@@ -186,7 +186,8 @@ LRESULT CALLBACK advancedOptionsProc(HWND hdlg, UINT wMsg, WPARAM wParam,
     return FALSE;
 }
 
-LRESULT logOptionsProc(HWND hdlg, UINT wMsg, WPARAM wParam, LPARAM lParam) {
+LRESULT CALLBACK logOptionsProc(HWND hdlg, UINT wMsg, WPARAM wParam,
+                                LPARAM lParam) {
     switch (wMsg) {
         case WM_INITDIALOG: {
             ConnInfo *ci = (ConnInfo *)lParam;

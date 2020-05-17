@@ -38,20 +38,27 @@ else()
 endif()
 
 if(MSVC)
-  add_compile_options(/W4 /WX)
+  # add_compile_options(/W4 /WX)
+  add_compile_options(/W4)
 else()
   add_compile_options(-Wall -Wextra -pedantic -Werror)
 endif()
 
+# math(EXPR BITS "8*${CMAKE_SIZEOF_VOID_P}")
 if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+	set(BITNESS 64)
+	set(BITNESS_NAME "x64")
 	set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../lib64")
 	set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../lib64")
 	set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../bin64")
 elseif(CMAKE_SIZEOF_VOID_P EQUAL 4)
-	set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../lib")
-	set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../lib")
-	set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../bin")
+	set(BITNESS 32)
+	set(BITNESS_NAME "x86")
+	set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../lib32")
+	set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../lib32")
+	set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../bin32")
 endif()
+message("${BITNESS}bit ${BITNESS_NAME}")
 
 if(NOT WIN32)
 	# Unix builds require autoconf
@@ -89,10 +96,10 @@ set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
 
 # Set path for AWS SDK
 set(aws-cpp-sdk-base "${CMAKE_CURRENT_SOURCE_DIR}/aws-sdk-cpp")
-set(aws-cpp-sdk-core_DIR "${PROJECT_ROOT}/AWSSDK/lib/cmake/aws-cpp-sdk-core")
-set(aws-c-event-stream_DIR "${PROJECT_ROOT}/AWSSDK/lib/aws-c-event-stream/cmake")
-set(aws-c-common_DIR "${PROJECT_ROOT}/AWSSDK/lib/aws-c-common/cmake")
-set(aws-checksums_DIR "${PROJECT_ROOT}/AWSSDK/lib/aws-checksums/cmake")
+set(aws-cpp-sdk-core_DIR "${PROJECT_ROOT}/sdk-build32/AWSSDK/lib/cmake/aws-cpp-sdk-core")
+set(aws-c-event-stream_DIR "${PROJECT_ROOT}/sdk-build32/AWSSDK/lib/aws-c-event-stream/cmake")
+set(aws-c-common_DIR "${PROJECT_ROOT}/sdk-build32/AWSSDK/lib/aws-c-common/cmake")
+set(aws-checksums_DIR "${PROJECT_ROOT}/sdk-build32/AWSSDK/lib/aws-checksums/cmake")
 
 if (WIN32)
 	find_package(AWSSDK REQUIRED core)
@@ -109,10 +116,17 @@ add_compile_definitions		(	_SILENCE_TR1_NAMESPACE_DEPRECATION_WARNING
 							)
 
 # Platform specific compiler definitions
-if (WIN32)
+if (WIN32 AND BITNESS EQUAL 64)
 	# Windows specific
 	add_compile_definitions	(	_WINDLL						
 								_WIN64			
+								_WINDOWS
+								WIN_EXPORT				
+							)
+elseif (WIN32 AND BITNESS EQUAL 32)
+	# Windows specific
+	add_compile_definitions	(	_WINDLL						
+								_WIN32			
 								_WINDOWS
 								WIN_EXPORT				
 							)
