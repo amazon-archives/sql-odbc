@@ -46,6 +46,7 @@
         <remove-function name='ASCII'>
             <argument type='str' />
         </remove-function>
+
         <remove-function name='FIND'>
             <argument type='str' />
             <argument type='str' />
@@ -65,6 +66,7 @@
             <argument type='str' />
             <argument type='real' />        
         </remove-function>
+
         <remove-function name='DATETRUNC'>
             <argument type='localstr' />
             <argument type='date' />
@@ -83,6 +85,7 @@
             <argument type='localstr' />
             <argument type='datetime' />
         </remove-function>
+
         <remove-function name='DATEPART'>
             <argument type='localstr' />
             <argument type='date' />
@@ -101,10 +104,12 @@
             <argument type='localstr' />
             <argument type='datetime' />
         </remove-function>
+
         <remove-function name='DATEPARSE'>
             <argument type='localstr' />
             <argument type='str' />
         </remove-function>
+
         <remove-function name='DATENAME'>
             <argument type='localstr' />
             <argument type='date' />
@@ -123,6 +128,7 @@
             <argument type='localstr' />
             <argument type='datetime' />
         </remove-function>
+
         <remove-function name='DATEDIFF'>
             <argument type='localstr' />
             <argument type='date' />
@@ -167,6 +173,7 @@
             <argument type='datetime' />
             <argument type='datetime' />
         </remove-function>
+
         <remove-function name='DATEADD'>
             <argument type='localstr' />
             <argument type='int' />
@@ -177,12 +184,15 @@
             <argument type='real' />
             <argument type='datetime' />
         </remove-function>
+
         <remove-function name='USEC_TO_TIMESTAMP'>
             <argument type='int' />
         </remove-function>
+
         <remove-function name='TIMESTAMP_TO_USEC'>
             <argument type='datetime' />
         </remove-function>
+
         <remove-function name='MAX'>
             <argument type='datetime' />
             <argument type='datetime' />
@@ -200,6 +210,7 @@
         <remove-function name='MAX'>
             <argument type='datetime' />
         </remove-function>
+
         <remove-function name='MIN'>
             <argument type='datetime' />
             <argument type='datetime' />
@@ -216,22 +227,24 @@
         </remove-function>
         <remove-function name='MIN'>
             <argument type='datetime' />
-        </remove-function>  
+        </remove-function> 
+
         <remove-function name='STDEV'>
             <argument type='real' />
         </remove-function>  
+
         <remove-function name='STDEVP'>
             <argument type='real' />
         </remove-function>   
+
         <remove-function name='VAR'>
             <argument type='real' />
-        </remove-function>   
+        </remove-function> 
+
         <remove-function name='VARP'>
             <argument type='real' />
         </remove-function>   
-        <remove-function name='MIN'>
-            <argument type='datetime' />
-        </remove-function>  
+ 
         <remove-function name='!='>
             <argument type='str' />
             <argument type='datetime' />
@@ -256,6 +269,7 @@
             <argument type='date' />
             <argument type='date' />
         </remove-function>   
+
         <remove-function name='+'>
             <argument type='datetime' />
             <argument type='real' />
@@ -272,6 +286,7 @@
             <argument type='date' />
             <argument type='int' />
         </remove-function>   
+        
         <remove-function name='-'>
             <argument type='datetime' />
             <argument type='real' />
