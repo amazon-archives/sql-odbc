@@ -7,11 +7,3 @@
 ### Documentation
 
 * [Add supported OS version in README.md](https://github.com/opendistro-for-elasticsearch/sql-odbc/pull/88)
-
-
-
-
-
-
-
-
