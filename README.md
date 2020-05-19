@@ -116,9 +116,7 @@ The following are the driver options that can be configured using a DSN or conne
 
 **NOTE:** Administrative privileges are required to change the value of logging options.
 
-## Download and Installation
-
-The driver will be available through standard open source repositories for installers.
+## Building from source
 
 ### Building
 
@@ -137,7 +135,7 @@ From the projects root directory, then build the project using Visual Studio (Wi
 
 ## Documentation
 
-Please refer to the [documentation](https://opendistro.github.io/for-elasticsearch-docs/) for detailed information on installing and configuring opendistro-elasticsearch-security plugin.
+Please refer to the [documentation](https://opendistro.github.io/for-elasticsearch-docs/) for detailed information on installing and configuring Open Distro for Elasticsearch.
 
 ## Code of Conduct
 
