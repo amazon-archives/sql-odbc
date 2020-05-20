@@ -57,12 +57,14 @@ class ESCommunication {
     void DropDBConnection();
     void LogMsg(ESLogLevel level, const char* msg);
     int ExecDirect(const char* query, const char* fetch_size_);
-    void GetResultWithCursor(std::string cursor,
-                             Aws::Http::HttpResponseCode response_code);
+    void GetResultWithCursor(std::string cursor);
+    /*
     void SendCursorQueries(std::promise< ESResult >& accumulate_promise,
-                           std::string cursor, ESResult& result);
+                           std::string cursor);
     void DataProcessing(ESResult& result);
+    */
     ESResult* PopResult();
+    schema_type* GetDocSchema();
     std::string GetClientEncoding();
     bool SetClientEncoding(std::string& encoding);
     bool IsSQLPluginInstalled(const std::string& plugin_response);
@@ -90,6 +92,7 @@ class ESCommunication {
     ConnStatusType m_status;
     bool m_valid_connection_options;
     std::queue< std::unique_ptr< ESResult > > m_result_queue;
+    schema_type m_doc_schema;
     runtime_options m_rt_opts;
     std::string m_client_encoding;
     Aws::SDKOptions m_options;

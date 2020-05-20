@@ -32,10 +32,13 @@ extern "C" {
 // is sometimes used Cannot pass q_res as reference because it breaks qresult.h
 // macros that expect to use -> operator
 BOOL CC_from_ESResult(QResultClass *q_res, ConnectionClass *conn,
-                      const char *cursor, ESResult &es_result);
+                      const char *cursor, ESResult &es_result,
+                      schema_type *doc_schema);
 BOOL CC_Metadata_from_ESResult(QResultClass *q_res, ConnectionClass *conn,
-                      const char *cursor, ESResult &es_result);
+                               const char *cursor, ESResult &es_result,
+                               schema_type *doc_schema);
 BOOL CC_No_Metadata_from_ESResult(QResultClass *q_res, ConnectionClass *conn,
-                      const char *cursor, ESResult &es_result);
+                                  const char *cursor, ESResult &es_result,
+                                  schema_type *doc_schema);
 #endif
 #endif

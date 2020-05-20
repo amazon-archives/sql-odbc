@@ -24,6 +24,7 @@
 std::string ESGetClientEncoding(void* es_conn);
 bool ESSetClientEncoding(void* es_conn, std::string& encoding);
 ESResult* ESGetResult(void* es_conn);
+schema_type* ESGetDocSchema(void* es_conn);
 void ESClearResult(ESResult* es_result);
 void* ESConnectDBParams(runtime_options& rt_opts, int expand_dbname,
                         unsigned int option_count);

@@ -30,7 +30,8 @@ RETCODE ExecuteStatement(StatementClass *stmt, BOOL commit);
 QResultClass *SendQueryGetResult(StatementClass *stmt, BOOL commit);
 RETCODE AssignResult(StatementClass *stmt);
 SQLRETURN ESAPI_Cancel(HSTMT hstmt);
-void ClearESResult(void* es_result);
+SQLRETURN GetAllResultSet(StatementClass *stmt);
+void ClearESResult(void *es_result);
 #ifdef __cplusplus
 }
 #endif

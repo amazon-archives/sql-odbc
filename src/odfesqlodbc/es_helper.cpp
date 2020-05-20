@@ -79,6 +79,11 @@ ESResult* ESGetResult(void* es_conn) {
                    : NULL;
 }
 
+schema_type* ESGetDocSchema(void* es_conn) {
+    return es_conn ? static_cast< ESCommunication* >(es_conn)->GetDocSchema()
+                   : NULL;
+}
+
 std::string ESGetClientEncoding(void* es_conn) {
     return es_conn
                ? static_cast< ESCommunication* >(es_conn)->GetClientEncoding()
