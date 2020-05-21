@@ -30,7 +30,6 @@
 #endif  // __APPLE__
 #include "statement.h"
 
-typedef rabbit::document json_doc;
 typedef rabbit::array json_arr;
 typedef json_arr::iterator::result_type json_arr_it;
 
@@ -139,6 +138,15 @@ BOOL CC_No_Metadata_from_ESResult(QResultClass *q_res, ConnectionClass *conn,
     ClearError();
     return _CC_No_Metadata_from_ESResult(q_res, conn, cursor, es_result,
                                          doc_schema)
+               ? TRUE
+               : FALSE;
+}
+
+BOOL CC_Assign_Table_Data(json_doc &es_result_doc, QResultClass *q_res,
+                          const schema_type &doc_schema,
+                          ColumnInfoClass &fields) {
+    ClearError();
+    return AssignTableData(es_result_doc, q_res, doc_schema, fields)
                ? TRUE
                : FALSE;
 }

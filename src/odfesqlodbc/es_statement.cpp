@@ -139,7 +139,10 @@ RETCODE ExecuteStatement(StatementClass *stmt, BOOL commit) {
         // Statement does not contain a result
         // Assign directly
         SC_set_Result(stmt, res);
-        GetAllResultSet(stmt);
+    }
+    
+    if (commit) {
+        GetMoreResults(stmt);
     }
 
     if (!SC_get_Curres(stmt))
@@ -149,37 +152,27 @@ RETCODE ExecuteStatement(StatementClass *stmt, BOOL commit) {
     return CleanUp();
 }
 
-SQLRETURN GetAllResultSet(StatementClass *stmt) {
-    CSTR func = "GetAllResultSet";
+SQLRETURN GetMoreResults(StatementClass *stmt) {
     if (stmt == NULL)
         return SQL_ERROR;
-
     ConnectionClass *conn = SC_get_conn(stmt);
-    QResultClass *res = SC_get_Result(stmt);
-    try {
-        if ((res != NULL) && (conn != NULL)) {
-            QResultClass *temp = res;
-            schema_type *doc_schema = ESGetDocSchema(conn);
-            while (temp != NULL) {
-                ESResult *es_res = ESGetResult(conn->esconn);
-                QResultClass *res_next = QR_Constructor();
-                if ((es_res != NULL) && (res_next != NULL)) {
-                    temp->next = res_next;
-                    if (!CC_from_ESResult(res_next, conn, res_next->cursor_name,
-                                          *es_res, doc_schema)) {
-                        QR_Destructor(res);
-                        res_next->next = NULL;
-                        return SQL_ERROR;
-                    }
-                    temp = temp->next;
-                } else {
-                    break;
-                }
-            }
-        }
-    } catch (...) {
-        
+    QResultClass *q_res = SC_get_Result(stmt);
+    if ((q_res == NULL) && (conn == NULL)) {
+        return SQL_ERROR;
     }
+
+    int get_more_result = SQL_ERROR;
+    do {
+        ESResult *es_res = ESGetResult(conn->esconn);
+        if (es_res != NULL) {
+            get_more_result = SQL_SUCCESS;
+            schema_type *doc_schema = ESGetDocSchema(conn);
+            CC_Assign_Table_Data(es_res->es_result_doc, q_res, *doc_schema,
+                                 *(q_res->fields));
+        } else {
+            get_more_result = SQL_ERROR;
+        }
+    } while (get_more_result == SQL_SUCCESS);
 
     return SQL_SUCCESS;
 }
@@ -294,6 +287,7 @@ RETCODE AssignResult(StatementClass *stmt) {
         QR_Destructor(res);
         return SQL_ERROR;
     }
+    GetMoreResults(stmt);
 
     // Deallocate and return result
     ESClearResult(es_res);

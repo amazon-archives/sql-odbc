@@ -459,7 +459,7 @@ void ESCommunication::GetResultWithCursor(std::string cursor) {
                      ctype, "", response, "", cursor);
         if (response == nullptr) {
             m_error_message =
-                "Failed to receive response from query. "
+                "Failed to receive response from cursor. "
                 "Received NULL response.";
             LogMsg(ES_ERROR, m_error_message.c_str());
             return;
@@ -479,10 +479,12 @@ void ESCommunication::GetResultWithCursor(std::string cursor) {
             m_result_queue.push(std::unique_ptr< ESResult >(result));
 
             if (result->es_result_doc.has("datarows")) {
-                if (result->es_result_doc["datarows"].size() < 1)
+                if (result->es_result_doc["datarows"].size() < 1) {
                     send_request = SQL_ERROR;
-                else
+                    SendCloseCursorRequest(cursor);
+                } else {
                     send_request = SQL_SUCCESS;
+                }
             }
         } catch (std::runtime_error& e) {
             m_error_message =
@@ -491,6 +493,19 @@ void ESCommunication::GetResultWithCursor(std::string cursor) {
             return;
         }  
     } while (send_request == SQL_SUCCESS);
+}
+
+void ESCommunication::SendCloseCursorRequest(std::string cursor) {
+    std::shared_ptr< Aws::Http::HttpResponse > response = nullptr;
+    IssueRequest(SQL_ENDPOINT_CLOSE_CURSOR, Aws::Http::HttpMethod::HTTP_POST,
+                 ctype, "", response, "", cursor);
+    if (response == nullptr) {
+        m_error_message =
+            "Failed to receive response from cursor. "
+            "Received NULL response.";
+        LogMsg(ES_ERROR, m_error_message.c_str());
+        return;
+    }
 }
 
 void ESCommunication::ConstructESResult(ESResult& result) {

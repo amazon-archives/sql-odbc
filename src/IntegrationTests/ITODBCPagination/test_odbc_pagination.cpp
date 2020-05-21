@@ -47,7 +47,7 @@ class TestPagination : public testing::Test {
         SQLAllocHandle(SQL_HANDLE_STMT, m_conn, &m_hstmt);
         SQLRETURN ret = SQLExecDirect(m_hstmt, (SQLTCHAR*)m_query.c_str(), SQL_NTS);
         EXPECT_EQ(SQL_SUCCESS, ret);
-        /*
+        
         // Get column count
         SQLSMALLINT total_columns = -1;
         SQLNumResultCols(m_hstmt, &total_columns);
@@ -69,8 +69,7 @@ class TestPagination : public testing::Test {
             row_count++;
         }
         return row_count;
-        */
-        return 1;
+        
     }
 
     ~TestPagination() {
@@ -83,34 +82,15 @@ class TestPagination : public testing::Test {
     SQLTCHAR m_out_conn_string[1024];
     SQLSMALLINT m_out_conn_string_length;
     std::wstring m_query =
-        L"SELECT Origin FROM kibana_sample_data_flights";
+        L"SELECT total_quantity FROM kibana_sample_data_ecommerce";
 };
 
-TEST_F(TestPagination, Fetch3000Rows) {
-   // int total_rows = 1000;
-    std::wstring fetch_size_15_conn_string =
-        use_ssl ? L"Driver={Elasticsearch ODBC};"
-                  L"host=https://localhost;port=9200;"
-                  L"user=admin;password=admin;auth=BASIC;useSSL="
-                  L"1;hostnameVerification=0;logLevel=0;logOutput=C:\\;"
-                  L"responseTimeout=1;fetchSize=3000"
-                : L"Driver={Elasticsearch ODBC};"
-                  L"host=localhost;port=9200;"
-                  L"user=admin;password=admin;auth=BASIC;useSSL="
-                  L"0;hostnameVerification=0;logLevel=0;logOutput=C:\\;"
-                  L"responseTimeout=1;fetchSize=3000";
-    ASSERT_EQ(SQL_SUCCESS,
-              SQLDriverConnect(
-                  m_conn, NULL, (SQLTCHAR*)fetch_size_15_conn_string.c_str(),
-                  SQL_NTS, m_out_conn_string, IT_SIZEOF(m_out_conn_string),
-                  &m_out_conn_string_length, SQL_DRIVER_PROMPT));
-    std::cout << "\n Total" << GetTotalRowsAfterQueryExecution();
-  //  EXPECT_EQ(total_rows, GetTotalRowsAfterQueryExecution());
-}
-/*
-TEST_F(TestPagination, NoFetchSize) {
-    // Default size when pagination is disabled i.e. fetch size is 0.
-    int total_rows = 200;
+TEST_F(TestPagination, EnablePagination) {
+    // Default fetch size is -1 for driver.
+    // Server default page size for all cursor requests is 1000.
+
+    //Total number of rows in kibana_sample_data_ecommerce table
+    int total_rows = 4675;
     std::wstring fetch_size_15_conn_string =
         use_ssl ? L"Driver={Elasticsearch ODBC};"
                   L"host=https://localhost;port=9200;"
@@ -129,7 +109,29 @@ TEST_F(TestPagination, NoFetchSize) {
                   &m_out_conn_string_length, SQL_DRIVER_PROMPT));
     EXPECT_EQ(total_rows, GetTotalRowsAfterQueryExecution());
 }
-*/
+
+TEST_F(TestPagination, DisablePagination) {
+    // Fetch size 0 implies no pagination
+    int total_rows = 200;
+    std::wstring fetch_size_15_conn_string =
+        use_ssl ? L"Driver={Elasticsearch ODBC};"
+                  L"host=https://localhost;port=9200;"
+                  L"user=admin;password=admin;auth=BASIC;useSSL="
+                  L"1;hostnameVerification=0;logLevel=0;logOutput=C:\\;"
+                  L"responseTimeout=1;fetchSize=0;"
+                : L"Driver={Elasticsearch ODBC};"
+                  L"host=localhost;port=9200;"
+                  L"user=admin;password=admin;auth=BASIC;useSSL="
+                  L"0;hostnameVerification=0;logLevel=0;logOutput=C:\\;"
+                  L"responseTimeout=1;fetchSize=0;";
+    ASSERT_EQ(SQL_SUCCESS,
+              SQLDriverConnect(
+                  m_conn, NULL, (SQLTCHAR*)fetch_size_15_conn_string.c_str(),
+                  SQL_NTS, m_out_conn_string, IT_SIZEOF(m_out_conn_string),
+                  &m_out_conn_string_length, SQL_DRIVER_PROMPT));
+    EXPECT_EQ(total_rows, GetTotalRowsAfterQueryExecution());
+}
+
 int main(int argc, char** argv) {
 #ifdef __APPLE__
     // Enable malloc logging for detecting memory leaks.

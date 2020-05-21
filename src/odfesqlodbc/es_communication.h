@@ -77,6 +77,7 @@ class ESCommunication {
     void AwsHttpResponseToString(
         std::shared_ptr< Aws::Http::HttpResponse > response,
         std::string& output);
+    void SendCloseCursorRequest(std::string cursor);
 
    private:
     void InitializeConnection();
