@@ -153,6 +153,8 @@ const std::vector< sample_data_struct > table_data_all{
     {"", "", "kibana_sample_data_flights", "BASE TABLE", ""},
     {"", "", "kibana_sample_data_logs", "BASE TABLE", ""},
     {"", "", "kibana_sample_data_types", "BASE TABLE", ""},
+    {"", "", "calcs", "BASE TABLE", ""},
+    {"", "", "staples", "BASE TABLE", ""},
 };
 const std::vector< sample_data_struct > table_data_types{
     {"", "", "", "BASE TABLE", ""}};
