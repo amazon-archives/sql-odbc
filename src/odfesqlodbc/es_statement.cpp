@@ -160,7 +160,6 @@ SQLRETURN GetMoreResults(StatementClass *stmt) {
     if ((q_res == NULL) && (conn == NULL)) {
         return SQL_ERROR;
     }
-
     int get_more_result = SQL_ERROR;
     do {
         ESResult *es_res = ESGetResult(conn->esconn);
@@ -173,7 +172,6 @@ SQLRETURN GetMoreResults(StatementClass *stmt) {
             get_more_result = SQL_ERROR;
         }
     } while (get_more_result == SQL_SUCCESS);
-
     return SQL_SUCCESS;
 }
 
@@ -232,8 +230,7 @@ QResultClass *SendQueryGetResult(StatementClass *stmt, BOOL commit) {
 
     // Send command
     ConnectionClass *conn = SC_get_conn(stmt);
-    if (ESExecDirect(conn->esconn, stmt->statement, conn->connInfo.fetch_size)
-        != 0) {
+    if (ESExecDirect(conn->esconn, stmt->statement, conn->connInfo.fetch_size) != 0) {
         QR_Destructor(res);
         return NULL;
     }

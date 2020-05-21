@@ -137,16 +137,16 @@ int main(int argc, char** argv) {
     // Enable malloc logging for detecting memory leaks.
     system("export MallocStackLogging=1");
 #endif
-    //testing::internal::CaptureStdout();
+    testing::internal::CaptureStdout();
     ::testing::InitGoogleTest(&argc, argv);
 
     int failures = RUN_ALL_TESTS();
 
-    //std::string output = testing::internal::GetCapturedStdout();
-    //std::cout << output << std::endl;
-    //std::cout << (failures ? "Not all tests passed." : "All tests passed")
-    //          << std::endl;
-    //WriteFileIfSpecified(argv, argv + argc, "-fout", output);
+    std::string output = testing::internal::GetCapturedStdout();
+    std::cout << output << std::endl;
+    std::cout << (failures ? "Not all tests passed." : "All tests passed")
+              << std::endl;
+    WriteFileIfSpecified(argv, argv + argc, "-fout", output);
 
 #ifdef __APPLE__
     // Disable malloc logging and report memory leaks

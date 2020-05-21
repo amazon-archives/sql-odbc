@@ -31,7 +31,6 @@ QResultClass *SendQueryGetResult(StatementClass *stmt, BOOL commit);
 RETCODE AssignResult(StatementClass *stmt);
 SQLRETURN ESAPI_Cancel(HSTMT hstmt);
 SQLRETURN GetMoreResults(StatementClass *stmt);
-SQLRETURN GetAllResultSet(StatementClass *stmt);
 void ClearESResult(void *es_result);
 #ifdef __cplusplus
 }

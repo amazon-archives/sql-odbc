@@ -20,7 +20,6 @@
 // clang-format off
 #include <memory>
 #include <queue>
-#include <future>
 #include "es_types.h"
 
 //Keep rabbit at top otherwise it gives build error because of some variable names like max, min
@@ -58,11 +57,6 @@ class ESCommunication {
     void LogMsg(ESLogLevel level, const char* msg);
     int ExecDirect(const char* query, const char* fetch_size_);
     void GetResultWithCursor(std::string cursor);
-    /*
-    void SendCursorQueries(std::promise< ESResult >& accumulate_promise,
-                           std::string cursor);
-    void DataProcessing(ESResult& result);
-    */
     ESResult* PopResult();
     schema_type* GetDocSchema();
     std::string GetClientEncoding();
