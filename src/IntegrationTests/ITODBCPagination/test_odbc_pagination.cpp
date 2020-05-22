@@ -82,15 +82,15 @@ class TestPagination : public testing::Test {
     SQLTCHAR m_out_conn_string[1024];
     SQLSMALLINT m_out_conn_string_length;
     std::wstring m_query =
-        L"SELECT total_quantity FROM kibana_sample_data_ecommerce";
+        L"SELECT Origin FROM kibana_sample_data_flights";
 };
 
 TEST_F(TestPagination, EnablePagination) {
     // Default fetch size is -1 for driver.
     // Server default page size for all cursor requests is 1000.
 
-    //Total number of rows in kibana_sample_data_ecommerce table
-    int total_rows = 4675;
+    //Total number of rows in kibana_sample_data_flights table
+    int total_rows = 13059;
     std::wstring fetch_size_15_conn_string =
         use_ssl ? L"Driver={Elasticsearch ODBC};"
                   L"host=https://localhost;port=9200;"
