@@ -63,13 +63,13 @@ jobs:
       if: success()
       uses: actions/upload-artifact@v1
       with:
-        name: mac-build
+        name: mac64-build
         path: build
     - name: upload-installer
       if: success()
       uses: actions/upload-artifact@v1
       with:
-        name: mac-installer
+        name: mac64-installer
         path: installer
     #- name: upload-test-results
     #  if: success()
@@ -89,14 +89,15 @@ jobs:
     - name: build-installer
       if: success()
       run: |
+        $prefix_path = (pwd).path
         cd cmake-build32
-        cmake ..\\src -D CMAKE_INSTALL_PREFIX=$prefix_path\AWSSDK\ -D BUILD_WITH_TESTS=OFF
+        cmake ..\\src -D CMAKE_INSTALL_PREFIX=$prefix_path\AWSSDK\bin -D BUILD_WITH_TESTS=OFF
         msbuild .\PACKAGE.vcxproj -p:Configuration=Release
         cd ..
     #- name: test
     #  run: |
-    #    cp .\\libraries\\VisualLeakDetector\\bin64\\*.* .\\bin64\\Release
-    #    cp .\\libraries\\VisualLeakDetector\\lib64\\*.lib .\\lib64\\Release
+    #    cp .\\libraries\\VisualLeakDetector\\bin32\\*.* .\\bin32\\Release
+    #    cp .\\libraries\\VisualLeakDetector\\lib32\\*.lib .\\lib32\\Release
     #    .\run_test_runner.bat
     - name: create-output
       if: always()
@@ -108,19 +109,19 @@ jobs:
         cp .\\bin32\\Release\\*.exe build
         cp .\\lib32\\Release\\*.lib build
         cp .\\cmake-build32\\*.msi installer
-    #    cp .\\bin64\\Release\\*.log test-output
-    #    cp .\\bin64\\Release\\*.html test-output
+    #    cp .\\bin32\\Release\\*.log test-output
+    #    cp .\\bin32\\Release\\*.html test-output
     - name: upload-build
       if: always()
       uses: actions/upload-artifact@v1
       with:
-        name: windows-build
+        name: windows32-build
         path: build
     - name: upload-installer
       if: always()
       uses: actions/upload-artifact@v1
       with:
-        name: windows-installer
+        name: windows32-installer
         path: installer
     #- name: upload-test-results
     #  if: always()
@@ -141,7 +142,8 @@ jobs:
       if: success()
       run: |
         cd cmake-build64
-        cmake ..\\src -D CMAKE_INSTALL_PREFIX=$prefix_path\AWSSDK\ -D BUILD_WITH_TESTS=OFF
+        cp $prefix_path\AWSSDK\
+        cmake ..\\src -D CMAKE_INSTALL_PREFIX=$prefix_path\AWSSDK\bin -D BUILD_WITH_TESTS=OFF
         msbuild .\PACKAGE.vcxproj -p:Configuration=Release
         cd ..
     #- name: test
@@ -165,13 +167,13 @@ jobs:
       if: always()
       uses: actions/upload-artifact@v1
       with:
-        name: windows-build
+        name: windows64-build
         path: build
     - name: upload-installer
       if: always()
       uses: actions/upload-artifact@v1
       with:
-        name: windows-installer
+        name: windows64-installer
         path: installer
     #- name: upload-test-results
     #  if: always()
