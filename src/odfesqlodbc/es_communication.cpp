@@ -447,7 +447,7 @@ int ESCommunication::ExecDirect(const char* query, const char* fetch_size_) {
     if (result->cursor.size() > 0) {
         auto send_cursor_queries =
             std::async(std::launch::async, [&]() {
-                 ESCommunication::SendCursorQueries(result->cursor);
+                 SendCursorQueries(result->cursor);
             });
     }
     return 0;
@@ -457,7 +457,7 @@ void ESCommunication::SendCursorQueries(std::string cursor) {
     try {
         BlockingQueue< ESResult* > queue;
         auto future_thread = std::async(std::launch::async, [&]() {
-            ESCommunication::DataProcessing(&queue);
+            DataProcessing(&queue);
         });
     
         while (cursor.size() > 0) {

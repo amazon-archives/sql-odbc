@@ -47,7 +47,7 @@ class TestPagination : public testing::Test {
         SQLAllocHandle(SQL_HANDLE_STMT, m_conn, &m_hstmt);
         SQLRETURN ret = SQLExecDirect(m_hstmt, (SQLTCHAR*)m_query.c_str(), SQL_NTS);
         EXPECT_EQ(SQL_SUCCESS, ret);
-        
+
         // Get column count
         SQLSMALLINT total_columns = -1;
         SQLNumResultCols(m_hstmt, &total_columns);
@@ -69,7 +69,6 @@ class TestPagination : public testing::Test {
             row_count++;
         }
         return row_count;
-        
     }
 
     ~TestPagination() {

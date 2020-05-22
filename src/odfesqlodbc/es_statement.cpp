@@ -140,7 +140,6 @@ RETCODE ExecuteStatement(StatementClass *stmt, BOOL commit) {
         // Assign directly
         SC_set_Result(stmt, res);
     }
-    
     if (commit) {
         GetMoreResults(stmt);
     }
