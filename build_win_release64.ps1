@@ -22,5 +22,3 @@ cmake -S src -B cmake-build${BITNESS} -A x64 -D CMAKE_INSTALL_PREFIX=sdk-build${
 
 # # Build Project
 cmake --build .\cmake-build${BITNESS} --config Release 
-
-msbuild cmake-build32\PACKAGE.vcxproj -p:Configuration=Release
