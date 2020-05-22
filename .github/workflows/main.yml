@@ -77,25 +77,66 @@ jobs:
     #  with:
     #    name: mac-test-results
     #    path: test-output
-  build-windows:
+  build-windows32:
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v1
     - name: add-msbuild-to-path
       uses: microsoft/setup-msbuild@v1.0.0
-    - name: aws-sdk-cpp-setup
+    - name: configure-and-build-driver
       run: |
-        .\aws_sdk_cpp_setup.ps1
-    - name: configure
+        .\build_win_release32.ps1
+    - name: build-installer
+      if: success()
       run: |
-        $prefix_path = (pwd).path
-        mkdir cmake-build
         cd cmake-build
-        cmake ..\\src -D CMAKE_INSTALL_PREFIX=$prefix_path\AWSSDK\
+        cmake ..\\src -D CMAKE_INSTALL_PREFIX=$prefix_path\AWSSDK\ -D BUILD_WITH_TESTS=OFF
+        msbuild .\PACKAGE.vcxproj -p:Configuration=Release
         cd ..
-    - name: build-driver
+    #- name: test
+    #  run: |
+    #    cp .\\libraries\\VisualLeakDetector\\bin64\\*.* .\\bin64\\Release
+    #    cp .\\libraries\\VisualLeakDetector\\lib64\\*.lib .\\lib64\\Release
+    #    .\run_test_runner.bat
+    - name: create-output
+      if: always()
       run: |
-        cmake --build cmake-build --config Release
+        mkdir build
+        mkdir test-output
+        mkdir installer
+        cp .\\bin32\\Release\\*.dll build
+        cp .\\bin32\\Release\\*.exe build
+        cp .\\lib32\\Release\\*.lib build
+        cp .\\cmake-build32\\*.msi installer
+    #    cp .\\bin64\\Release\\*.log test-output
+    #    cp .\\bin64\\Release\\*.html test-output
+    - name: upload-build
+      if: always()
+      uses: actions/upload-artifact@v1
+      with:
+        name: windows-build
+        path: build
+    - name: upload-installer
+      if: always()
+      uses: actions/upload-artifact@v1
+      with:
+        name: windows-installer
+        path: installer
+    #- name: upload-test-results
+    #  if: always()
+    #  uses: actions/upload-artifact@v1
+    #  with:
+    #    name: windows-test-results
+    #    path: test-output
+  build-windows64:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: add-msbuild-to-path
+      uses: microsoft/setup-msbuild@v1.0.0
+    - name: configure-and-build-driver
+      run: |
+        .\build_win_release64.ps1
     - name: build-installer
       if: success()
       run: |
@@ -117,7 +158,7 @@ jobs:
         cp .\\bin64\\Release\\*.dll build
         cp .\\bin64\\Release\\*.exe build
         cp .\\lib64\\Release\\*.lib build
-        cp .\\cmake-build\\*.msi installer
+        cp .\\cmake-build64\\*.msi installer
     #    cp .\\bin64\\Release\\*.log test-output
     #    cp .\\bin64\\Release\\*.html test-output
     - name: upload-build
