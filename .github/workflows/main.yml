@@ -89,7 +89,7 @@ jobs:
     - name: build-installer
       if: success()
       run: |
-        cd cmake-build
+        cd cmake-build32
         cmake ..\\src -D CMAKE_INSTALL_PREFIX=$prefix_path\AWSSDK\ -D BUILD_WITH_TESTS=OFF
         msbuild .\PACKAGE.vcxproj -p:Configuration=Release
         cd ..
@@ -140,7 +140,7 @@ jobs:
     - name: build-installer
       if: success()
       run: |
-        cd cmake-build
+        cd cmake-build64
         cmake ..\\src -D CMAKE_INSTALL_PREFIX=$prefix_path\AWSSDK\ -D BUILD_WITH_TESTS=OFF
         msbuild .\PACKAGE.vcxproj -p:Configuration=Release
         cd ..
