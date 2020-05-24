@@ -32,6 +32,7 @@ RETCODE ExecuteStatement(StatementClass *stmt, BOOL commit) {
 
     auto CleanUp = [&]() -> RETCODE {
         SC_SetExecuting(stmt, FALSE);
+        ESClearSchema(ESGetDocSchema(conn));
         CLEANUP_FUNC_CONN_CS(func_cs_count, conn);
         if (conn->status != CONN_DOWN)
             conn->status = oldstatus;

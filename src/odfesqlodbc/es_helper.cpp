@@ -105,6 +105,10 @@ void ESClearResult(ESResult* es_result) {
     delete es_result;
 }
 
+void ESClearSchema(schema_type* doc_schema) {
+    doc_schema->clear();
+}
+
 // This class provides a cross platform way of entering critical sections
 class CriticalSectionHelper {
    public:
