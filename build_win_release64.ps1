@@ -4,8 +4,8 @@ $BITNESS=64
 # Compare Bitness for 32
 # $ARCH="x64"
 
-mkdir sdk-build${BITNESS}
-cd sdk-build${BITNESS}
+mkdir sdk-build64
+cd .\sdk-build64
 
 git clone "https://github.com/aws/aws-sdk-cpp.git"
 
@@ -18,7 +18,7 @@ msbuild INSTALL.vcxproj /p:Configuration=Release
 cd ..
 
 # # Configure Project
-cmake -S src -B cmake-build${BITNESS} -A x64 -D CMAKE_INSTALL_PREFIX=sdk-build${BITNESS}\AWSSDK\ -D BUILD_WITH_TESTS=ON
+cmake -S src -B cmake-build64 -A x64 -D CMAKE_INSTALL_PREFIX=sdk-build64\AWSSDK\ -D BUILD_WITH_TESTS=ON
 
 # # Build Project
-cmake --build .\cmake-build${BITNESS} --config Release 
+cmake --build .\cmake-build64 --config Release 
