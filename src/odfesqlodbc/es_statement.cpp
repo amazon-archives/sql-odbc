@@ -32,7 +32,6 @@ RETCODE ExecuteStatement(StatementClass *stmt, BOOL commit) {
 
     auto CleanUp = [&]() -> RETCODE {
         SC_SetExecuting(stmt, FALSE);
-        ESClearSchema(ESGetDocSchema(conn));
         CLEANUP_FUNC_CONN_CS(func_cs_count, conn);
         if (conn->status != CONN_DOWN)
             conn->status = oldstatus;
@@ -66,6 +65,7 @@ RETCODE ExecuteStatement(StatementClass *stmt, BOOL commit) {
 
     conn->status = CONN_EXECUTING;
 
+    ESClearSchema(ESGetDocSchema(conn));
     QResultClass *res = SendQueryGetResult(stmt, commit);
     if (!res) {
         std::string es_conn_err = GetErrorMsg(SC_get_conn(stmt)->esconn);
