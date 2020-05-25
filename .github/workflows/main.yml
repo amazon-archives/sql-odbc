@@ -141,8 +141,8 @@ jobs:
     - name: build-installer
       if: success()
       run: |
+        $prefix_path = (pwd).path
         cd cmake-build64
-        cp $prefix_path\AWSSDK\
         cmake ..\\src -D CMAKE_INSTALL_PREFIX=$prefix_path\AWSSDK\bin -D BUILD_WITH_TESTS=OFF
         msbuild .\PACKAGE.vcxproj -p:Configuration=Release
         cd ..
