@@ -38,13 +38,11 @@ else()
 endif()
 
 if(MSVC)
-  # add_compile_options(/W4 /WX)
-  add_compile_options(/W4)
+  add_compile_options(/W4 /WX)
 else()
   add_compile_options(-Wall -Wextra -pedantic -Werror)
 endif()
 
-# math(EXPR BITS "8*${CMAKE_SIZEOF_VOID_P}")
 if(CMAKE_SIZEOF_VOID_P EQUAL 8)
 	set(BITNESS 64)
 	set(BITNESS_NAME "x64")
@@ -58,7 +56,6 @@ elseif(CMAKE_SIZEOF_VOID_P EQUAL 4)
 	set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../lib32")
 	set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../bin32")
 endif()
-message("${BITNESS}bit ${BITNESS_NAME}")
 
 if(NOT WIN32)
 	# Unix builds require autoconf
