@@ -82,6 +82,24 @@ The driver can be consumed by linking to it using the library file (elasticodbc.
 
 Compiling on Mac will output the tests to **bin64** and the driver to **lib64**. There are also some additional test infrastructure files which output to the **lib64** directory.
 
+## Packaging installer
+
+Build the driver with `BUILD_WITH_TESTS` option disabled.
+
+#### Windows
+
+Open the project's build directory in Developer PowerShell for VS.
+> msbuild .\PACKAGE.vcxproj -p:Configuration=Release
+
+Installer named as `ODFE SQL ODBC Driver-<version>-Windows.msi` will be generated in the build directory.
+
+#### Mac
+
+Run below command from the project's build directory.
+>cpack .
+
+Installer named as `ODFE SQL ODBC Driver-<version>-Darwin.pkg` will be generated in the build directory.
+
 ## Running Tests
 
 Tests can be **executed directly**, or by using the **Test Runner**.
