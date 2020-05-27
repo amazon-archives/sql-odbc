@@ -84,7 +84,7 @@ schema_type* ESGetDocSchema(void* es_conn) {
                    : NULL;
 }
 
-bool ESSetDocSchema(void* es_conn, schema_type* doc_schema) {
+bool ESSetDocSchema(void* es_conn, schema_type& doc_schema) {
     return es_conn ? static_cast< ESCommunication* >(es_conn)->SetDocSchema(
                doc_schema)
                    : false;

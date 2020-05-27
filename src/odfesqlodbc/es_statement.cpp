@@ -65,7 +65,6 @@ RETCODE ExecuteStatement(StatementClass *stmt, BOOL commit) {
 
     conn->status = CONN_EXECUTING;
 
-    ESClearSchema(ESGetDocSchema(conn));
     QResultClass *res = SendQueryGetResult(stmt, commit);
     if (!res) {
         std::string es_conn_err = GetErrorMsg(SC_get_conn(stmt)->esconn);
@@ -172,6 +171,7 @@ SQLRETURN GetMoreResults(StatementClass *stmt) {
             get_more_result = SQL_ERROR;
         }
     } while (get_more_result == SQL_SUCCESS);
+    ESClearSchema(doc_schema);
     return SQL_SUCCESS;
 }
 
@@ -245,8 +245,7 @@ QResultClass *SendQueryGetResult(StatementClass *stmt, BOOL commit) {
     BOOL success =
         commit
             ? CC_from_ESResult(res, conn, res->cursor_name, *es_res)
-                          : CC_Metadata_from_ESResult(
-                              res, conn, res->cursor_name, *es_res);
+                          : CC_Metadata_from_ESResult(res, conn, res->cursor_name, *es_res);
 
     // Convert result to QResultClass
     if (!success) {

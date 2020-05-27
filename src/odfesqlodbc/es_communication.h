@@ -89,7 +89,7 @@ class ESCommunication {
     void DataProcessing(BlockingQueue< ESResult* >* queue);
     ESResult* PopResult();
     schema_type* GetDocSchema();
-    bool SetDocSchema(schema_type* doc_schema);
+    bool SetDocSchema(schema_type& doc_schema);
     std::string GetClientEncoding();
     bool SetClientEncoding(std::string& encoding);
     bool IsSQLPluginInstalled(const std::string& plugin_response);

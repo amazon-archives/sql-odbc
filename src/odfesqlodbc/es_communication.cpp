@@ -70,24 +70,11 @@ static const std::string CURSOR_JSON_SCHEMA =
     "{"  // This was generated from the example elasticsearch data
     "\"type\": \"object\","
     "\"properties\": {"
-    "\"schema\": {"
-    "\"type\": \"array\","
-    "\"items\": [{"
-    "\"type\": \"object\","
-    "\"properties\": {"
-    "\"name\": { \"type\": \"string\" },"
-    "\"type\": { \"type\": \"string\" }"
-    "},"
-    "\"required\": [ \"name\", \"type\" ]"
-    "}]"
-    "},"
     "\"cursor\": { \"type\": \"string\" },"
-    "\"total\": { \"type\": \"integer\" },"
     "\"datarows\": {"
     "\"type\": \"array\","
     "\"items\": {}"
     "},"
-    "\"size\": { \"type\": \"integer\" },"
     "\"status\": { \"type\": \"integer\" }"
     "},"
     "\"required\":  [\"datarows\"]"
@@ -116,7 +103,7 @@ void ESCommunication::AwsHttpResponseToString(
 }
 
 void ESCommunication::PrepareCursorResult(ESResult& es_result) {
-    // Prepare document and validate schema
+    // Prepare document and validate result
     try {
         LogMsg(ES_DEBUG, "Parsing result JSON with cursor.");
         es_result.es_result_doc.parse(es_result.result_json,
@@ -278,7 +265,7 @@ void ESCommunication::IssueRequest(
     const std::string& endpoint, const Aws::Http::HttpMethod request_type,
     const std::string& content_type, const std::string& query,
     std::shared_ptr< Aws::Http::HttpResponse >& response,
-    const std::string& fetch_size, const std::string& cursor) {
+    const std::string& fetch_size, const std::string& cursor = "") {
     // Generate http request
     std::shared_ptr< Aws::Http::HttpRequest > request =
         Aws::Http::CreateHttpRequest(
@@ -390,7 +377,7 @@ bool ESCommunication::EstablishConnection() {
     LogMsg(ES_ALL, "Checking for SQL plugin");
     std::shared_ptr< Aws::Http::HttpResponse > response = nullptr;
     IssueRequest(PLUGIN_ENDPOINT_FORMAT_JSON, Aws::Http::HttpMethod::HTTP_GET,
-                 "", "", response, "", "");
+                 "", "", response, "");
     if (response == nullptr) {
         m_error_message =
             "The SQL plugin must be installed in order to use this driver. "
@@ -440,7 +427,7 @@ int ESCommunication::ExecDirect(const char* query, const char* fetch_size_) {
     // Issue request
     std::shared_ptr< Aws::Http::HttpResponse > response = nullptr;
     IssueRequest(SQL_ENDPOINT_FORMAT_JDBC, Aws::Http::HttpMethod::HTTP_POST,
-                 ctype, statement, response, fetch_size, "");
+                 ctype, statement, response, fetch_size);
 
     // Validate response
     if (response == nullptr) {
@@ -486,7 +473,7 @@ int ESCommunication::ExecDirect(const char* query, const char* fetch_size_) {
         return -1;
     }
     m_result_queue.push(std::unique_ptr< ESResult >(result));
-    if (result->cursor.size() > 0) {
+    if (!result->cursor.empty()) {
         auto send_cursor_queries =
             std::async(std::launch::async, [&]() {
                  SendCursorQueries(result->cursor);
@@ -502,7 +489,7 @@ void ESCommunication::SendCursorQueries(std::string cursor) {
             DataProcessing(&queue);
         });
     
-        while (cursor.size() > 0) {
+        while (!cursor.empty()) {
             std::shared_ptr< Aws::Http::HttpResponse > response = nullptr;
             IssueRequest(SQL_ENDPOINT_FORMAT_JDBC,
                          Aws::Http::HttpMethod::HTTP_POST, ctype, "", response,
@@ -522,7 +509,7 @@ void ESCommunication::SendCursorQueries(std::string cursor) {
                 cursor = es_result->es_result_doc["cursor"].as_string();
             } else {
                 SendCloseCursorRequest(cursor);
-                cursor = "";
+                cursor.clear();
                 queue.push(NULL);
             }
         }
@@ -630,8 +617,8 @@ schema_type* ESCommunication::GetDocSchema() {
     return &m_doc_schema;
 }
 
-bool ESCommunication::SetDocSchema(schema_type* doc_schema) {
-    m_doc_schema = *doc_schema;
+bool ESCommunication::SetDocSchema(schema_type& doc_schema) {
+    m_doc_schema = doc_schema;
     if (m_doc_schema.empty()) {
         LogMsg(ES_WARNING, "Failed to set schema required for cursor results");
         return false;
@@ -664,7 +651,7 @@ std::string ESCommunication::GetServerVersion() {
 
     // Issue request
     std::shared_ptr< Aws::Http::HttpResponse > response = nullptr;
-    IssueRequest("", Aws::Http::HttpMethod::HTTP_GET, "", "", response, "", "");
+    IssueRequest("", Aws::Http::HttpMethod::HTTP_GET, "", "", response, "");
     if (response == nullptr) {
         m_error_message =
             "Failed to receive response from query. "
