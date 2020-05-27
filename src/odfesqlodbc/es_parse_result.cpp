@@ -34,14 +34,11 @@ typedef rabbit::array json_arr;
 typedef json_arr::iterator::result_type json_arr_it;
 
 bool _CC_from_ESResult(QResultClass *q_res, ConnectionClass *conn,
-                       const char *cursor, ESResult &es_result,
-                       schema_type *doc_schema);
+                       const char *cursor, ESResult &es_result);
 bool _CC_Metadata_from_ESResult(QResultClass *q_res, ConnectionClass *conn,
-                                const char *cursor, ESResult &es_result,
-                                schema_type *doc_schema);
+                                const char *cursor, ESResult &es_result);
 bool _CC_No_Metadata_from_ESResult(QResultClass *q_res, ConnectionClass *conn,
-                                   const char *cursor, ESResult &es_result,
-                                   schema_type *doc_schema);
+                                   const char *cursor, ESResult &es_result);
 void GetSchemaInfo(schema_type &schema, json_doc &es_result_doc);
 bool AssignColumnHeaders(const schema_type &doc_schema, QResultClass *q_res,
                          const ESResult &es_result);
@@ -114,30 +111,25 @@ std::string GetResultParserError() {
 }
 
 BOOL CC_from_ESResult(QResultClass *q_res, ConnectionClass *conn,
-                      const char *cursor, ESResult &es_result,
-                      schema_type *doc_schema) {
+                      const char *cursor, ESResult &es_result) {
     ClearError();
-    return _CC_from_ESResult(q_res, conn, cursor, es_result, doc_schema)
+    return _CC_from_ESResult(q_res, conn, cursor, es_result)
                ? TRUE
                : FALSE;
 }
 
 BOOL CC_Metadata_from_ESResult(QResultClass *q_res, ConnectionClass *conn,
-                               const char *cursor, ESResult &es_result,
-                               schema_type *doc_schema) {
+                               const char *cursor, ESResult &es_result) {
     ClearError();
-    return _CC_Metadata_from_ESResult(q_res, conn, cursor, es_result,
-                                      doc_schema)
+    return _CC_Metadata_from_ESResult(q_res, conn, cursor, es_result)
                ? TRUE
                : FALSE;
 }
 
 BOOL CC_No_Metadata_from_ESResult(QResultClass *q_res, ConnectionClass *conn,
-                                  const char *cursor, ESResult &es_result,
-                                  schema_type *doc_schema) {
+                                  const char *cursor, ESResult &es_result) {
     ClearError();
-    return _CC_No_Metadata_from_ESResult(q_res, conn, cursor, es_result,
-                                         doc_schema)
+    return _CC_No_Metadata_from_ESResult(q_res, conn, cursor, es_result)
                ? TRUE
                : FALSE;
 }
@@ -152,21 +144,20 @@ BOOL CC_Assign_Table_Data(json_doc &es_result_doc, QResultClass *q_res,
 }
 
 bool _CC_No_Metadata_from_ESResult(QResultClass *q_res, ConnectionClass *conn,
-                                   const char *cursor, ESResult &es_result,
-                                   schema_type *doc_schema) {
+                                   const char *cursor, ESResult &es_result) {
     // Note - NULL conn and/or cursor is valid
     if (q_res == NULL)
         return false;
 
     try {
-        if (!doc_schema->size()) {
-            GetSchemaInfo(*doc_schema, es_result.es_result_doc);
-        }
+        schema_type doc_schema;
+        GetSchemaInfo(doc_schema, es_result.es_result_doc);
+        ESSetDocSchema(conn, &doc_schema);
 
         SQLULEN starting_cached_rows = q_res->num_cached_rows;
 
         // Assign table data and column headers
-        if (!AssignTableData(es_result.es_result_doc, q_res, *doc_schema,
+        if (!AssignTableData(es_result.es_result_doc, q_res, doc_schema,
                              *(q_res->fields)))
             return false;
 
@@ -191,20 +182,19 @@ bool _CC_No_Metadata_from_ESResult(QResultClass *q_res, ConnectionClass *conn,
 }
 
 bool _CC_Metadata_from_ESResult(QResultClass *q_res, ConnectionClass *conn,
-                                const char *cursor, ESResult &es_result,
-                                schema_type *doc_schema) {
+                                const char *cursor, ESResult &es_result) {
     // Note - NULL conn and/or cursor is valid
     if (q_res == NULL)
         return false;
 
     QR_set_conn(q_res, conn);
     try {
-        if (!doc_schema->size()) {
-            GetSchemaInfo(*doc_schema, es_result.es_result_doc);
-        }
+        schema_type doc_schema;
+        GetSchemaInfo(doc_schema, es_result.es_result_doc);
+        ESSetDocSchema(conn, &doc_schema);
 
         // Assign table data and column headers
-        if (!AssignColumnHeaders(*doc_schema, q_res, es_result))
+        if (!AssignColumnHeaders(doc_schema, q_res, es_result))
             return false;
 
         // Set command type and cursor name
@@ -230,22 +220,21 @@ bool _CC_Metadata_from_ESResult(QResultClass *q_res, ConnectionClass *conn,
 }
 
 bool _CC_from_ESResult(QResultClass *q_res, ConnectionClass *conn,
-                       const char *cursor, ESResult &es_result,
-                       schema_type* doc_schema) {
+                       const char *cursor, ESResult &es_result) {
     // Note - NULL conn and/or cursor is valid
     if (q_res == NULL)
         return false;
 
     QR_set_conn(q_res, conn);
     try {
-        if (!doc_schema->size()) {
-            GetSchemaInfo(*doc_schema, es_result.es_result_doc);
-        }
+        schema_type doc_schema;
+        GetSchemaInfo(doc_schema, es_result.es_result_doc);
+        ESSetDocSchema(conn, &doc_schema);
         SQLULEN starting_cached_rows = q_res->num_cached_rows;
 
         // Assign table data and column headers
-        if ((!AssignColumnHeaders(*doc_schema, q_res, es_result))
-            || (!AssignTableData(es_result.es_result_doc, q_res, *doc_schema,
+        if ((!AssignColumnHeaders(doc_schema, q_res, es_result))
+            || (!AssignTableData(es_result.es_result_doc, q_res, doc_schema,
                                  *(q_res->fields))))
             return false;
 

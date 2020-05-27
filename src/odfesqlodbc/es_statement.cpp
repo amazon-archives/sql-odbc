@@ -157,7 +157,8 @@ SQLRETURN GetMoreResults(StatementClass *stmt) {
         return SQL_ERROR;
     ConnectionClass *conn = SC_get_conn(stmt);
     QResultClass *q_res = SC_get_Result(stmt);
-    if ((q_res == NULL) && (conn == NULL)) {
+    schema_type *doc_schema = ESGetDocSchema(conn);
+    if ((q_res == NULL) && (conn == NULL) && (doc_schema == NULL)) {
         return SQL_ERROR;
     }
     int get_more_result = SQL_ERROR;
@@ -165,7 +166,6 @@ SQLRETURN GetMoreResults(StatementClass *stmt) {
         ESResult *es_res = ESGetResult(conn->esconn);
         if (es_res != NULL) {
             get_more_result = SQL_SUCCESS;
-            schema_type *doc_schema = ESGetDocSchema(conn);
             CC_Assign_Table_Data(es_res->es_result_doc, q_res, *doc_schema,
                                  *(q_res->fields));
         } else {
@@ -242,12 +242,11 @@ QResultClass *SendQueryGetResult(StatementClass *stmt, BOOL commit) {
         QR_Destructor(res);
         return NULL;
     }
-    schema_type *doc_schema = ESGetDocSchema(conn);
     BOOL success =
         commit
-            ? CC_from_ESResult(res, conn, res->cursor_name, *es_res, doc_schema)
+            ? CC_from_ESResult(res, conn, res->cursor_name, *es_res)
                           : CC_Metadata_from_ESResult(
-                              res, conn, res->cursor_name, *es_res, doc_schema);
+                              res, conn, res->cursor_name, *es_res);
 
     // Convert result to QResultClass
     if (!success) {
@@ -278,9 +277,7 @@ RETCODE AssignResult(StatementClass *stmt) {
     // Commit result to QResultClass
     ESResult *es_res = static_cast< ESResult * >(res->es_result);
     ConnectionClass *conn = SC_get_conn(stmt);
-    schema_type *doc_schema = ESGetDocSchema(conn);
-    if (!CC_No_Metadata_from_ESResult(res, conn, res->cursor_name, *es_res,
-                                      doc_schema)) {
+    if (!CC_No_Metadata_from_ESResult(res, conn, res->cursor_name, *es_res)) {
         QR_Destructor(res);
         return SQL_ERROR;
     }

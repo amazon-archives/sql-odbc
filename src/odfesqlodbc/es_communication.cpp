@@ -64,7 +64,33 @@ static const std::string JSON_SCHEMA =
     "\"size\": { \"type\": \"integer\" },"
     "\"status\": { \"type\": \"integer\" }"
     "},"
-    "\"required\": [\"datarows\"]"
+    "\"required\": [\"schema\", \"total\", \"datarows\", \"size\", \"status\"]"
+    "}";
+static const std::string CURSOR_JSON_SCHEMA =
+    "{"  // This was generated from the example elasticsearch data
+    "\"type\": \"object\","
+    "\"properties\": {"
+    "\"schema\": {"
+    "\"type\": \"array\","
+    "\"items\": [{"
+    "\"type\": \"object\","
+    "\"properties\": {"
+    "\"name\": { \"type\": \"string\" },"
+    "\"type\": { \"type\": \"string\" }"
+    "},"
+    "\"required\": [ \"name\", \"type\" ]"
+    "}]"
+    "},"
+    "\"cursor\": { \"type\": \"string\" },"
+    "\"total\": { \"type\": \"integer\" },"
+    "\"datarows\": {"
+    "\"type\": \"array\","
+    "\"items\": {}"
+    "},"
+    "\"size\": { \"type\": \"integer\" },"
+    "\"status\": { \"type\": \"integer\" }"
+    "},"
+    "\"required\":  [\"datarows\"]"
     "}";
 
 void ESCommunication::AwsHttpResponseToString(
@@ -87,6 +113,22 @@ void ESCommunication::AwsHttpResponseToString(
     // Directly copy memory from buffer into our string buffer
     stream_buffer->sgetn(buf.data(), avail);
     output.assign(buf.data(), avail);
+}
+
+void ESCommunication::PrepareCursorResult(ESResult& es_result) {
+    // Prepare document and validate schema
+    try {
+        LogMsg(ES_DEBUG, "Parsing result JSON with cursor.");
+        es_result.es_result_doc.parse(es_result.result_json,
+                                      CURSOR_JSON_SCHEMA);
+    } catch (const rabbit::parse_error& e) {
+        // The exception rabbit gives is quite useless - providing the json
+        // will aid debugging for users
+        std::string str = "Exception obtained '" + std::string(e.what())
+                          + "' when parsing json string '"
+                          + es_result.result_json + "'.";
+        throw std::runtime_error(str.c_str());
+    }
 }
 
 void ESCommunication::GetJsonSchema(ESResult& es_result) {
@@ -474,7 +516,7 @@ void ESCommunication::SendCursorQueries(std::string cursor) {
             }
             ESResult* es_result = new ESResult;
             AwsHttpResponseToString(response, es_result->result_json);
-            GetJsonSchema(*es_result);
+            PrepareCursorResult(*es_result);
             queue.push(es_result);
             if (es_result->es_result_doc.has("cursor")) {
                 cursor = es_result->es_result_doc["cursor"].as_string();
@@ -586,6 +628,15 @@ ESResult* ESCommunication::PopResult() {
 
 schema_type* ESCommunication::GetDocSchema() {
     return &m_doc_schema;
+}
+
+bool ESCommunication::SetDocSchema(schema_type* doc_schema) {
+    m_doc_schema = *doc_schema;
+    if (m_doc_schema.empty()) {
+        LogMsg(ES_WARNING, "Failed to set schema required for cursor results");
+        return false;
+    }
+    return true;
 }
 
 // TODO #36 - Send query to database to get encoding

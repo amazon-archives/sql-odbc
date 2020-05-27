@@ -89,6 +89,7 @@ class ESCommunication {
     void DataProcessing(BlockingQueue< ESResult* >* queue);
     ESResult* PopResult();
     schema_type* GetDocSchema();
+    bool SetDocSchema(schema_type* doc_schema);
     std::string GetClientEncoding();
     bool SetClientEncoding(std::string& encoding);
     bool IsSQLPluginInstalled(const std::string& plugin_response);
@@ -109,6 +110,7 @@ class ESCommunication {
     bool EstablishConnection();
     void ConstructESResult(ESResult& result);
     void GetJsonSchema(ESResult& es_result);
+    void PrepareCursorResult(ESResult& es_result);
 
     // TODO #35 - Go through and add error messages on exit conditions
     std::string m_error_message;  
