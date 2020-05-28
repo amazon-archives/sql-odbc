@@ -46,30 +46,6 @@
 
 // clang-format on
 
-template < typename T >
-class BlockingQueue {
-   private:
-    std::mutex mutex;
-    std::condition_variable condition;
-    std::deque< T > queue;
-
-   public:
-    void push(T const& value) {
-        {
-            std::unique_lock< std::mutex > lock(this->mutex);
-            queue.push_front(value);
-        }
-        this->condition.notify_one();
-    }
-    T pop() {
-        std::unique_lock< std::mutex > lock(this->mutex);
-        this->condition.wait(lock, [=] { return !this->queue.empty(); });
-        T rc(std::move(this->queue.back()));
-        this->queue.pop_back();
-        return rc;
-    }
-};
-
 class ESCommunication {
    public:
     ESCommunication();
@@ -86,10 +62,7 @@ class ESCommunication {
     void LogMsg(ESLogLevel level, const char* msg);
     int ExecDirect(const char* query, const char* fetch_size_);
     void SendCursorQueries(std::string cursor);
-    void DataProcessing(BlockingQueue< ESResult* >* queue);
     ESResult* PopResult();
-    schema_type* GetDocSchema();
-    bool SetDocSchema(schema_type& doc_schema);
     std::string GetClientEncoding();
     bool SetClientEncoding(std::string& encoding);
     bool IsSQLPluginInstalled(const std::string& plugin_response);

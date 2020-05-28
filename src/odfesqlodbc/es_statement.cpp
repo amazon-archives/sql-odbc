@@ -141,7 +141,7 @@ RETCODE ExecuteStatement(StatementClass *stmt, BOOL commit) {
         SC_set_Result(stmt, res);
     }
     if (commit) {
-        GetMoreResults(stmt);
+        GetNextResultSet(stmt);
     }
 
     if (!SC_get_Curres(stmt))
@@ -151,27 +151,26 @@ RETCODE ExecuteStatement(StatementClass *stmt, BOOL commit) {
     return CleanUp();
 }
 
-SQLRETURN GetMoreResults(StatementClass *stmt) {
-    if (stmt == NULL)
-        return SQL_ERROR;
-    ConnectionClass *conn = SC_get_conn(stmt);
-    QResultClass *q_res = SC_get_Result(stmt);
-    schema_type *doc_schema = ESGetDocSchema(conn);
-    if ((q_res == NULL) && (conn == NULL) && (doc_schema == NULL)) {
+SQLRETURN GetNextResultSet(StatementClass *stmt) {
+    if (stmt == NULL) {
         return SQL_ERROR;
     }
-    int get_more_result = SQL_ERROR;
-    do {
-        ESResult *es_res = ESGetResult(conn->esconn);
-        if (es_res != NULL) {
-            get_more_result = SQL_SUCCESS;
-            CC_Assign_Table_Data(es_res->es_result_doc, q_res, *doc_schema,
-                                 *(q_res->fields));
-        } else {
-            get_more_result = SQL_ERROR;
-        }
-    } while (get_more_result == SQL_SUCCESS);
-    ESClearSchema(doc_schema);
+    ConnectionClass *conn = SC_get_conn(stmt);
+    QResultClass *q_res = SC_get_Result(stmt);
+    if ((q_res == NULL) && (conn == NULL)) {
+        return SQL_ERROR;
+    }
+    SQLSMALLINT total_columns = -1;
+    SQLNumResultCols(stmt, &total_columns);
+    if (total_columns == -1) {
+        return SQL_ERROR;
+    }
+    ESResult *es_res = ESGetResult(conn->esconn);
+    while (es_res != NULL) {
+        CC_Assign_Table_Data(es_res->es_result_doc, q_res, total_columns,
+                             *(q_res->fields));
+        es_res = ESGetResult(conn->esconn);
+    }
     return SQL_SUCCESS;
 }
 
@@ -280,7 +279,7 @@ RETCODE AssignResult(StatementClass *stmt) {
         QR_Destructor(res);
         return SQL_ERROR;
     }
-    GetMoreResults(stmt);
+    GetNextResultSet(stmt);
 
     // Deallocate and return result
     ESClearResult(es_res);

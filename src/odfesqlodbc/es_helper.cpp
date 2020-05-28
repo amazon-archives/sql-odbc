@@ -79,17 +79,6 @@ ESResult* ESGetResult(void* es_conn) {
                    : NULL;
 }
 
-schema_type* ESGetDocSchema(void* es_conn) {
-    return es_conn ? static_cast< ESCommunication* >(es_conn)->GetDocSchema()
-                   : NULL;
-}
-
-bool ESSetDocSchema(void* es_conn, schema_type& doc_schema) {
-    return es_conn ? static_cast< ESCommunication* >(es_conn)->SetDocSchema(
-               doc_schema)
-                   : false;
-}
-
 std::string ESGetClientEncoding(void* es_conn) {
     return es_conn
                ? static_cast< ESCommunication* >(es_conn)->GetClientEncoding()
@@ -109,10 +98,6 @@ void ESDisconnect(void* es_conn) {
 
 void ESClearResult(ESResult* es_result) {
     delete es_result;
-}
-
-void ESClearSchema(schema_type* doc_schema) {
-    doc_schema->clear();
 }
 
 // This class provides a cross platform way of entering critical sections

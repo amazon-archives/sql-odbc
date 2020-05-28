@@ -24,10 +24,7 @@
 std::string ESGetClientEncoding(void* es_conn);
 bool ESSetClientEncoding(void* es_conn, std::string& encoding);
 ESResult* ESGetResult(void* es_conn);
-schema_type* ESGetDocSchema(void* es_conn);
-bool ESSetDocSchema(void* es_conn, schema_type& doc_schema);
 void ESClearResult(ESResult* es_result);
-void ESClearSchema(schema_type* doc_schema);
 void* ESConnectDBParams(runtime_options& rt_opts, int expand_dbname,
                         unsigned int option_count);
 std::string GetServerVersion(void* es_conn);

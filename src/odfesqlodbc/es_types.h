@@ -308,7 +308,6 @@ typedef struct ESResult {
     ESResult() {
         ref_count = 0;
         num_fields = 0;
-        cursor = "";
         result_json = "";
         command_type = "";
     }

@@ -39,6 +39,6 @@ BOOL CC_Metadata_from_ESResult(QResultClass *q_res, ConnectionClass *conn,
 BOOL CC_No_Metadata_from_ESResult(QResultClass *q_res, ConnectionClass *conn,
                                   const char *cursor, ESResult &es_result);
 BOOL CC_Assign_Table_Data(json_doc &es_result_doc, QResultClass *q_res,
-                          const schema_type &doc_schema, ColumnInfoClass &fields);
+                          int doc_schema_size, ColumnInfoClass &fields);
 #endif
 #endif
