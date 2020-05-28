@@ -43,8 +43,8 @@ void GetSchemaInfo(schema_type &schema, json_doc &es_result_doc);
 bool AssignColumnHeaders(const schema_type &doc_schema, QResultClass *q_res,
                          const ESResult &es_result);
 bool AssignTableData(json_doc &es_result_doc, QResultClass *q_res,
-                     int doc_schema_size, ColumnInfoClass &fields);
-bool AssignRowData(const json_arr_it &row, int row_schema_size,
+                     size_t doc_schema_size, ColumnInfoClass &fields);
+bool AssignRowData(const json_arr_it &row, size_t row_schema_size,
                    QResultClass *q_res, ColumnInfoClass &fields,
                    const size_t &row_size);
 void UpdateResultFields(QResultClass *q_res, const ConnectionClass *conn,
@@ -131,7 +131,7 @@ BOOL CC_No_Metadata_from_ESResult(QResultClass *q_res, ConnectionClass *conn,
 }
 
 BOOL CC_Assign_Table_Data(json_doc &es_result_doc, QResultClass *q_res,
-                          int doc_schema_size,
+                          size_t doc_schema_size,
                           ColumnInfoClass &fields) {
     ClearError();
     return AssignTableData(es_result_doc, q_res, doc_schema_size, fields)
@@ -152,8 +152,7 @@ bool _CC_No_Metadata_from_ESResult(QResultClass *q_res, ConnectionClass *conn,
         SQLULEN starting_cached_rows = q_res->num_cached_rows;
 
         // Assign table data and column headers
-        if (!AssignTableData(es_result.es_result_doc, q_res,
-                             static_cast< int > (doc_schema.size()),
+        if (!AssignTableData(es_result.es_result_doc, q_res, doc_schema.size(),
                              *(q_res->fields)))
             return false;
 
@@ -228,8 +227,7 @@ bool _CC_from_ESResult(QResultClass *q_res, ConnectionClass *conn,
 
         // Assign table data and column headers
         if ((!AssignColumnHeaders(doc_schema, q_res, es_result))
-            || (!AssignTableData(es_result.es_result_doc, q_res,
-                                 static_cast< int > (doc_schema.size()),
+            || (!AssignTableData(es_result.es_result_doc, q_res, doc_schema.size(),
                                  *(q_res->fields))))
             return false;
 
@@ -297,7 +295,7 @@ bool AssignColumnHeaders(const schema_type &doc_schema, QResultClass *q_res,
 // Responsible for looping through rows, allocating tuples and passing rows for
 // assignment
 bool AssignTableData(json_doc &es_result_doc, QResultClass *q_res,
-                     int doc_schema_size, ColumnInfoClass &fields) {
+                     size_t doc_schema_size, ColumnInfoClass &fields) {
     // Assign row info
     json_arr es_result_data = es_result_doc[JSON_KW_DATAROWS];
     if (es_result_data.size() == 0)
@@ -323,7 +321,7 @@ bool AssignTableData(json_doc &es_result_doc, QResultClass *q_res,
 }
 
 // Responsible for assigning row data to tuples
-bool AssignRowData(const json_arr_it &row, int row_schema_size,
+bool AssignRowData(const json_arr_it &row, size_t row_schema_size,
                    QResultClass *q_res, ColumnInfoClass &fields,
                    const size_t &row_size) {
     TupleField *tuple =

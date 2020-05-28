@@ -279,7 +279,7 @@ RETCODE AssignResult(StatementClass *stmt) {
         QR_Destructor(res);
         return SQL_ERROR;
     }
-    GetNextResultSet(stmt);
+    //GetNextResultSet(stmt);
 
     // Deallocate and return result
     ESClearResult(es_res);
