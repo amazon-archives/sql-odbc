@@ -67,15 +67,14 @@ class ESCommunication {
     bool SetClientEncoding(std::string& encoding);
     bool IsSQLPluginInstalled(const std::string& plugin_response);
     std::string GetServerVersion();
-    void IssueRequest(const std::string& endpoint,
-                      const Aws::Http::HttpMethod request_type,
-                      const std::string& content_type, const std::string& query,
-                      std::shared_ptr< Aws::Http::HttpResponse >& response,
-                      const std::string& fetch_size = "", const std::string& cursor = "");
+    std::shared_ptr< Aws::Http::HttpResponse > IssueRequest(
+        const std::string& endpoint, const Aws::Http::HttpMethod request_type,
+        const std::string& content_type, const std::string& query,
+        const std::string& fetch_size = "", const std::string& cursor = "");
     void AwsHttpResponseToString(
         std::shared_ptr< Aws::Http::HttpResponse > response,
         std::string& output);
-    void SendCloseCursorRequest(std::string cursor);
+    void SendCloseCursorRequest(const std::string& cursor);
 
    private:
     void InitializeConnection();
@@ -83,7 +82,7 @@ class ESCommunication {
     bool EstablishConnection();
     void ConstructESResult(ESResult& result);
     void GetJsonSchema(ESResult& es_result);
-    void PrepareCursorResult(ESResult& es_result);
+    void PrepareCursorResult(std::unique_ptr< ESResult > & es_result);
 
     // TODO #35 - Go through and add error messages on exit conditions
     std::string m_error_message;  

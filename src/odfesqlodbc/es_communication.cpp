@@ -102,18 +102,18 @@ void ESCommunication::AwsHttpResponseToString(
     output.assign(buf.data(), avail);
 }
 
-void ESCommunication::PrepareCursorResult(ESResult& es_result) {
+void ESCommunication::PrepareCursorResult(std::unique_ptr< ESResult >& es_result) {
     // Prepare document and validate result
     try {
         LogMsg(ES_DEBUG, "Parsing result JSON with cursor.");
-        es_result.es_result_doc.parse(es_result.result_json,
+        es_result->es_result_doc.parse(es_result->result_json,
                                       CURSOR_JSON_SCHEMA);
     } catch (const rabbit::parse_error& e) {
         // The exception rabbit gives is quite useless - providing the json
         // will aid debugging for users
         std::string str = "Exception obtained '" + std::string(e.what())
                           + "' when parsing json string '"
-                          + es_result.result_json + "'.";
+                          + es_result->result_json + "'.";
         throw std::runtime_error(str.c_str());
     }
 }
@@ -261,10 +261,9 @@ void ESCommunication::InitializeConnection() {
     m_http_client = Aws::Http::CreateHttpClient(config);
 }
 
-void ESCommunication::IssueRequest(
+std::shared_ptr< Aws::Http::HttpResponse > ESCommunication::IssueRequest(
     const std::string& endpoint, const Aws::Http::HttpMethod request_type,
     const std::string& content_type, const std::string& query,
-    std::shared_ptr< Aws::Http::HttpResponse >& response,
     const std::string& fetch_size, const std::string& cursor) {
     // Generate http request
     std::shared_ptr< Aws::Http::HttpRequest > request =
@@ -319,7 +318,9 @@ void ESCommunication::IssueRequest(
     }
 
     // Issue request
-    response = m_http_client->MakeRequest(request);
+    std::shared_ptr< Aws::Http::HttpResponse > response =
+        m_http_client->MakeRequest(request);
+    return response;
 }
 
 bool ESCommunication::IsSQLPluginInstalled(const std::string& plugin_response) {
@@ -375,9 +376,9 @@ bool ESCommunication::EstablishConnection() {
     // Check whether SQL plugin has been installed on the Elasticsearch server.
     // This is required for executing driver queries with the server.
     LogMsg(ES_ALL, "Checking for SQL plugin");
-    std::shared_ptr< Aws::Http::HttpResponse > response = nullptr;
-    IssueRequest(PLUGIN_ENDPOINT_FORMAT_JSON, Aws::Http::HttpMethod::HTTP_GET,
-                 "", "", response, "");
+    std::shared_ptr< Aws::Http::HttpResponse > response =
+        IssueRequest(PLUGIN_ENDPOINT_FORMAT_JSON,
+                     Aws::Http::HttpMethod::HTTP_GET, "", "", "");
     if (response == nullptr) {
         m_error_message =
             "The SQL plugin must be installed in order to use this driver. "
@@ -425,9 +426,9 @@ int ESCommunication::ExecDirect(const char* query, const char* fetch_size_) {
     LogMsg(ES_DEBUG, msg.c_str());
 
     // Issue request
-    std::shared_ptr< Aws::Http::HttpResponse > response = nullptr;
-    IssueRequest(SQL_ENDPOINT_FORMAT_JDBC, Aws::Http::HttpMethod::HTTP_POST,
-                 ctype, statement, response, fetch_size);
+    std::shared_ptr< Aws::Http::HttpResponse > response =
+        IssueRequest(SQL_ENDPOINT_FORMAT_JDBC, Aws::Http::HttpMethod::HTTP_POST,
+                     ctype, statement, fetch_size);
 
     // Validate response
     if (response == nullptr) {
@@ -483,15 +484,15 @@ int ESCommunication::ExecDirect(const char* query, const char* fetch_size_) {
 }
 
 void ESCommunication::SendCursorQueries(const char* _cursor) {
-    if (_cursor == NULL)
+    if (_cursor == NULL) {
         return;
+    }
     try {
         std::string cursor(_cursor);
         while (!cursor.empty() && (m_result_queue.size() < m_result_queue_capacity)) {
-            std::shared_ptr< Aws::Http::HttpResponse > response = nullptr;
-            IssueRequest(SQL_ENDPOINT_FORMAT_JDBC,
-                         Aws::Http::HttpMethod::HTTP_POST, ctype, "", response,
-                         "", cursor);
+            std::shared_ptr< Aws::Http::HttpResponse > response = IssueRequest(
+                SQL_ENDPOINT_FORMAT_JDBC, Aws::Http::HttpMethod::HTTP_POST,
+                ctype, "", "", cursor);
             if (response == nullptr) {
                 m_error_message =
                     "Failed to receive response from cursor. "
@@ -499,10 +500,9 @@ void ESCommunication::SendCursorQueries(const char* _cursor) {
                 LogMsg(ES_ERROR, m_error_message.c_str());
                 return;
             }
-            ESResult* es_result = new ESResult;
+            std::unique_ptr< ESResult > es_result = std::make_unique< ESResult >();
             AwsHttpResponseToString(response, es_result->result_json);
-            PrepareCursorResult(*es_result);
-            
+            PrepareCursorResult(es_result);
             if (es_result->es_result_doc.has("cursor")) {
                 cursor = es_result->es_result_doc["cursor"].as_string();
                 es_result->cursor =
@@ -511,7 +511,7 @@ void ESCommunication::SendCursorQueries(const char* _cursor) {
                 SendCloseCursorRequest(cursor);
                 cursor.clear();
             }
-            m_result_queue.push(std::unique_ptr< ESResult >(es_result));
+            m_result_queue.push(std::move(es_result));
         }
     } catch (std::runtime_error& e) {
         m_error_message =
@@ -520,10 +520,10 @@ void ESCommunication::SendCursorQueries(const char* _cursor) {
     }
 }
 
-void ESCommunication::SendCloseCursorRequest(std::string cursor) {
-    std::shared_ptr< Aws::Http::HttpResponse > response = nullptr;
-    IssueRequest(SQL_ENDPOINT_CLOSE_CURSOR, Aws::Http::HttpMethod::HTTP_POST,
-                 ctype, "", response, "", cursor);
+void ESCommunication::SendCloseCursorRequest(const std::string& cursor) {
+    std::shared_ptr< Aws::Http::HttpResponse > response =
+        IssueRequest(SQL_ENDPOINT_CLOSE_CURSOR,
+                     Aws::Http::HttpMethod::HTTP_POST, ctype, "", "", cursor);
     if (response == nullptr) {
         m_error_message =
             "Failed to receive response from cursor. "
@@ -604,8 +604,8 @@ std::string ESCommunication::GetServerVersion() {
     }
 
     // Issue request
-    std::shared_ptr< Aws::Http::HttpResponse > response = nullptr;
-    IssueRequest("", Aws::Http::HttpMethod::HTTP_GET, "", "", response, "");
+    std::shared_ptr< Aws::Http::HttpResponse > response =
+        IssueRequest("", Aws::Http::HttpMethod::HTTP_GET, "", "", "");
     if (response == nullptr) {
         m_error_message =
             "Failed to receive response from query. "
