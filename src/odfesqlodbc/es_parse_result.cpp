@@ -30,6 +30,7 @@
 #endif  // __APPLE__
 #include "statement.h"
 
+typedef std::vector< std::pair< std::string, OID > > schema_type;
 typedef rabbit::array json_arr;
 typedef json_arr::iterator::result_type json_arr_it;
 

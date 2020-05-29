@@ -265,7 +265,7 @@ void ESCommunication::IssueRequest(
     const std::string& endpoint, const Aws::Http::HttpMethod request_type,
     const std::string& content_type, const std::string& query,
     std::shared_ptr< Aws::Http::HttpResponse >& response,
-    const std::string& fetch_size, const std::string& cursor = "") {
+    const std::string& fetch_size, const std::string& cursor) {
     // Generate http request
     std::shared_ptr< Aws::Http::HttpRequest > request =
         Aws::Http::CreateHttpRequest(
@@ -474,6 +474,7 @@ int ESCommunication::ExecDirect(const char* query, const char* fetch_size_) {
     }
     m_result_queue.push(std::unique_ptr< ESResult >(result));
     if (!result->cursor.empty()) {
+        // If response has cursor, this thread will retrives more results pages asynchronously.
         auto send_cursor_queries = std::async(std::launch::async, [&]() {
             SendCursorQueries(result->cursor.c_str());
         });

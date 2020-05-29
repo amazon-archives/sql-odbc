@@ -313,7 +313,5 @@ typedef struct ESResult {
     }
 } ESResult;
 
-typedef std::vector< std::pair< std::string, OID > > schema_type;
-
 #endif
 #endif

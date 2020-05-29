@@ -248,10 +248,11 @@ QResultClass *SendQueryGetResult(StatementClass *stmt, BOOL commit) {
         QR_Destructor(res);
         return NULL;
     }
+
     BOOL success =
         commit
             ? CC_from_ESResult(res, conn, res->cursor_name, *es_res)
-                          : CC_Metadata_from_ESResult(res, conn, res->cursor_name, *es_res);
+            : CC_Metadata_from_ESResult(res, conn, res->cursor_name, *es_res);
 
     // Convert result to QResultClass
     if (!success) {
@@ -286,7 +287,7 @@ RETCODE AssignResult(StatementClass *stmt) {
         QR_Destructor(res);
         return SQL_ERROR;
     }
-    //GetNextResultSet(stmt);
+    GetNextResultSet(stmt);
 
     // Deallocate and return result
     ESClearResult(es_res);

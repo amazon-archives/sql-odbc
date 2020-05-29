@@ -95,12 +95,12 @@ TEST_F(TestPagination, EnablePagination) {
                   L"host=https://localhost;port=9200;"
                   L"user=admin;password=admin;auth=BASIC;useSSL="
                   L"1;hostnameVerification=0;logLevel=0;logOutput=C:\\;"
-                  L"responseTimeout=1;"
+                  L"responseTimeout=10;"
                 : L"Driver={Elasticsearch ODBC};"
                   L"host=localhost;port=9200;"
                   L"user=admin;password=admin;auth=BASIC;useSSL="
                   L"0;hostnameVerification=0;logLevel=0;logOutput=C:\\;"
-                  L"responseTimeout=1;";
+                  L"responseTimeout=10;";
     ASSERT_EQ(SQL_SUCCESS,
               SQLDriverConnect(
                   m_conn, NULL, (SQLTCHAR*)fetch_size_15_conn_string.c_str(),
@@ -117,12 +117,12 @@ TEST_F(TestPagination, DisablePagination) {
                   L"host=https://localhost;port=9200;"
                   L"user=admin;password=admin;auth=BASIC;useSSL="
                   L"1;hostnameVerification=0;logLevel=0;logOutput=C:\\;"
-                  L"responseTimeout=1;fetchSize=0;"
+                  L"responseTimeout=10;fetchSize=0;"
                 : L"Driver={Elasticsearch ODBC};"
                   L"host=localhost;port=9200;"
                   L"user=admin;password=admin;auth=BASIC;useSSL="
                   L"0;hostnameVerification=0;logLevel=0;logOutput=C:\\;"
-                  L"responseTimeout=1;fetchSize=0;";
+                  L"responseTimeout=10;fetchSize=0;";
     ASSERT_EQ(SQL_SUCCESS,
               SQLDriverConnect(
                   m_conn, NULL, (SQLTCHAR*)fetch_size_15_conn_string.c_str(),
