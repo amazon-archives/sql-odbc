@@ -131,8 +131,7 @@ BOOL CC_No_Metadata_from_ESResult(QResultClass *q_res, ConnectionClass *conn,
 }
 
 BOOL CC_Assign_Table_Data(json_doc &es_result_doc, QResultClass *q_res,
-                          size_t doc_schema_size,
-                          ColumnInfoClass &fields) {
+                          size_t doc_schema_size, ColumnInfoClass &fields) {
     ClearError();
     return AssignTableData(es_result_doc, q_res, doc_schema_size, fields)
                ? TRUE

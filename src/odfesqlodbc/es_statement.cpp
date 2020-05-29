@@ -167,6 +167,13 @@ SQLRETURN GetNextResultSet(StatementClass *stmt) {
     }
     ESResult *es_res = ESGetResult(conn->esconn);
     while (es_res != NULL) {
+        // Save server cursor id to fetch more pages later
+        if (es_res->es_result_doc.has("cursor")) {
+            QR_set_server_cursor_id(
+                q_res, es_res->es_result_doc["cursor"].as_string().c_str());
+        } else {
+            QR_set_server_cursor_id(q_res, NULL);
+        }
         CC_Assign_Table_Data(es_res->es_result_doc, q_res, total_columns,
                              *(q_res->fields));
         es_res = ESGetResult(conn->esconn);

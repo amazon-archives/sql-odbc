@@ -61,7 +61,7 @@ class ESCommunication {
     void DropDBConnection();
     void LogMsg(ESLogLevel level, const char* msg);
     int ExecDirect(const char* query, const char* fetch_size_);
-    void SendCursorQueries(std::string cursor);
+    void SendCursorQueries(const char* cursor);
     ESResult* PopResult();
     std::string GetClientEncoding();
     bool SetClientEncoding(std::string& encoding);
@@ -92,7 +92,7 @@ class ESCommunication {
     ConnStatusType m_status;
     bool m_valid_connection_options;
     std::queue< std::unique_ptr< ESResult > > m_result_queue;
-    schema_type m_doc_schema;
+    const size_t m_result_queue_capacity = 4;
     runtime_options m_rt_opts;
     std::string m_client_encoding;
     Aws::SDKOptions m_options;

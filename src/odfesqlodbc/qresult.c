@@ -191,6 +191,7 @@ QResultClass *QR_Constructor(void) {
         rv->deleted = NULL;
         rv->deleted_keyset = NULL;
         rv->es_result = NULL;
+        rv->server_cursor_id = NULL;
     }
 
     MYLOG(ES_TRACE, "leaving\n");
@@ -293,6 +294,13 @@ void QR_set_message(QResultClass *self, const char *msg) {
     self->messageref = NULL;
 
     self->message = msg ? strdup(msg) : NULL;
+}
+
+void QR_set_server_cursor_id(QResultClass *self, const char *server_cursor_id) {
+    if (self->server_cursor_id)
+        free(self->server_cursor_id);
+
+    self->server_cursor_id = server_cursor_id ? strdup(server_cursor_id) : NULL;
 }
 
 void QR_add_message(QResultClass *self, const char *msg) {

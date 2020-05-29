@@ -29,6 +29,7 @@
 #include "misc.h"
 #include "qresult.h"
 #include "statement.h"
+#include "es_statement.h"
 
 /*	Helper macro */
 #define getEffectiveOid(conn, fi) \
@@ -1246,6 +1247,7 @@ RETCODE SQL_API ESAPI_ExtendedFetch(HSTMT hstmt, SQLUSMALLINT fFetchType,
     UNUSED(bookmark_offset, irow);
     CSTR func = "ESAPI_ExtendedFetch";
     StatementClass *stmt = (StatementClass *)hstmt;
+    ConnectionClass *conn;
     ARDFields *opts;
     QResultClass *res;
     BindInfoClass *bookmark;
@@ -1388,6 +1390,17 @@ RETCODE SQL_API ESAPI_ExtendedFetch(HSTMT hstmt, SQLUSMALLINT fFetchType,
      */
     if (!should_set_rowset_start)
         rowset_start = SC_get_rowset_start(stmt);
+
+    // Get more results when cursor reaches end 
+    if ((!useCursor) && (rowset_start >= num_tuples) && (res->server_cursor_id != NULL)) {
+        conn = SC_get_conn(stmt);
+        if (conn != NULL) {
+            ESSendCursorQueries(conn->esconn, res->server_cursor_id);
+            GetNextResultSet(stmt);
+            num_tuples = QR_get_num_total_tuples(res);
+        }
+    }
+
     if (useCursor) {
         if (reached_eof && rowset_start >= num_tuples) {
             EXTFETCH_RETURN_EOF(stmt, res)

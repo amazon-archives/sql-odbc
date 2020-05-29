@@ -74,6 +74,10 @@ int ESExecDirect(void* es_conn, const char* statement, const char* fetch_size) {
                : -1;
 }
 
+void ESSendCursorQueries(void* es_conn, const char* cursor) {
+    static_cast< ESCommunication* >(es_conn)->SendCursorQueries(cursor);
+}
+
 ESResult* ESGetResult(void* es_conn) {
     return es_conn ? static_cast< ESCommunication* >(es_conn)->PopResult()
                    : NULL;

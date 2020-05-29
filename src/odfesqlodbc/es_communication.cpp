@@ -474,17 +474,19 @@ int ESCommunication::ExecDirect(const char* query, const char* fetch_size_) {
     }
     m_result_queue.push(std::unique_ptr< ESResult >(result));
     if (!result->cursor.empty()) {
-        auto send_cursor_queries =
-            std::async(std::launch::async, [&]() {
-                 SendCursorQueries(result->cursor);
-            });
+        auto send_cursor_queries = std::async(std::launch::async, [&]() {
+            SendCursorQueries(result->cursor.c_str());
+        });
     }
     return 0;
 }
 
-void ESCommunication::SendCursorQueries(std::string cursor) {
+void ESCommunication::SendCursorQueries(const char* _cursor) {
+    if (_cursor == NULL)
+        return;
     try {
-        while (!cursor.empty()) {
+        std::string cursor(_cursor);
+        while (!cursor.empty() && (m_result_queue.size() < m_result_queue_capacity)) {
             std::shared_ptr< Aws::Http::HttpResponse > response = nullptr;
             IssueRequest(SQL_ENDPOINT_FORMAT_JDBC,
                          Aws::Http::HttpMethod::HTTP_POST, ctype, "", response,
