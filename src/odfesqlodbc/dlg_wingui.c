@@ -153,7 +153,7 @@ static void getDriversDefaultsOfCi(const ConnInfo *ci, GLOBAL_VALUES *glbv) {
         getDriversDefaults(INVALID_DRIVER, glbv);
 }
 
-LRESULT CALLBACK advancedOptionsProc(HWND hdlg, UINT wMsg, WPARAM wParam,
+INT_PTR CALLBACK advancedOptionsProc(HWND hdlg, UINT wMsg, WPARAM wParam,
                                      LPARAM lParam) {
     switch (wMsg) {
         case WM_INITDIALOG: {
@@ -186,7 +186,8 @@ LRESULT CALLBACK advancedOptionsProc(HWND hdlg, UINT wMsg, WPARAM wParam,
     return FALSE;
 }
 
-LRESULT logOptionsProc(HWND hdlg, UINT wMsg, WPARAM wParam, LPARAM lParam) {
+INT_PTR CALLBACK logOptionsProc(HWND hdlg, UINT wMsg, WPARAM wParam,
+                                LPARAM lParam) {
     switch (wMsg) {
         case WM_INITDIALOG: {
             ConnInfo *ci = (ConnInfo *)lParam;

@@ -340,7 +340,7 @@ namespace details {
 	
 	// Subtraction operator overload is required for std::distance
     template <typename OtherFunction, typename OtherIterator>
-    int64_t operator-(const transform_iterator<OtherFunction, OtherIterator>& other) const { return base() - other.base(); }
+    size_t operator-(const transform_iterator<OtherFunction, OtherIterator>& other) const { return base() - other.base(); }
 
     template <typename OtherFunction, typename OtherIterator>
     bool operator==(const transform_iterator<OtherFunction, OtherIterator>& other) const { return base() == other.base(); }

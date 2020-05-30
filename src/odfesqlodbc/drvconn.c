@@ -42,7 +42,7 @@
 #include "es_apifunc.h"
 
 #ifdef WIN32
-LRESULT CALLBACK dconn_FDriverConnectProc(HWND hdlg, UINT wMsg, WPARAM wParam,
+INT_PTR CALLBACK dconn_FDriverConnectProc(HWND hdlg, UINT wMsg, WPARAM wParam,
                                           LPARAM lParam);
 extern HINSTANCE s_hModule; /* Saved module handle. */
 #endif
@@ -81,7 +81,7 @@ int paramRequired(const ConnInfo *ci, int reqs) {
 #ifdef WIN32
 RETCODE
 dconn_DoDialog(HWND hwnd, ConnInfo *ci) {
-    LRESULT dialog_result;
+    INT_PTR dialog_result;
 
     MYLOG(ES_TRACE, "entering ci = %p\n", ci);
 
@@ -103,7 +103,7 @@ dconn_DoDialog(HWND hwnd, ConnInfo *ci) {
     return SQL_ERROR;
 }
 
-LRESULT CALLBACK dconn_FDriverConnectProc(HWND hdlg, UINT wMsg, WPARAM wParam,
+INT_PTR CALLBACK dconn_FDriverConnectProc(HWND hdlg, UINT wMsg, WPARAM wParam,
                                           LPARAM lParam) {
     MYLOG(ES_DEBUG, "dconn_FDriverConnectProc\n");
     ConnInfo *ci;
@@ -182,7 +182,7 @@ LRESULT CALLBACK dconn_FDriverConnectProc(HWND hdlg, UINT wMsg, WPARAM wParam,
             if (lParam == (LPARAM)GetDlgItem(hdlg, IDC_NOTICE_USER)) {
                 HBRUSH hBrush = (HBRUSH)GetStockObject(WHITE_BRUSH);
                 SetTextColor((HDC)wParam, RGB(255, 0, 0));
-                return (LRESULT)hBrush;
+                return (INT_PTR)hBrush;
             }
             break;
     }
