@@ -40,10 +40,6 @@
 #include <aws/core/http/HttpClientFactory.h>
 #include <aws/core/http/HttpClient.h>
 #include <aws/core/client/ClientConfiguration.h>
-#include <mutex>
-#include <condition_variable>
-#include <deque>
-
 // clang-format on
 
 class ESCommunication {
