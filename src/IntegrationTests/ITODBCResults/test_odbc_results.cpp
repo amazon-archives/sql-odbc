@@ -98,13 +98,13 @@ const SQLULEN single_col_column_size = 0;
 const SQLSMALLINT single_col_decimal_digit = 0;
 const SQLSMALLINT single_col_nullable = 2;
 const std::wstring single_row = L"1";
-const uint64_t multi_row_cnt = 25;
-const uint64_t single_row_cnt = 1;
-const uint64_t multi_col_cnt = 25;
-const uint64_t single_col_cnt = 1;
-const uint64_t single_row_rd_cnt = 1;
-const uint64_t multi_row_rd_cnt_aligned = 5;
-const uint64_t multi_row_rd_cnt_misaligned = 3;
+const size_t multi_row_cnt = 25;
+const size_t single_row_cnt = 1;
+const size_t multi_col_cnt = 25;
+const size_t single_col_cnt = 1;
+const size_t single_row_rd_cnt = 1;
+const size_t multi_row_rd_cnt_aligned = 5;
+const size_t multi_row_rd_cnt_misaligned = 3;
 const std::wstring multi_col = L"*";
 const std::wstring multi_row = std::to_wstring(multi_row_cnt);
 typedef struct Col {
@@ -122,14 +122,14 @@ inline bool FuzzyEquals(T a, T b, T epsil);
 void BindColumns(std::vector< std::vector< Col > >& cols, SQLHSTMT* hstmt);
 void ExecuteQuery(const std::wstring& column, const std::wstring& dataset,
                   const std::wstring& count, SQLHSTMT* hstmt);
-void ExtendedFetch(const uint64_t exp_row_cnt, const uint64_t exp_read_cnt,
-                   const bool aligned, const uint64_t total_row_cnt,
+void ExtendedFetch(const size_t exp_row_cnt, const size_t exp_read_cnt,
+                   const bool aligned, const size_t total_row_cnt,
                    SQLHSTMT* hstmt);
-void Fetch(uint64_t exp_row_cnt, SQLHSTMT* hstmt);
-void QueryBind(const uint64_t row_cnt, const uint64_t col_cnt,
-               const uint64_t row_fetch_cnt, const std::wstring& column_name,
+void Fetch(size_t exp_row_cnt, SQLHSTMT* hstmt);
+void QueryBind(const size_t row_cnt, const size_t col_cnt,
+               const size_t row_fetch_cnt, const std::wstring& column_name,
                std::vector< std::vector< Col > >& cols, SQLHSTMT* hstmt);
-void QueryBindFetch(const uint64_t row_cnt, const uint64_t col_cnt,
+void QueryBindFetch(const size_t row_cnt, const size_t col_cnt,
                     const std::wstring& column_name, SQLHSTMT* hstmt);
 void QueryFetch(const std::wstring& column, const std::wstring& dataset,
                 const std::wstring& count, SQLHSTMT* hstmt);
@@ -161,12 +161,12 @@ inline void ExecuteQuery(const std::wstring& column,
     ASSERT_TRUE(SQL_SUCCEEDED(ret));
 }
 
-inline void ExtendedFetch(const uint64_t exp_row_cnt,
-                          const uint64_t exp_read_cnt, const bool aligned,
-                          const uint64_t total_row_cnt, SQLHSTMT* hstmt) {
+inline void ExtendedFetch(const size_t exp_row_cnt,
+                          const size_t exp_read_cnt, const bool aligned,
+                          const size_t total_row_cnt, SQLHSTMT* hstmt) {
     SQLULEN row_cnt = 0;
     SQLUSMALLINT row_stat[10];
-    uint64_t read_cnt = 0;
+    size_t read_cnt = 0;
     SQLRETURN ret;
     while (
         (ret = SQLExtendedFetch(*hstmt, SQL_FETCH_NEXT, 0, &row_cnt, row_stat))
@@ -175,7 +175,7 @@ inline void ExtendedFetch(const uint64_t exp_row_cnt,
         if (aligned) {
             EXPECT_EQ(row_cnt, exp_row_cnt);
         } else {
-            uint64_t adj_exp_row_cnt =
+            size_t adj_exp_row_cnt =
                 ((read_cnt * exp_row_cnt) > total_row_cnt)
                     ? (total_row_cnt % exp_row_cnt)
                     : exp_row_cnt;
@@ -187,9 +187,9 @@ inline void ExtendedFetch(const uint64_t exp_row_cnt,
     EXPECT_EQ(exp_read_cnt, read_cnt);
 }
 
-inline void Fetch(uint64_t exp_row_cnt, SQLHSTMT* hstmt) {
+inline void Fetch(size_t exp_row_cnt, SQLHSTMT* hstmt) {
     SQLRETURN ret;
-    uint64_t read_cnt = 0;
+    size_t read_cnt = 0;
     while ((ret = SQLFetch(*hstmt)) == SQL_SUCCESS) {
         read_cnt++;
     }
@@ -198,8 +198,8 @@ inline void Fetch(uint64_t exp_row_cnt, SQLHSTMT* hstmt) {
     EXPECT_EQ(exp_row_cnt, read_cnt);
 }
 
-inline void QueryBind(const uint64_t row_cnt, const uint64_t col_cnt,
-                      const uint64_t row_fetch_cnt,
+inline void QueryBind(const size_t row_cnt, const size_t col_cnt,
+                      const size_t row_fetch_cnt,
                       const std::wstring& column_name,
                       std::vector< std::vector< Col > >& cols,
                       SQLHSTMT* hstmt) {
@@ -218,23 +218,23 @@ inline void QueryBind(const uint64_t row_cnt, const uint64_t col_cnt,
     BindColumns(cols, hstmt);
 }
 
-inline void QueryBindExtendedFetch(const uint64_t row_cnt,
-                                   const uint64_t col_cnt,
-                                   const uint64_t row_fetch_cnt,
+inline void QueryBindExtendedFetch(const size_t row_cnt,
+                                   const size_t col_cnt,
+                                   const size_t row_fetch_cnt,
                                    const std::wstring& column_name,
                                    SQLHSTMT* hstmt) {
     std::vector< std::vector< Col > > cols(col_cnt);
     QueryBind(row_cnt, col_cnt, row_fetch_cnt, column_name, cols, hstmt);
 
     // Fetch data
-    uint64_t misaligned = ((row_cnt % row_fetch_cnt) != 0);
-    uint64_t exp_read_cnt = (row_cnt / row_fetch_cnt) + misaligned;
+    size_t misaligned = ((row_cnt % row_fetch_cnt) != 0);
+    size_t exp_read_cnt = (row_cnt / row_fetch_cnt) + misaligned;
     ExtendedFetch(row_fetch_cnt, exp_read_cnt, (bool)!misaligned, row_cnt,
                   hstmt);
     CloseCursor(hstmt, true, true);
 }
 
-inline void QueryBindFetch(const uint64_t row_cnt, const uint64_t col_cnt,
+inline void QueryBindFetch(const size_t row_cnt, const size_t col_cnt,
                            const std::wstring& column_name, SQLHSTMT* hstmt) {
     std::vector< std::vector< Col > > cols(col_cnt);
     QueryBind(row_cnt, col_cnt, 1, column_name, cols, hstmt);
@@ -860,7 +860,7 @@ TEST_F(TestSQLNumResultCols, SingleColumn) {
     ExecuteQuery(single_col, flight_data_set, row_str, &m_hstmt);
 
     EXPECT_EQ(SQL_SUCCESS, SQLNumResultCols(m_hstmt, &m_column_count));
-    EXPECT_EQ(single_col_cnt, (uint64_t)m_column_count);
+    EXPECT_EQ(single_col_cnt, (size_t)m_column_count);
 }
 
 TEST_F(TestSQLNumResultCols, MultiColumn) {
@@ -868,7 +868,7 @@ TEST_F(TestSQLNumResultCols, MultiColumn) {
     ExecuteQuery(multi_col, flight_data_set, row_str, &m_hstmt);
 
     EXPECT_EQ(SQL_SUCCESS, SQLNumResultCols(m_hstmt, &m_column_count));
-    EXPECT_EQ(multi_col_cnt, (uint64_t)m_column_count);
+    EXPECT_EQ(multi_col_cnt, (size_t)m_column_count);
 }
 
 TEST_F(TestSQLDescribeCol, SingleColumnMetadata) {

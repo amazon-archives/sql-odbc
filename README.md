@@ -9,10 +9,10 @@ The driver is compatible with ODBC 3.51.
 ## Supported Versions
 
 
-  | Operating System  | Version |
-  | ------------- |-------------|
-  |  Windows    |  Windows 10 |
-  |  MacOS    |  Catalina 10.15.4, Mojave 10.14.6 |
+  | Operating System  | Version | Supported Bitness |
+  | ------------- |-------------| ----------------- |
+  |  Windows    |  Windows 10   | 32-bit, 64-bit |
+  |  MacOS    |  Catalina 10.15.4, Mojave 10.14.6 | 64-bit |
 
 ## Installing the Driver
 
@@ -116,9 +116,7 @@ The following are the driver options that can be configured using a DSN or conne
 
 **NOTE:** Administrative privileges are required to change the value of logging options.
 
-## Download and Installation
-
-The driver will be available through standard open source repositories for installers.
+## Building from source
 
 ### Building
 
@@ -137,7 +135,7 @@ From the projects root directory, then build the project using Visual Studio (Wi
 
 ## Documentation
 
-Please refer to the [documentation](https://opendistro.github.io/for-elasticsearch-docs/) for detailed information on installing and configuring opendistro-elasticsearch-security plugin.
+Please refer to the [documentation](https://opendistro.github.io/for-elasticsearch-docs/) for detailed information on installing and configuring Open Distro for Elasticsearch.
 
 ## Code of Conduct
 

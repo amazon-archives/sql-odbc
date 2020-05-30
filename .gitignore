@@ -14,7 +14,9 @@
 *.ipch
 *.cache
 *.log
+bin32/*
 bin64/*
+lib32/*
 lib64/*
 *.tlog
 include/*
@@ -25,7 +27,9 @@ packages/*
 .vscode/*
 src/psqlodbc/psqlodbcBuilder/x64_*
 src/*/x64
+src/*/Win32
 src/*/*/x64
+src/*/*/Win32
 src/IntegrationTests/ITODBCResults/test_odbc_results1.cpp
 src/IntegrationTests/ITODBCResults/memory_leak_report.txt
 src/IntegrationTests/ITODBCHelper/ITODBCHelper.vcxproj.user

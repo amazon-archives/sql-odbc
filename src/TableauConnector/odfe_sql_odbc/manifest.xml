@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8' ?>
 
-<connector-plugin class='odfe_sql_odbc' superclass='odbc' plugin-version='0.2.0' name='ODFE SQL ODBC' version='18.1' min-version-tableau='2019.4'>
+<connector-plugin class='odfe_sql_odbc' superclass='odbc' plugin-version='0.2.0' name='ODFE SQL ODBC' version='18.1' min-version-tableau='2020.1'>
   <vendor-information>
       <company name="Amazon"/>
       <support-link url="https://github.com/opendistro-for-elasticsearch/sql-odbc"/>
@@ -33,6 +33,8 @@
       <customization name="CAP_ODBC_SUPPRESS_INFO_SCHEMA_TABLES" value="yes"/>
       <customization name="CAP_ODBC_SUPPRESS_PG_TEMP_SCHEMA_TABLES" value="yes"/>
       <customization name="CAP_ODBC_METADATA_SUPPRESS_SQLSTATISTICS_API" value="yes"/>
+      <customization name="CAP_SUPPORTS_SPLIT_FROM_RIGHT" value="no"/>
+      <customization name="CAP_CONNECT_STORED_PROCEDURE" value="no"/>
     </customizations>
   </connection-customization>
   <connection-dialog file='connection-dialog.tcd'/>
