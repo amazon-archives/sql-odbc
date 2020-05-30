@@ -102,18 +102,18 @@ void ESCommunication::AwsHttpResponseToString(
     output.assign(buf.data(), avail);
 }
 
-void ESCommunication::PrepareCursorResult(std::unique_ptr< ESResult >& es_result) {
+void ESCommunication::PrepareCursorResult(ESResult& es_result) {
     // Prepare document and validate result
     try {
         LogMsg(ES_DEBUG, "Parsing result JSON with cursor.");
-        es_result->es_result_doc.parse(es_result->result_json,
+        es_result.es_result_doc.parse(es_result.result_json,
                                       CURSOR_JSON_SCHEMA);
     } catch (const rabbit::parse_error& e) {
         // The exception rabbit gives is quite useless - providing the json
         // will aid debugging for users
         std::string str = "Exception obtained '" + std::string(e.what())
                           + "' when parsing json string '"
-                          + es_result->result_json + "'.";
+                          + es_result.result_json + "'.";
         throw std::runtime_error(str.c_str());
     }
 }
@@ -317,10 +317,8 @@ std::shared_ptr< Aws::Http::HttpResponse > ESCommunication::IssueRequest(
         signer.SignRequest(*request);
     }
 
-    // Issue request
-    std::shared_ptr< Aws::Http::HttpResponse > response =
-        m_http_client->MakeRequest(request);
-    return response;
+    // Issue request and return response
+    return m_http_client->MakeRequest(request);
 }
 
 bool ESCommunication::IsSQLPluginInstalled(const std::string& plugin_response) {
@@ -502,7 +500,7 @@ void ESCommunication::SendCursorQueries(const char* _cursor) {
             }
             std::unique_ptr< ESResult > es_result = std::make_unique< ESResult >();
             AwsHttpResponseToString(response, es_result->result_json);
-            PrepareCursorResult(es_result);
+            PrepareCursorResult(*es_result);
             if (es_result->es_result_doc.has("cursor")) {
                 cursor = es_result->es_result_doc["cursor"].as_string();
                 es_result->cursor =

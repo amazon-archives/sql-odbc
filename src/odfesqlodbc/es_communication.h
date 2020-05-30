@@ -82,7 +82,7 @@ class ESCommunication {
     bool EstablishConnection();
     void ConstructESResult(ESResult& result);
     void GetJsonSchema(ESResult& es_result);
-    void PrepareCursorResult(std::unique_ptr< ESResult > & es_result);
+    void PrepareCursorResult(ESResult& es_result);
 
     // TODO #35 - Go through and add error messages on exit conditions
     std::string m_error_message;  
@@ -91,7 +91,7 @@ class ESCommunication {
     ConnStatusType m_status;
     bool m_valid_connection_options;
     std::queue< std::unique_ptr< ESResult > > m_result_queue;
-    const size_t m_result_queue_capacity = 4;
+    const size_t m_result_queue_capacity = 2;
     runtime_options m_rt_opts;
     std::string m_client_encoding;
     Aws::SDKOptions m_options;
