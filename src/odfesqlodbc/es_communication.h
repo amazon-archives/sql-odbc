@@ -71,6 +71,7 @@ class ESCommunication {
         std::shared_ptr< Aws::Http::HttpResponse > response,
         std::string& output);
     void SendCloseCursorRequest(const std::string& cursor);
+    void ClearQueue();
 
    private:
     void InitializeConnection();

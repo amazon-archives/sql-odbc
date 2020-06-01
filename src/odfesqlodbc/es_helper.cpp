@@ -104,6 +104,10 @@ void ESClearResult(ESResult* es_result) {
     delete es_result;
 }
 
+void ESClearQueue(void* es_conn) {
+     static_cast< ESCommunication* >(es_conn)->ClearQueue();
+}
+
 // This class provides a cross platform way of entering critical sections
 class CriticalSectionHelper {
    public:

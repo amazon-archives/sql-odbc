@@ -41,6 +41,7 @@ ConnStatusType ESStatus(void* es_conn);
 int ESExecDirect(void* es_conn, const char* statement, const char* fetch_size);
 void ESSendCursorQueries(void* es_conn, const char* cursor);
 void ESDisconnect(void* es_conn);
+void ESClearQueue(void* es_conn);
 #ifdef __cplusplus
 }
 #endif

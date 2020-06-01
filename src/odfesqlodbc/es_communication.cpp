@@ -530,6 +530,12 @@ void ESCommunication::SendCloseCursorRequest(const std::string& cursor) {
     }
 }
 
+void ESCommunication::ClearQueue() {
+    while (!m_result_queue.empty()) {
+        m_result_queue.pop();
+    }
+}
+
 void ESCommunication::ConstructESResult(ESResult& result) {
     GetJsonSchema(result);
     rabbit::array schema_array = result.es_result_doc["schema"];
