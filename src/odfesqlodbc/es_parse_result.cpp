@@ -131,7 +131,7 @@ BOOL CC_No_Metadata_from_ESResult(QResultClass *q_res, ConnectionClass *conn,
                : FALSE;
 }
 
-BOOL CC_Assign_Table_Data(json_doc &es_result_doc, QResultClass *q_res,
+BOOL CC_Append_Table_Data(json_doc &es_result_doc, QResultClass *q_res,
                           size_t doc_schema_size, ColumnInfoClass &fields) {
     ClearError();
     return AssignTableData(es_result_doc, q_res, doc_schema_size, fields)
@@ -305,8 +305,9 @@ bool AssignTableData(json_doc &es_result_doc, QResultClass *q_res,
     // than it
     size_t row_size = std::distance(es_result_data.begin()->value_begin(),
                                     es_result_data.begin()->value_end());
-    if (row_size < doc_schema_size)
+    if (row_size < doc_schema_size) {
         return false;
+    }
     for (auto it : es_result_data) {
         // Setup memory to receive tuple
         if (!QR_prepare_for_tupledata(q_res))
@@ -343,12 +344,11 @@ bool AssignRowData(const json_arr_it &row, size_t row_schema_size,
             tuple[i].value = NULL;
         } else {
             // Copy string over to tuple
-            const std::string data = row_column->str();
-            tuple[i].len = static_cast< int >(data.length());
+            tuple[i].len = static_cast< int >(row_column->str().length());
             QR_MALLOC_return_with_error(
-                tuple[i].value, char, data.length() + 1, q_res,
+                tuple[i].value, char, row_column->str().length() + 1, q_res,
                 "Out of memory in allocating item buffer.", false);
-            strcpy((char *)tuple[i].value, data.c_str());
+            strcpy((char *)tuple[i].value, row_column->str().c_str());
 
             // If data length exceeds current display size, set display size
             if (fields.coli_array[i].display_size < tuple[i].len)

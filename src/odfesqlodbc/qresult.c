@@ -239,6 +239,13 @@ void QR_close_result(QResultClass *self, BOOL destroy) {
             free(self->notice);
             self->notice = NULL;
         }
+
+        /* Free server_cursor_id (this is from strdup()) */
+        if (self->server_cursor_id) {
+            free(self->server_cursor_id);
+            self->server_cursor_id = NULL;
+        }
+
         /* Destruct the result object in the chain */
         next = self->next;
         self->next = NULL;
@@ -297,8 +304,9 @@ void QR_set_message(QResultClass *self, const char *msg) {
 }
 
 void QR_set_server_cursor_id(QResultClass *self, const char *server_cursor_id) {
-    if (self->server_cursor_id)
+    if (self->server_cursor_id) {
         free(self->server_cursor_id);
+    }
 
     self->server_cursor_id = server_cursor_id ? strdup(server_cursor_id) : NULL;
 }

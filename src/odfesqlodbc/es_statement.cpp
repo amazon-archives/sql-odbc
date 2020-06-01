@@ -140,6 +140,9 @@ RETCODE ExecuteStatement(StatementClass *stmt, BOOL commit) {
         // Assign directly
         SC_set_Result(stmt, res);
     }
+
+    // This will commit results for SQLExecDirect and will not commit
+    // results for SQLPrepare since only metadata is required for SQLPrepare
     if (commit) {
         GetNextResultSet(stmt);
     }
@@ -152,19 +155,18 @@ RETCODE ExecuteStatement(StatementClass *stmt, BOOL commit) {
 }
 
 SQLRETURN GetNextResultSet(StatementClass *stmt) {
-    if (stmt == NULL) {
-        return SQL_ERROR;
-    }
     ConnectionClass *conn = SC_get_conn(stmt);
     QResultClass *q_res = SC_get_Result(stmt);
     if ((q_res == NULL) && (conn == NULL)) {
         return SQL_ERROR;
     }
+
     SQLSMALLINT total_columns = -1;
-    SQLNumResultCols(stmt, &total_columns);
-    if (total_columns == -1) {
+    if (SQL_SUCCEEDED(SQLNumResultCols(stmt, &total_columns))
+        && (total_columns == -1)) {
         return SQL_ERROR;
     }
+
     ESResult *es_res = ESGetResult(conn->esconn);
     while (es_res != NULL) {
         // Save server cursor id to fetch more pages later
@@ -174,10 +176,14 @@ SQLRETURN GetNextResultSet(StatementClass *stmt) {
         } else {
             QR_set_server_cursor_id(q_res, NULL);
         }
-        CC_Assign_Table_Data(es_res->es_result_doc, q_res, total_columns,
+
+        // Responsible for looping through rows, allocating tuples and 
+        // appending these rows in q_result
+        CC_Append_Table_Data(es_res->es_result_doc, q_res, total_columns,
                              *(q_res->fields));
         es_res = ESGetResult(conn->esconn);
     }
+
     return SQL_SUCCESS;
 }
 

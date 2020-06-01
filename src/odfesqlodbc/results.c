@@ -1392,7 +1392,7 @@ RETCODE SQL_API ESAPI_ExtendedFetch(HSTMT hstmt, SQLUSMALLINT fFetchType,
         rowset_start = SC_get_rowset_start(stmt);
 
     // Get more results when cursor reaches end 
-    if ((!useCursor) && (rowset_start >= num_tuples) && (res->server_cursor_id != NULL)) {
+    if ((rowset_start >= num_tuples) && (res->server_cursor_id != NULL)) {
         conn = SC_get_conn(stmt);
         if (conn != NULL) {
             ESSendCursorQueries(conn->esconn, res->server_cursor_id);
