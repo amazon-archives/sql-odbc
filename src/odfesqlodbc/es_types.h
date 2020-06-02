@@ -301,6 +301,7 @@ typedef struct ESResult {
                          // several qresults.
     uint16_t num_fields;
     std::vector< ColumnInfo > column_info;
+    std::string cursor;
     std::string result_json;
     std::string command_type;  // SELECT / FETCH / etc
     rabbit::document es_result_doc;
@@ -311,6 +312,6 @@ typedef struct ESResult {
         command_type = "";
     }
 } ESResult;
-#endif
 
+#endif
 #endif

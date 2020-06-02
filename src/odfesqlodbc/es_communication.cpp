@@ -33,6 +33,7 @@
 static const std::string ctype = "application/json";
 static const std::string SQL_ENDPOINT_FORMAT_JDBC =
     "/_opendistro/_sql?format=jdbc";
+static const std::string SQL_ENDPOINT_CLOSE_CURSOR = "/_opendistro/_sql/close";
 static const std::string PLUGIN_ENDPOINT_FORMAT_JSON =
     "/_cat/plugins?format=json";
 static const std::string OPENDISTRO_SQL_PLUGIN_NAME = "opendistro_sql";
@@ -54,6 +55,7 @@ static const std::string JSON_SCHEMA =
     "\"required\": [ \"name\", \"type\" ]"
     "}]"
     "},"
+    "\"cursor\": { \"type\": \"string\" },"
     "\"total\": { \"type\": \"integer\" },"
     "\"datarows\": {"
     "\"type\": \"array\","
@@ -63,6 +65,19 @@ static const std::string JSON_SCHEMA =
     "\"status\": { \"type\": \"integer\" }"
     "},"
     "\"required\": [\"schema\", \"total\", \"datarows\", \"size\", \"status\"]"
+    "}";
+static const std::string CURSOR_JSON_SCHEMA =
+    "{"  // This was generated from the example elasticsearch data
+    "\"type\": \"object\","
+    "\"properties\": {"
+    "\"cursor\": { \"type\": \"string\" },"
+    "\"datarows\": {"
+    "\"type\": \"array\","
+    "\"items\": {}"
+    "},"
+    "\"status\": { \"type\": \"integer\" }"
+    "},"
+    "\"required\":  [\"datarows\"]"
     "}";
 
 void ESCommunication::AwsHttpResponseToString(
@@ -85,6 +100,22 @@ void ESCommunication::AwsHttpResponseToString(
     // Directly copy memory from buffer into our string buffer
     stream_buffer->sgetn(buf.data(), avail);
     output.assign(buf.data(), avail);
+}
+
+void ESCommunication::PrepareCursorResult(ESResult& es_result) {
+    // Prepare document and validate result
+    try {
+        LogMsg(ES_DEBUG, "Parsing result JSON with cursor.");
+        es_result.es_result_doc.parse(es_result.result_json,
+                                      CURSOR_JSON_SCHEMA);
+    } catch (const rabbit::parse_error& e) {
+        // The exception rabbit gives is quite useless - providing the json
+        // will aid debugging for users
+        std::string str = "Exception obtained '" + std::string(e.what())
+                          + "' when parsing json string '"
+                          + es_result.result_json + "'.";
+        throw std::runtime_error(str.c_str());
+    }
 }
 
 void ESCommunication::GetJsonSchema(ESResult& es_result) {
@@ -230,11 +261,10 @@ void ESCommunication::InitializeConnection() {
     m_http_client = Aws::Http::CreateHttpClient(config);
 }
 
-void ESCommunication::IssueRequest(
+std::shared_ptr< Aws::Http::HttpResponse > ESCommunication::IssueRequest(
     const std::string& endpoint, const Aws::Http::HttpMethod request_type,
     const std::string& content_type, const std::string& query,
-    std::shared_ptr< Aws::Http::HttpResponse >& response,
-    const std::string& fetch_size) {
+    const std::string& fetch_size, const std::string& cursor) {
     // Generate http request
     std::shared_ptr< Aws::Http::HttpRequest > request =
         Aws::Http::CreateHttpRequest(
@@ -250,11 +280,15 @@ void ESCommunication::IssueRequest(
         request->SetHeaderValue(Aws::Http::CONTENT_TYPE_HEADER, ctype);
 
     // Set body
-    if (!query.empty()) {
+    if (!query.empty() || !cursor.empty()) {
         rabbit::object body;
-        body["query"] = query;
-        if (!fetch_size.empty()) 
-            body["fetch_size"] = fetch_size;
+        if (!query.empty()) {
+            body["query"] = query;
+            if (!fetch_size.empty() && fetch_size != "-1")
+                body["fetch_size"] = fetch_size;
+        } else if (!cursor.empty()) {
+            body["cursor"] = cursor;
+        }
         std::shared_ptr< Aws::StringStream > aws_ss =
             Aws::MakeShared< Aws::StringStream >("RabbitStream");
         *aws_ss << std::string(body.str());
@@ -283,8 +317,8 @@ void ESCommunication::IssueRequest(
         signer.SignRequest(*request);
     }
 
-    // Issue request
-    response = m_http_client->MakeRequest(request);
+    // Issue request and return response
+    return m_http_client->MakeRequest(request);
 }
 
 bool ESCommunication::IsSQLPluginInstalled(const std::string& plugin_response) {
@@ -340,9 +374,9 @@ bool ESCommunication::EstablishConnection() {
     // Check whether SQL plugin has been installed on the Elasticsearch server.
     // This is required for executing driver queries with the server.
     LogMsg(ES_ALL, "Checking for SQL plugin");
-    std::shared_ptr< Aws::Http::HttpResponse > response = nullptr;
-    IssueRequest(PLUGIN_ENDPOINT_FORMAT_JSON, Aws::Http::HttpMethod::HTTP_GET,
-                 "", "", response, "");
+    std::shared_ptr< Aws::Http::HttpResponse > response =
+        IssueRequest(PLUGIN_ENDPOINT_FORMAT_JSON,
+                     Aws::Http::HttpMethod::HTTP_GET, "", "", "");
     if (response == nullptr) {
         m_error_message =
             "The SQL plugin must be installed in order to use this driver. "
@@ -390,9 +424,9 @@ int ESCommunication::ExecDirect(const char* query, const char* fetch_size_) {
     LogMsg(ES_DEBUG, msg.c_str());
 
     // Issue request
-    std::shared_ptr< Aws::Http::HttpResponse > response = nullptr;
-    IssueRequest(SQL_ENDPOINT_FORMAT_JDBC, Aws::Http::HttpMethod::HTTP_POST,
-                 ctype, statement, response, fetch_size);
+    std::shared_ptr< Aws::Http::HttpResponse > response =
+        IssueRequest(SQL_ENDPOINT_FORMAT_JDBC, Aws::Http::HttpMethod::HTTP_POST,
+                     ctype, statement, fetch_size);
 
     // Validate response
     if (response == nullptr) {
@@ -438,7 +472,68 @@ int ESCommunication::ExecDirect(const char* query, const char* fetch_size_) {
         return -1;
     }
     m_result_queue.push(std::unique_ptr< ESResult >(result));
+    if (!result->cursor.empty()) {
+        // If response has cursor, this thread will retrives more results pages asynchronously.
+        auto send_cursor_queries = std::async(std::launch::async, [&]() {
+            SendCursorQueries(result->cursor.c_str());
+        });
+    }
     return 0;
+}
+
+void ESCommunication::SendCursorQueries(const char* _cursor) {
+    if (_cursor == NULL) {
+        return;
+    }
+    try {
+        std::string cursor(_cursor);
+        while (!cursor.empty() && (m_result_queue.size() < m_result_queue_capacity)) {
+            std::shared_ptr< Aws::Http::HttpResponse > response = IssueRequest(
+                SQL_ENDPOINT_FORMAT_JDBC, Aws::Http::HttpMethod::HTTP_POST,
+                ctype, "", "", cursor);
+            if (response == nullptr) {
+                m_error_message =
+                    "Failed to receive response from cursor. "
+                    "Received NULL response.";
+                LogMsg(ES_ERROR, m_error_message.c_str());
+                return;
+            }
+            std::unique_ptr< ESResult > es_result = std::make_unique< ESResult >();
+            AwsHttpResponseToString(response, es_result->result_json);
+            PrepareCursorResult(*es_result);
+            if (es_result->es_result_doc.has("cursor")) {
+                cursor = es_result->es_result_doc["cursor"].as_string();
+                es_result->cursor =
+                    es_result->es_result_doc["cursor"].as_string();
+            } else {
+                SendCloseCursorRequest(cursor);
+                cursor.clear();
+            }
+            m_result_queue.push(std::move(es_result));
+        }
+    } catch (std::runtime_error& e) {
+        m_error_message =
+            "Received runtime exception: " + std::string(e.what());
+        LogMsg(ES_ERROR, m_error_message.c_str());
+    }
+}
+
+void ESCommunication::SendCloseCursorRequest(const std::string& cursor) {
+    std::shared_ptr< Aws::Http::HttpResponse > response =
+        IssueRequest(SQL_ENDPOINT_CLOSE_CURSOR,
+                     Aws::Http::HttpMethod::HTTP_POST, ctype, "", "", cursor);
+    if (response == nullptr) {
+        m_error_message =
+            "Failed to receive response from cursor. "
+            "Received NULL response.";
+        LogMsg(ES_ERROR, m_error_message.c_str());
+    }
+}
+
+void ESCommunication::ClearQueue() {
+    while (!m_result_queue.empty()) {
+        m_result_queue.pop();
+    }
 }
 
 void ESCommunication::ConstructESResult(ESResult& result) {
@@ -459,7 +554,9 @@ void ESCommunication::ConstructESResult(ESResult& result) {
 
         result.column_info.push_back(col_info);
     }
-
+    if (result.es_result_doc.has("cursor")) {
+        result.cursor = result.es_result_doc["cursor"].as_string();
+    }
     result.command_type = "SELECT";
     result.num_fields = (uint16_t)schema_array.size();
 }
@@ -511,8 +608,8 @@ std::string ESCommunication::GetServerVersion() {
     }
 
     // Issue request
-    std::shared_ptr< Aws::Http::HttpResponse > response = nullptr;
-    IssueRequest("", Aws::Http::HttpMethod::HTTP_GET, "", "", response, "");
+    std::shared_ptr< Aws::Http::HttpResponse > response =
+        IssueRequest("", Aws::Http::HttpMethod::HTTP_GET, "", "", "");
     if (response == nullptr) {
         m_error_message =
             "Failed to receive response from query. "

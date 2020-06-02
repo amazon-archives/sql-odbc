@@ -118,6 +118,7 @@ struct QResultClass_ {
     KeySet *updated_keyset;     /* uddated keyset info */
     TupleField *updated_tuples; /* uddated data by myself */
     void *es_result;
+    char *server_cursor_id;
 };
 
 enum {
@@ -277,7 +278,7 @@ void QR_set_position(QResultClass *self, SQLLEN pos);
 void QR_set_cursor(QResultClass *self, const char *name);
 SQLLEN getNthValid(const QResultClass *self, SQLLEN sta, UWORD orientation,
                    SQLULEN nth, SQLLEN *nearest);
-
+void QR_set_server_cursor_id(QResultClass *self, const char *server_cursor_id);
 #define QR_MALLOC_return_with_error(t, tp, s, a, m, r) \
     do {                                               \
         if (t = (tp *)malloc(s), NULL == t) {          \

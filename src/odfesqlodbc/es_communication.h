@@ -20,6 +20,7 @@
 // clang-format off
 #include <memory>
 #include <queue>
+#include <future>
 #include "es_types.h"
 
 //Keep rabbit at top otherwise it gives build error because of some variable names like max, min
@@ -56,19 +57,21 @@ class ESCommunication {
     void DropDBConnection();
     void LogMsg(ESLogLevel level, const char* msg);
     int ExecDirect(const char* query, const char* fetch_size_);
+    void SendCursorQueries(const char* cursor);
     ESResult* PopResult();
     std::string GetClientEncoding();
     bool SetClientEncoding(std::string& encoding);
     bool IsSQLPluginInstalled(const std::string& plugin_response);
     std::string GetServerVersion();
-    void IssueRequest(const std::string& endpoint,
-                      const Aws::Http::HttpMethod request_type,
-                      const std::string& content_type, const std::string& query,
-                      std::shared_ptr< Aws::Http::HttpResponse >& response,
-                      const std::string& fetch_size);
+    std::shared_ptr< Aws::Http::HttpResponse > IssueRequest(
+        const std::string& endpoint, const Aws::Http::HttpMethod request_type,
+        const std::string& content_type, const std::string& query,
+        const std::string& fetch_size = "", const std::string& cursor = "");
     void AwsHttpResponseToString(
         std::shared_ptr< Aws::Http::HttpResponse > response,
         std::string& output);
+    void SendCloseCursorRequest(const std::string& cursor);
+    void ClearQueue();
 
    private:
     void InitializeConnection();
@@ -76,6 +79,7 @@ class ESCommunication {
     bool EstablishConnection();
     void ConstructESResult(ESResult& result);
     void GetJsonSchema(ESResult& es_result);
+    void PrepareCursorResult(ESResult& es_result);
 
     // TODO #35 - Go through and add error messages on exit conditions
     std::string m_error_message;  
@@ -84,6 +88,7 @@ class ESCommunication {
     ConnStatusType m_status;
     bool m_valid_connection_options;
     std::queue< std::unique_ptr< ESResult > > m_result_queue;
+    const size_t m_result_queue_capacity = 2;
     runtime_options m_rt_opts;
     std::string m_client_encoding;
     Aws::SDKOptions m_options;

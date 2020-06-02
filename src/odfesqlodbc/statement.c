@@ -163,6 +163,9 @@ RETCODE SQL_API ESAPI_FreeStmt(HSTMT hstmt, SQLUSMALLINT fOption) {
     if (fOption == SQL_DROP) {
         ConnectionClass *conn = stmt->hdbc;
 
+        // Clear queue in case it holds next pages of results
+        ESClearQueue(conn->esconn);
+
         /* Remove the statement from the connection's statement list */
         if (conn) {
             QResultClass *res;

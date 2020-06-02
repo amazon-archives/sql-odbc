@@ -54,7 +54,7 @@ const DescribeColumnData column_data[] = {{L"Origin", SQL_WVARCHAR},
 const std::wstring flight_data_set = L"kibana_sample_data_flights";
 const std::wstring multi_type_data_set = L"kibana_sample_data_types";
 const std::wstring single_col = L"Origin";
-const std::wstring m_expected_origin_column_data = L"Frankfurt am Main Airport";
+const std::wstring m_expected_origin_column_data = L"Olenya Air Base";
 const std::wstring single_float_col = L"DistanceMiles";
 const std::wstring single_integer_col = L"FlightDelayMin";
 const std::wstring single_timestamp_col = L"timestamp";
@@ -90,8 +90,8 @@ const std::vector< TIMESTAMP_STRUCT > type_date_vals = {
     {2018, 07, 22, 12, 23, 52, 803000000}};
 const std::wstring type_object = L"type_object";
 const std::wstring type_nested = L"type_nested";
-const float distance_miles = 10247.900391f;
-const int delay_offset_3 = 180;
+const float distance_miles = 1738.98f;
+const int delay_offset_3 = 0;
 const SQLSMALLINT single_col_name_length = 6;
 const SQLSMALLINT single_col_data_type = SQL_WVARCHAR;
 const SQLULEN single_col_column_size = 0;
@@ -755,7 +755,7 @@ TEST_F(TestSQLGetData, GetIntegerData) {
 TEST_F(TestSQLGetData, GetBitData) {
     QueryFetch(single_bit_col, flight_data_set, single_row, &m_hstmt);
 
-    bool data_false = true;
+    bool data_false;
     SQLRETURN ret = SQLGetData(m_hstmt, m_single_column_ordinal_position,
                                SQL_C_BIT, &data_false, 1, &m_origin_indicator);
     LogAnyDiagnostics(SQL_HANDLE_STMT, m_hstmt, ret);
@@ -766,12 +766,11 @@ TEST_F(TestSQLGetData, GetBitData) {
     ASSERT_NO_THROW(CloseCursor(&m_hstmt, true, true));
     QueryFetch(single_bit_col, flight_data_set, single_row_offset_3, &m_hstmt);
 
-    bool data_true = false;
     ret = SQLGetData(m_hstmt, m_single_column_ordinal_position, SQL_C_BIT,
-                     &data_true, 1, &m_origin_indicator);
+                     &data_false, 1, &m_origin_indicator);
     LogAnyDiagnostics(SQL_HANDLE_STMT, m_hstmt, ret);
     EXPECT_TRUE(SQL_SUCCEEDED(ret));
-    EXPECT_TRUE(data_true);
+    EXPECT_FALSE(data_false);
 }
 
 GET_DATA_TEST(TypeDataSet_GetBoolData, type_boolean, SQL_C_BIT,
