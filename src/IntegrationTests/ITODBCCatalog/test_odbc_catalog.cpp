@@ -131,34 +131,29 @@ class TestSQLColumns : public testing::Test {
     }
 
 // Table test constants and macro
-typedef struct sample_data_struct {
+typedef struct table_data {
     std::string catalog_name;
     std::string schema_name;
     std::string table_name;
     std::string table_type;
     std::string remarks;
-} sample_data_struct;
+} table_data;
 
-const std::vector< sample_data_struct > table_data_filtered{
-    {"", "", "kibana_sample_data_datetime", "BASE TABLE", ""},
+const std::vector< table_data > table_data_filtered{
     {"", "", "kibana_sample_data_ecommerce", "BASE TABLE", ""},
     {"", "", "kibana_sample_data_flights", "BASE TABLE", ""},
-    {"", "", "kibana_sample_data_logs", "BASE TABLE", ""},
     {"", "", "kibana_sample_data_types", "BASE TABLE", ""}};
-const std::vector< sample_data_struct > table_data_single{
+const std::vector< table_data > table_data_single{
     {"", "", "kibana_sample_data_flights", "BASE TABLE", ""}};
-const std::vector< sample_data_struct > table_data_all{
-    {"", "", "kibana_sample_data_datetime", "BASE TABLE", ""},
+const std::vector< table_data > table_data_all{
     {"", "", "kibana_sample_data_ecommerce", "BASE TABLE", ""},
     {"", "", "kibana_sample_data_flights", "BASE TABLE", ""},
-    {"", "", "kibana_sample_data_logs", "BASE TABLE", ""},
     {"", "", "kibana_sample_data_types", "BASE TABLE", ""},
 };
-const std::vector< sample_data_struct > table_data_types{
+const std::vector< table_data > table_data_types{
     {"", "", "", "BASE TABLE", ""}};
-const std::vector< sample_data_struct > table_data_schemas{
-    {"", "", "", "", ""}};
-const std::vector< sample_data_struct > table_data_catalogs{
+const std::vector< table_data > table_data_schemas{{"", "", "", "", ""}};
+const std::vector< table_data > table_data_catalogs{
     {"odfe-cluster", "", "", "", ""}};
 
 class TestSQLTables : public testing::Test {
@@ -184,7 +179,7 @@ class TestSQLTables : public testing::Test {
 };
 
 void CheckTableData(SQLHSTMT m_hstmt,
-                    const std::vector< sample_data_struct >& sample_data) {
+                    const std::vector< table_data >& expected_tables) {
     std::vector< bind_info > binds;
     binds.push_back(bind_info(1, SQL_C_CHAR));
     binds.push_back(bind_info(2, SQL_C_CHAR));
@@ -196,43 +191,29 @@ void CheckTableData(SQLHSTMT m_hstmt,
                    it.buffer_len, &it.out_len);
 
     SQLRETURN ret = SQL_ERROR;
-    if (sample_data.empty()) {
+    if (expected_tables.empty()) {
+        // Verify that there is at least one table row.
         size_t result_count = 0;
-        while ((ret = SQLFetch(m_hstmt)) == SQL_SUCCESS)
+        while ((ret = SQLFetch(m_hstmt)) == SQL_SUCCESS) {
             result_count++;
+        }
         EXPECT_TRUE(result_count != 0);
     } else {
-        size_t result_count = 0;
-        for (; ((ret = SQLFetch(m_hstmt)) == SQL_SUCCESS)
-               && (result_count < sample_data.size());
-             result_count++) {
-            // Metadata tables start with '.'
-            if (!binds[2].AsString().empty()
-                && (binds[2].AsString().at(0) == '.')) {
-                continue;
-            }
-
-            auto it = std::find_if(
-                sample_data.begin(), sample_data.end(),
-                [&](const sample_data_struct& d) {
-                    return (((flights_catalog_elas == binds[0].AsString())
-                             || (flights_catalog_odfe == binds[0].AsString())
-                             || (d.catalog_name == binds[0].AsString()))
-                            && (d.schema_name == binds[1].AsString())
-                            && (d.table_name == binds[2].AsString())
-                            && (d.table_type == binds[3].AsString()));
-                });
-            EXPECT_NE(it, sample_data.end());
+        // Fetch list of table rows from the Statement.
+        std::vector< table_data > server_tables;
+        while ((ret = SQLFetch(m_hstmt)) == SQL_SUCCESS) {
+            table_data table = {binds[0].AsString(), binds[1].AsString(),
+                                binds[2].AsString(), binds[3].AsString(), ""};
+            server_tables.emplace_back(table);
         }
 
-        // Security logs bloat table list, filter them (and test table)
-        if (ret == SQL_SUCCESS) {
-            while ((ret = SQLFetch(m_hstmt)) == SQL_SUCCESS) {
-                EXPECT_TRUE(
-                    (binds[2].AsString().find("security-auditlog")
-                     == std::string::npos)
-                    || (binds[2].AsString().find("test") == std::string::npos));
-            }
+        // Make sure that all expected tables are found.
+        for (auto expected_table : expected_tables) {
+            EXPECT_TRUE(std::any_of(server_tables.begin(), server_tables.end(),
+                                    [&](const table_data& d) {
+                                        return d.table_name
+                                               == expected_table.table_name;
+                                    }));
         }
     }
     EXPECT_EQ(ret, SQL_NO_DATA);

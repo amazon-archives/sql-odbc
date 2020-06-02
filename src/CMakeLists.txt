@@ -22,6 +22,9 @@ endif()
 
 project(global_make_list)
 
+include("${CMAKE_CURRENT_SOURCE_DIR}/modules/code-coverage.cmake")
+add_code_coverage_all_targets(EXCLUDE libraries aws-cpp-sdk googletest IntegrationTests)
+
 # This wasn't being picked up on mac, causes some symbol errors
 if(APPLE)
 	set(CMAKE_CXX_STANDARD 14)
