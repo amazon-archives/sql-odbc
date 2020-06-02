@@ -162,8 +162,8 @@ SQLRETURN GetNextResultSet(StatementClass *stmt) {
     }
 
     SQLSMALLINT total_columns = -1;
-    if (!SQL_SUCCEEDED(SQLNumResultCols(stmt, &total_columns))
-        || (total_columns == -1)) {
+    if (!SQL_SUCCEEDED(SQLNumResultCols(stmt, &total_columns)) || 
+       (total_columns == -1)) {
         return SQL_ERROR;
     }
 
