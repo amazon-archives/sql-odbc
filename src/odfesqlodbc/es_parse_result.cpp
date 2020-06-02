@@ -344,11 +344,12 @@ bool AssignRowData(const json_arr_it &row, size_t row_schema_size,
             tuple[i].value = NULL;
         } else {
             // Copy string over to tuple
-            tuple[i].len = static_cast< int >(row_column->str().length());
+            const std::string data = row_column->str();
+            tuple[i].len = static_cast< int >(data.length());
             QR_MALLOC_return_with_error(
-                tuple[i].value, char, row_column->str().length() + 1, q_res,
+                tuple[i].value, char, data.length() + 1, q_res,
                 "Out of memory in allocating item buffer.", false);
-            strcpy((char *)tuple[i].value, row_column->str().c_str());
+            strcpy((char *)tuple[i].value, data.c_str());
 
             // If data length exceeds current display size, set display size
             if (fields.coli_array[i].display_size < tuple[i].len)
