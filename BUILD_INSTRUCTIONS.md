@@ -109,7 +109,7 @@ Tests can be **executed directly**, or by using the **Test Runner**.
 * A test DSN named `test_dsn` must be set up in order for certain tests in ITODBCConnection to pass. To configure the DSN, see the instructions, below.
 * Datasets must be loaded into Elasticsearch using [kibana](https://www.elastic.co/guide/en/kibana/current/connect-to-elasticsearch.html). See the section on loading datasets below.
 
-### Windows DSN Setup
+### Windows Test DSN Setup
 
 1. Open `src/IntegrationTests/ITODBCConnection/test_dsn.reg`.
    * This contains the registry entries needed for setting up `test_dsn`.
@@ -117,7 +117,7 @@ Tests can be **executed directly**, or by using the **Test Runner**.
    * As an Administrator, run a command prompt or Powershell and run `reg import <.reg-file>` to add the entries to your registry.
    * Manually add the entries to your registry using Registry Editor.
 
-### Mac DSN Setup
+### Mac Test DSN Setup
 
 1. Open `src/IntegrationTests/ITODBCConnection/test_odbc.ini` and `src/IntegrationTests/ITODBCConnection/test_odbcinst.ini`
    * These contain the minimal configuration necessary for setting up `test_dsn`.
@@ -127,7 +127,7 @@ Tests can be **executed directly**, or by using the **Test Runner**.
       * `export ODBCINSTINI=<project-dir>/src/IntegrationTests/ITODBCConnection/test_odbcinst.ini`
    * Manually add the entries to your existing `odbc.ini` and `odbcinst.ini` entries. (normally found at `~/.odbc.ini` and `~/.odbcinst.ini`)
 
-### Loading Datasets
+### Loading Test Datasets
 
 Loading a dataset requires an [elasticsearch](https://opendistro.github.io/for-elasticsearch-docs/docs/install/) service running with [kibana](https://opendistro.github.io/for-elasticsearch-docs/docs/kibana/). If either of these are missing, please refer to the documentation on how to set them up.
 
@@ -250,6 +250,27 @@ Open the project's root directory in a command line interface of your choice. Ex
 >**./run_test_runner.sh**
 
 The **Test Runner** has been tried and tested with [Python3.7.6](https://www.python.org/downloads/release/python-376/) on **Mac systems**. Other versions of Python may work, but are untested.
+
+### Running Tests with Coverage (Mac only)
+
+(using a CMake script provided by George Cave (StableCoder) under the Apache 2.0 license, found [here](https://github.com/StableCoder/cmake-scripts/blob/master/code-coverage.cmake))
+
+> **NOTE**: Before building with coverage, make sure the following directory is in your PATH environment variable:
+> `/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin`
+
+To build the tests with code coverage enabled, set the `CODE_COVERAGE` variable to `ON` when preparing your CMake build.
+```bash
+cmake ... -DBUILD_WITH_TESTS=ON -DCODE_COVERAGE=ON
+```
+
+To get coverage for the driver library, you must use the `ccov-all` target, which runs all test suites and components with coverage.
+```bash
+make ccov-all
+```
+
+This will generate an HTML report at `<cmake-build-dir>/ccov/all-merged/index.html`, which can be opened in a web browser to view a summary of the overall code coverage, as well as line-by-line coverage for individual files.
+
+For more information interpreting this report, see https://clang.llvm.org/docs/SourceBasedCodeCoverage.html#interpreting-reports.
 
 ## Setting up a DSN
 
