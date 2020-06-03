@@ -46,11 +46,6 @@ RETCODE SQL_API ESAPI_RowCount(HSTMT hstmt, SQLLEN *pcrow) {
         SC_log_error(func, NULL_STRING, NULL);
         return SQL_INVALID_HANDLE;
     }
-    if (stmt->proc_return > 0) {
-        *pcrow = 0;
-        MYLOG(ES_ALL, "returning RowCount=" FORMAT_LEN "\n", *pcrow);
-        return SQL_SUCCESS;
-    }
 
     res = SC_get_Curres(stmt);
     if (res) {
@@ -61,19 +56,11 @@ RETCODE SQL_API ESAPI_RowCount(HSTMT hstmt, SQLLEN *pcrow) {
                 func);
             return SQL_ERROR;
         }
-        if (res->recent_processed_row_count >= 0) {
-            *pcrow = res->recent_processed_row_count;
-            MYLOG(ES_DEBUG, "**** THE ROWS: *pcrow = " FORMAT_LEN "\n", *pcrow);
-
-            return SQL_SUCCESS;
-        } else if (QR_NumResultCols(res) > 0) {
-            *pcrow = QR_get_cursor(res)
-                         ? -1
-                         : QR_get_num_total_tuples(res) - res->dl_count;
-            MYLOG(ES_DEBUG, "RowCount=" FORMAT_LEN "\n", *pcrow);
-            return SQL_SUCCESS;
-        }
     }
+
+    // Row count is not supported by this driver, so we will always report -1,
+    // as defined by the ODBC API for SQLRowCount.
+    *pcrow = -1;
 
     return SQL_SUCCESS;
 }
