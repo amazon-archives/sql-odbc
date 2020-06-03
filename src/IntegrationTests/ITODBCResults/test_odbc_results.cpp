@@ -988,7 +988,7 @@ TEST_F(TestSQLMoreResults, NoData) {
 // Row count is not supported for the driver, so this should return -1,
 // as defined in the ODBC API.
 TEST_F(TestSQLRowCount, RowCountNotAvailable) {
-    long row_count;
+    SQLLEN row_count;
     SQLRETURN ret = SQLRowCount(m_hstmt, &row_count);
     EXPECT_EQ(SQL_SUCCESS, ret);
     EXPECT_EQ(row_count, -1L);
