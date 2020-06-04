@@ -3,6 +3,13 @@
 PKG_INSTALL_DIR=/Applications
 FINAL_INSTALL_DIR=/usr/local/lib/odfe-sql-odbc
 
+# Remove install directory if it already exists
+if [ -d "${FINAL_INSTALL_DIR}" ]; then
+    # Fail if FINAL_INSTALL_DIR is not set for whatever reason
+    if [ -z ${FINAL_INSTALL_DIR} ]; then exit 1; fi
+    rm -rf ${FINAL_INSTALL_DIR}
+fi
+
 # Move PKG installed folders to intended install directory
 mkdir -p ${FINAL_INSTALL_DIR}
 mv ${PKG_INSTALL_DIR}/bin ${FINAL_INSTALL_DIR}/bin
