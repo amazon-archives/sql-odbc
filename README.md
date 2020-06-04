@@ -66,10 +66,10 @@ This will customize the connection from Tableau to ODFE, ensuring that the corre
 ## Using the Driver
 
 The driver comes in the form of a library file:
-    odfesqlodbc.dll for Window
-    libodfesqlodbc.dylib for Mac
+* Windows: `odfesqlodbc.dll`
+* Mac: `libodfesqlodbc.dylib`
 
-If using with ODBC compatible BI tools,refer to the tool documentation on configuring a new ODBC driver. Typically, all that's required is to make the tool aware of the location of the driver library file and then use it to setup database (i.e Elasticsearch) connections.
+If using with ODBC compatible BI tools, refer to the tool documentation on configuring a new ODBC driver. In most cases, you will need to make the tool aware of the location of the driver library file and then use it to setup ODFE database connections.
 
 ### Connection Strings and Other Settings
 
@@ -125,9 +125,10 @@ If your PC is already setup to build the library, you can simply invoke cmake us
 
 > cmake ./src
 
-From the projects root directory, then build the project using Visual Studio (Windows) or make (Mac). To build in Visual Studio, open ./global_make_list.sln. To build for Mac, simply enter
+From the projects root directory, then build the project using Visual Studio (Windows) or make (Mac). 
 
-> make
+* Visual Studio: Open **./global_make_list.sln**
+* Make: Run `make` from the build root.
 
 ### Testing
 
