@@ -49,7 +49,7 @@ If using with ODBC compatible BI tools, refer to the tool documentation on confi
 
 ### Connection Strings and Configuring the Driver
 
-A list of options available for configuring driver behaviour is available [here](./docs/user/configuration_options.md)
+A list of options available for configuring driver behaviour is available [here](./docs/user/configuration_options.md).
 
 To setup a connection, the driver uses an ODBC connection string. Connection strings are semicolon-delimited strings specifying the set of options to use for a connection. Typically, a connection string will either:
 
