@@ -35,6 +35,12 @@
       <customization name="CAP_ODBC_METADATA_SUPPRESS_SQLSTATISTICS_API" value="yes"/>
       <customization name="CAP_SUPPORTS_SPLIT_FROM_RIGHT" value="no"/>
       <customization name="CAP_CONNECT_STORED_PROCEDURE" value="no"/>
+      <!-- 
+      CAP_SUPPRESS_GET_SERVER_TIME will fix the error while creating extract in tableau.
+      This can be removed when elasticsearch supports query without FROM clause.
+      For smore details: https://community.tableau.com/message/1092123?et=watches.email.thread#1092123
+      -->
+      <customization name="CAP_SUPPRESS_GET_SERVER_TIME" value="yes"/>
     </customizations>
   </connection-customization>
   <connection-dialog file='connection-dialog.tcd'/>
