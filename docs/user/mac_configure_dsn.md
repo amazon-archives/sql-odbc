@@ -19,7 +19,7 @@ Note: In order to use the ODFE SQL ODBC driver with the [Tableau Connector](), t
 3. Click **OK** to save the options.
 
 <p align="center"> 
-<img src="img/dsn_default_config.png" width="80%">
+<img src="img/driver_default_config.png" width="80%">
 </p>
 
 ## Adding a DSN Entry
