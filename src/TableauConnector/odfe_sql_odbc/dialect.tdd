@@ -318,12 +318,6 @@
         <remove-function name='-'>
             <argument type='date' />
             <argument type='date' />
-        </remove-function>      
-        <!--
-        NOW is supported by data source but queries without FROM clause are not supported yet.
-        and Tableau generates "SELECT NOW as `COL`" when creating an Extract from the Workbook screen.
-        -->
-        <remove-function name='NOW'>
-        </remove-function>                 
+        </remove-function>                   
    </function-map>
 </dialect>
