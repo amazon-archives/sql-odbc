@@ -14,7 +14,6 @@
  *
  */
 
-#define QUEUE_CAPACITY 2
 #include "es_communication.h"
 
 // odfesqlodbc needs to be included before mylog, otherwise mylog will generate
@@ -142,8 +141,7 @@ ESCommunication::ESCommunication()
     : m_status(ConnStatusType::CONNECTION_BAD),
       m_valid_connection_options(false),
       m_error_message(""),
-      m_client_encoding(m_supported_client_encodings[0]),
-      m_result_queue(QUEUE_CAPACITY)
+      m_client_encoding(m_supported_client_encodings[0])
 #ifdef __APPLE__
 #pragma clang diagnostic pop
 #endif  // __APPLE__
@@ -473,7 +471,11 @@ int ESCommunication::ExecDirect(const char* query, const char* fetch_size_) {
         delete result;
         return -1;
     }
-    m_result_queue.push(std::reference_wrapper< ESResult >(*result));
+    SQLRETURN ret = m_result_queue.push(std::reference_wrapper< ESResult >(*result));
+    if (ret == SQL_ERROR) {
+        LogMsg(ES_ERROR, "Failed to add result in queue");
+    }
+
     if (!result->cursor.empty()) {
         // If response has cursor, this thread will retrives more results pages asynchronously.
         auto send_cursor_queries = std::async(std::launch::async, [&]() {
@@ -511,7 +513,10 @@ void ESCommunication::SendCursorQueries(const char* _cursor) {
                 SendCloseCursorRequest(cursor);
                 cursor.clear();
             }
-            m_result_queue.push(std::reference_wrapper< ESResult >(*es_result));
+            SQLRETURN ret = m_result_queue.push(std::reference_wrapper< ESResult >(*es_result));
+            if (ret == SQL_ERROR) {
+                LogMsg(ES_ERROR, "Failed to add result in queue");
+            }
         }
     } catch (std::runtime_error& e) {
         m_error_message =

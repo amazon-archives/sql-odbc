@@ -22,7 +22,7 @@
 
 class ESResultQueue {
    public:
-    ESResultQueue(size_t queue_capacity);
+    ESResultQueue();
     ~ESResultQueue();
     std::reference_wrapper< ESResult > pop_front();
     void pop();

@@ -14,10 +14,19 @@
  *
  */
 
+#define QUEUE_CAPACITY 2
 #include "es_result_queue.h"
 
-ESResultQueue::ESResultQueue(size_t queue_capacity) {
-    m_queue_capacity = queue_capacity;
+ESResultQueue::ESResultQueue()
+#ifdef __APPLE__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wreorder"
+#endif  // __APPLE__
+    : m_queue_capacity(QUEUE_CAPACITY)
+#ifdef __APPLE__
+#pragma clang diagnostic pop
+#endif  // __APPLE__
+{
 }
 
 ESResultQueue::~ESResultQueue() {
@@ -37,7 +46,7 @@ SQLRETURN ESResultQueue::push(std::reference_wrapper< ESResult > es_result) {
     if (m_queue.size() < m_queue_capacity) {
         m_queue.push(es_result);
         return SQL_SUCCESS;
-    } 
+    }
     return SQL_ERROR;
 }
 
