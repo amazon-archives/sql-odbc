@@ -18,15 +18,7 @@
 #include "es_result_queue.h"
 
 ESResultQueue::ESResultQueue()
-#ifdef __APPLE__
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wreorder"
-#endif  // __APPLE__
-    : m_queue_capacity(QUEUE_CAPACITY)
-#ifdef __APPLE__
-#pragma clang diagnostic pop
-#endif  // __APPLE__
-{
+    : m_queue_capacity(QUEUE_CAPACITY) {
 }
 
 ESResultQueue::~ESResultQueue() {
