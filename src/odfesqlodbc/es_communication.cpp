@@ -209,7 +209,7 @@ void ESCommunication::DropDBConnection() {
     }
     m_status = ConnStatusType::CONNECTION_BAD;
     if (!m_result_queue.empty()) {
-        m_result_queue = std::queue< std::unique_ptr< ESResult > >();
+        m_result_queue.clear();
     }
 }
 
@@ -471,7 +471,11 @@ int ESCommunication::ExecDirect(const char* query, const char* fetch_size_) {
         delete result;
         return -1;
     }
-    m_result_queue.push(std::unique_ptr< ESResult >(result));
+    SQLRETURN ret = m_result_queue.push(std::reference_wrapper< ESResult >(*result));
+    if (ret == SQL_ERROR) {
+        LogMsg(ES_ERROR, "Failed to add result in queue");
+    }
+
     if (!result->cursor.empty()) {
         // If response has cursor, this thread will retrives more results pages asynchronously.
         auto send_cursor_queries = std::async(std::launch::async, [&]() {
@@ -487,7 +491,7 @@ void ESCommunication::SendCursorQueries(const char* _cursor) {
     }
     try {
         std::string cursor(_cursor);
-        while (!cursor.empty() && (m_result_queue.size() < m_result_queue_capacity)) {
+        while (!cursor.empty() && !m_result_queue.IsFull()) {
             std::shared_ptr< Aws::Http::HttpResponse > response = IssueRequest(
                 SQL_ENDPOINT_FORMAT_JDBC, Aws::Http::HttpMethod::HTTP_POST,
                 ctype, "", "", cursor);
@@ -498,7 +502,7 @@ void ESCommunication::SendCursorQueries(const char* _cursor) {
                 LogMsg(ES_ERROR, m_error_message.c_str());
                 return;
             }
-            std::unique_ptr< ESResult > es_result = std::make_unique< ESResult >();
+            ESResult* es_result = new ESResult;
             AwsHttpResponseToString(response, es_result->result_json);
             PrepareCursorResult(*es_result);
             if (es_result->es_result_doc.has("cursor")) {
@@ -509,7 +513,10 @@ void ESCommunication::SendCursorQueries(const char* _cursor) {
                 SendCloseCursorRequest(cursor);
                 cursor.clear();
             }
-            m_result_queue.push(std::move(es_result));
+            SQLRETURN ret = m_result_queue.push(std::reference_wrapper< ESResult >(*es_result));
+            if (ret == SQL_ERROR) {
+                LogMsg(ES_ERROR, "Failed to add result in queue");
+            }
         }
     } catch (std::runtime_error& e) {
         m_error_message =
@@ -531,8 +538,8 @@ void ESCommunication::SendCloseCursorRequest(const std::string& cursor) {
 }
 
 void ESCommunication::ClearQueue() {
-    while (!m_result_queue.empty()) {
-        m_result_queue.pop();
+    if (!m_result_queue.empty()) {
+        m_result_queue.clear();
     }
 }
 
@@ -579,9 +586,8 @@ ESResult* ESCommunication::PopResult() {
         LogMsg(ES_WARNING, "Result queue is empty; returning null result.");
         return NULL;
     }
-    ESResult* result = m_result_queue.front().release();
-    m_result_queue.pop();
-    return result;
+    ESResult& result = m_result_queue.pop_front().get();
+    return &result;
 }
 
 // TODO #36 - Send query to database to get encoding

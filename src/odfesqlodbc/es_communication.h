@@ -22,6 +22,7 @@
 #include <queue>
 #include <future>
 #include "es_types.h"
+#include "es_result_queue.h"
 
 //Keep rabbit at top otherwise it gives build error because of some variable names like max, min
 #ifdef __APPLE__
@@ -87,8 +88,7 @@ class ESCommunication {
 
     ConnStatusType m_status;
     bool m_valid_connection_options;
-    std::queue< std::unique_ptr< ESResult > > m_result_queue;
-    const size_t m_result_queue_capacity = 2;
+    ESResultQueue m_result_queue;
     runtime_options m_rt_opts;
     std::string m_client_encoding;
     Aws::SDKOptions m_options;
