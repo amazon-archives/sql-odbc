@@ -100,7 +100,7 @@ jobs:
       - name: build-installer
         if: success()
         run: |
-          cd cmake-build
+          cd cmake-build32
           cmake ..\\src -D CMAKE_INSTALL_PREFIX=$prefix_path\AWSSDK\ -D BUILD_WITH_TESTS=OFF
           msbuild .\PACKAGE.vcxproj -p:Configuration=Release
           cd ..
@@ -113,7 +113,7 @@ jobs:
           cp .\\bin32\\Release\\*.dll build
           cp .\\bin32\\Release\\*.exe build
           cp .\\lib32\\Release\\*.lib build
-          cp .\\cmake-build\\*.msi installer
+          cp .\\cmake-build32\\*.msi installer
       - name: upload-build
         if: always()
         uses: actions/upload-artifact@v1
@@ -152,7 +152,7 @@ jobs:
       - name: build-installer
         if: success()
         run: |
-          cd cmake-build
+          cd cmake-build64
           cmake ..\\src -D CMAKE_INSTALL_PREFIX=$prefix_path\AWSSDK\ -D BUILD_WITH_TESTS=OFF
           msbuild .\PACKAGE.vcxproj -p:Configuration=Release
           cd ..
@@ -165,7 +165,7 @@ jobs:
           cp .\\bin64\\Release\\*.dll build
           cp .\\bin64\\Release\\*.exe build
           cp .\\lib64\\Release\\*.lib build
-          cp .\\cmake-build\\*.msi installer
+          cp .\\cmake-build64\\*.msi installer
       - name: upload-build
         if: always()
         uses: actions/upload-artifact@v1
