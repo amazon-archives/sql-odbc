@@ -40,7 +40,9 @@ HANDLE createSemaphore(unsigned int initial, unsigned int capacity) {
 #pragma clang diagnostic ignored "-Wunused-parameter"
 #endif  // __APPLE__
 es_semaphore::es_semaphore(unsigned int initial, unsigned int capacity)
+#ifdef __APPLE__
 #pragma clang diagnostic pop
+#endif  // __APPLE__
     :
 #ifdef WIN32
       m_semaphore(createSemaphore(initial, capacity))
@@ -48,7 +50,7 @@ es_semaphore::es_semaphore(unsigned int initial, unsigned int capacity)
       m_semaphore(dispatch_semaphore_create(initial))
 #endif
 {
-#if not defined(WIN32) && not defined(__APPLE__)
+#if !defined(WIN32) && !defined(__APPLE__)
     sem_init(&m_semaphore, 0, capacity);
 #endif
 }
