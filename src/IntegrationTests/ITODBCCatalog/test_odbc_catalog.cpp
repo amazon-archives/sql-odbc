@@ -453,53 +453,49 @@ typedef struct sample_data_getTypeInfo_struct {
 
 // GetTypeInfo expected output
 const std::vector< sample_data_getTypeInfo_struct > sample_data_all_types_info{
-    {"boolean", SQL_BIT, 1, "`", "`", "", 2, 0, 3, 1, 0, 0, "", 0, 0, SQL_BIT,
-     0, 10, 0},
-    {"byte", SQL_TINYINT, 3, "`", "`", "", 2, 0, 3, 0, 0, 0, "", 0, 0,
+    {"boolean", SQL_BIT, 1, "", "", "", 2, 0, 3, 1, 0, 0, "", 0, 0, SQL_BIT, 0,
+     10, 0},
+    {"byte", SQL_TINYINT, 3, "", "", "", 2, 0, 3, 0, 0, 0, "", 0, 0,
      SQL_TINYINT, 0, 10, 0},
-    {"short", SQL_SMALLINT, 5, "`", "`", "", 2, 0, 3, 0, 0, 0, "", 0, 0,
+    {"short", SQL_SMALLINT, 5, "", "", "", 2, 0, 3, 0, 0, 0, "", 0, 0,
      SQL_SMALLINT, 0, 10, 0},
-    {"keyword", SQL_WVARCHAR, 256, "`", "`", "", 2, 1, 3, 1, 0, 0, "", 0, 0,
+    {"keyword", SQL_WVARCHAR, 256, "\"", "\"", "", 2, 1, 3, 1, 0, 0, "", 0, 0,
      SQL_WVARCHAR, 0, 10, 0},
-    {"text", SQL_WVARCHAR, 2147483647, "`", "`", "", 2, 1, 3, 1, 0, 0, "", 0, 0,
+    {"text", SQL_WVARCHAR, 2147483647, "\"", "\"", "", 2, 1, 3, 1, 0, 0, "", 0,
+     0, SQL_WVARCHAR, 0, 10, 0},
+    {"nested", SQL_WVARCHAR, 0, "\"", "\"", "", 2, 0, 3, 1, 0, 0, "", 0, 0,
      SQL_WVARCHAR, 0, 10, 0},
-    {"nested", SQL_WVARCHAR, 0, "`", "`", "", 2, 0, 3, 1, 0, 0, "", 0, 0,
+    {"object", SQL_WVARCHAR, 0, "\"", "\"", "", 2, 0, 3, 1, 0, 0, "", 0, 0,
      SQL_WVARCHAR, 0, 10, 0},
-    {"object", SQL_WVARCHAR, 0, "`", "`", "", 2, 0, 3, 1, 0, 0, "", 0, 0,
-     SQL_WVARCHAR, 0, 10, 0},
-    {"unsupported", SQL_WVARCHAR, 0, "`", "`", "", 2, 0, 3, 1, 0, 0, "", 0, 0,
-     SQL_WVARCHAR, 0, 10, 0},
-    {"integer", SQL_INTEGER, 10, "`", "`", "", 2, 0, 3, 0, 0, 0, "", 0, 0,
+    {"integer", SQL_INTEGER, 10, "", "", "", 2, 0, 3, 0, 0, 0, "", 0, 0,
      SQL_INTEGER, 0, 10, 0},
-    {"double", SQL_DOUBLE, 15, "`", "`", "", 2, 0, 3, 0, 0, 0, "", 0, 0,
+    {"double", SQL_DOUBLE, 15, "", "", "", 2, 0, 3, 0, 0, 0, "", 0, 0,
      SQL_DOUBLE, 0, 10, 0},
-    {"scaled_float", SQL_DOUBLE, 15, "`", "`", "", 2, 0, 3, 0, 0, 0, "", 0, 0,
+    {"scaled_float", SQL_DOUBLE, 15, "", "", "", 2, 0, 3, 0, 0, 0, "", 0, 0,
      SQL_DOUBLE, 0, 10, 0},
-    {"long", SQL_BIGINT, 19, "`", "`", "", 2, 0, 3, 0, 0, 0, "", 0, 0,
-     SQL_BIGINT, 0, 10, 0},
-    {"half_float", SQL_REAL, 7, "`", "`", "", 2, 0, 3, 0, 0, 0, "", 0, 0,
-     SQL_REAL, 0, 10, 0},
-    {"float", SQL_REAL, 7, "`", "`", "", 2, 0, 3, 0, 0, 0, "", 0, 0, SQL_REAL,
+    {"long", SQL_BIGINT, 19, "", "", "", 2, 0, 3, 0, 0, 0, "", 0, 0, SQL_BIGINT,
      0, 10, 0},
-    {"date", SQL_TYPE_TIMESTAMP, 24, "`", "`", "", 2, 0, 3, 1, 0, 0, "", 0, 0,
+    {"half_float", SQL_REAL, 7, "", "", "", 2, 0, 3, 0, 0, 0, "", 0, 0,
+     SQL_REAL, 0, 10, 0},
+    {"float", SQL_REAL, 7, "", "", "", 2, 0, 3, 0, 0, 0, "", 0, 0, SQL_REAL, 0,
+     10, 0},
+    {"date", SQL_TYPE_TIMESTAMP, 24, "", "", "", 2, 0, 3, 1, 0, 0, "", 0, 0,
      SQL_TYPE_TIMESTAMP, 0, 10, 0}};
 
 const std::vector< sample_data_getTypeInfo_struct >
     sample_data_single_type_multiple_row{
-        {"keyword", SQL_WVARCHAR, 256, "`", "`", "", 2, 1, 3, 1, 0, 0, "", 0, 0,
-         SQL_WVARCHAR, 0, 10, 0},
-        {"text", SQL_WVARCHAR, 2147483647, "`", "`", "", 2, 1, 3, 1, 0, 0, "",
+        {"keyword", SQL_WVARCHAR, 256, "\"", "\"", "", 2, 1, 3, 1, 0, 0, "", 0,
+         0, SQL_WVARCHAR, 0, 10, 0},
+        {"text", SQL_WVARCHAR, 2147483647, "\"", "\"", "", 2, 1, 3, 1, 0, 0, "",
          0, 0, SQL_WVARCHAR, 0, 10, 0},
-        {"nested", SQL_WVARCHAR, 0, "`", "`", "", 2, 0, 3, 1, 0, 0, "", 0, 0,
+        {"nested", SQL_WVARCHAR, 0, "\"", "\"", "", 2, 0, 3, 1, 0, 0, "", 0, 0,
          SQL_WVARCHAR, 0, 10, 0},
-        {"object", SQL_WVARCHAR, 0, "`", "`", "", 2, 0, 3, 1, 0, 0, "", 0, 0,
-         SQL_WVARCHAR, 0, 10, 0},
-        {"unsupported", SQL_WVARCHAR, 0, "`", "`", "", 2, 0, 3, 1, 0, 0, "", 0,
-         0, SQL_WVARCHAR, 0, 10, 0}};
+        {"object", SQL_WVARCHAR, 0, "\"", "\"", "", 2, 0, 3, 1, 0, 0, "", 0, 0,
+         SQL_WVARCHAR, 0, 10, 0}};
 
 const std::vector< sample_data_getTypeInfo_struct >
-    sample_data_single_type_info{{"boolean", SQL_BIT, 1, "`", "`", "", 2, 0, 3,
-                                  1, 0, 0, "", 0, 0, SQL_BIT, 0, 10, 0}};
+    sample_data_single_type_info{{"boolean", SQL_BIT, 1, "", "", "", 2, 0, 3, 1,
+                                  0, 0, "", 0, 0, SQL_BIT, 0, 10, 0}};
 
 const std::vector< sample_data_getTypeInfo_struct > sample_data_empty{};
 
