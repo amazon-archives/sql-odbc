@@ -207,7 +207,8 @@ def ParseUnitTestLog(unit_test, log):
     tmp = ""
     for log in log_split:
         if log.startswith("[==========] Running"):
-            tmp = log.replace("[==========] Running ", "").replace(" test cases.", "").replace(" test case.", "").replace("tests from", "").replace("test from", "")
+            tmp = log.replace("[==========] Running ", "").replace(" test suites.", "").replace(
+                " test suite.", "").replace("tests from", "").replace("test from", "")
     if tmp == "":
         print('!!! FAILED TO FIND LOG WITH RUNNING !!!')
         log_json["TotalTestCount"] = "0"

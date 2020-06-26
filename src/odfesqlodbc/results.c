@@ -1234,7 +1234,6 @@ RETCODE SQL_API ESAPI_ExtendedFetch(HSTMT hstmt, SQLUSMALLINT fFetchType,
     UNUSED(bookmark_offset, irow);
     CSTR func = "ESAPI_ExtendedFetch";
     StatementClass *stmt = (StatementClass *)hstmt;
-    ConnectionClass *conn;
     ARDFields *opts;
     QResultClass *res;
     BindInfoClass *bookmark;
@@ -1276,8 +1275,7 @@ RETCODE SQL_API ESAPI_ExtendedFetch(HSTMT hstmt, SQLUSMALLINT fFetchType,
 
     opts = SC_get_ARDF(stmt);
     /*
-     * If a bookmark colunmn is bound but bookmark usage is off, then
-     * error
+     * If a bookmark column is bound but bookmark usage is off, then error.
      */
     if ((bookmark = opts->bookmark, bookmark) && bookmark->buffer
         && stmt->options.use_bookmarks == SQL_UB_OFF) {
@@ -1379,12 +1377,15 @@ RETCODE SQL_API ESAPI_ExtendedFetch(HSTMT hstmt, SQLUSMALLINT fFetchType,
         rowset_start = SC_get_rowset_start(stmt);
 
     // Get more results when cursor reaches end 
-    if ((rowset_start >= num_tuples) && (res->server_cursor_id != NULL)) {
-        conn = SC_get_conn(stmt);
+    { 
+        ConnectionClass *conn = SC_get_conn(stmt);
         if (conn != NULL) {
-            ESSendCursorQueries(conn->esconn, res->server_cursor_id);
-            GetNextResultSet(stmt);
-            num_tuples = QR_get_num_total_tuples(res);
+            const SQLLEN end_rowset_size = rowset_start + rowsetSize;
+            while ((end_rowset_size >= num_tuples)
+                   && (NULL != res->server_cursor_id)) {
+                GetNextResultSet(stmt);
+                num_tuples = QR_get_num_total_tuples(res);
+            }
         }
     }
 

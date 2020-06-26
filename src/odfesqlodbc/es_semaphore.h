@@ -13,31 +13,34 @@
  * permissions and limitations under the License.
  *
  */
-#ifndef ES_RESULT_QUEUE
-#define ES_RESULT_QUEUE
+#ifndef ES_SEMAPHORE
+#define ES_SEMAPHORE
 
-#include <queue>
-#include <mutex>
-#include "es_semaphore.h"
+#ifdef WIN32
+  #include <windows.h>
+#elif defined(__APPLE__)
+  #include <dispatch/dispatch.h>
+#else 
+  #include <semaphore.h>
+#endif
 
-#define QUEUE_TIMEOUT 20 // milliseconds
-
-struct ESResult;
-
-class ESResultQueue {
+class es_semaphore {
     public:
-        ESResultQueue(unsigned int capacity);
-        ~ESResultQueue();
+        es_semaphore(unsigned int initial, unsigned int capacity);
+        ~es_semaphore();
 
-        void clear();
-        bool pop(unsigned int timeout_ms, ESResult*& result);
-        bool push(unsigned int timeout_ms, ESResult* result);
+        void lock();
+        void release();
+        bool try_lock_for(unsigned int timeout_ms);
 
     private:
-        std::queue<ESResult*> m_queue;
-        std::mutex m_queue_mutex;
-        es_semaphore m_push_semaphore;
-        es_semaphore m_pop_semaphore;
+#ifdef WIN32
+        HANDLE m_semaphore;
+#elif defined(__APPLE__)
+        dispatch_semaphore_t m_semaphore;
+#else 
+        sem_t m_semaphore;
+#endif
 };
 
 #endif
