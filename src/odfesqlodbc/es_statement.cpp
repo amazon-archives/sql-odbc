@@ -76,7 +76,7 @@ RETCODE ExecuteStatement(StatementClass *stmt, BOOL commit) {
         } else if (SC_get_errornumber(stmt) <= 0) {
             SC_set_error(
                 stmt, STMT_NO_RESPONSE,
-                "Failed to error message from result. Connection may be down.",
+                "Failed to retrieve error message from result. Connection may be down.",
                 func);
         }
         return CleanUp();
@@ -147,8 +147,6 @@ RETCODE ExecuteStatement(StatementClass *stmt, BOOL commit) {
         GetNextResultSet(stmt);
     }
 
-    if (!SC_get_Curres(stmt))
-        SC_set_Curres(stmt, SC_get_Result(stmt));
     stmt->diag_row_count = res->recent_processed_row_count;
 
     return CleanUp();
@@ -168,7 +166,7 @@ SQLRETURN GetNextResultSet(StatementClass *stmt) {
     }
 
     ESResult *es_res = ESGetResult(conn->esconn);
-    while (es_res != NULL) {
+    if (es_res != NULL) {
         // Save server cursor id to fetch more pages later
         if (es_res->es_result_doc.has("cursor")) {
             QR_set_server_cursor_id(
@@ -181,7 +179,6 @@ SQLRETURN GetNextResultSet(StatementClass *stmt) {
         // appending these rows in q_result
         CC_Append_Table_Data(es_res->es_result_doc, q_res, total_columns,
                              *(q_res->fields));
-        es_res = ESGetResult(conn->esconn);
     }
 
     return SQL_SUCCESS;

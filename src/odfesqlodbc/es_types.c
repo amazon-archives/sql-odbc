@@ -507,6 +507,8 @@ const char *estype_attr_to_name(const ConnectionClass *conn, OID type,
             return "date";
         case ES_TYPE_OBJECT:
             return "object";
+        case ES_TYPE_VARCHAR:
+            return "varchar";
         default:
             return "unsupported";
     }
@@ -548,7 +550,7 @@ estype_attr_column_size(const ConnectionClass *conn, OID type, int atttypmod,
         case ES_TYPE_UNSUPPORTED:
             return 0;
         default:
-            return 0;
+            return adtsize_or_longest;
     }
 }
 

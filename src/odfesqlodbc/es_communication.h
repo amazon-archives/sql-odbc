@@ -58,7 +58,7 @@ class ESCommunication {
     void DropDBConnection();
     void LogMsg(ESLogLevel level, const char* msg);
     int ExecDirect(const char* query, const char* fetch_size_);
-    void SendCursorQueries(const char* cursor);
+    void SendCursorQueries(std::string cursor);
     ESResult* PopResult();
     std::string GetClientEncoding();
     bool SetClientEncoding(std::string& encoding);
@@ -72,7 +72,7 @@ class ESCommunication {
         std::shared_ptr< Aws::Http::HttpResponse > response,
         std::string& output);
     void SendCloseCursorRequest(const std::string& cursor);
-    void ClearQueue();
+    void StopResultRetrieval();
 
    private:
     void InitializeConnection();
@@ -88,6 +88,7 @@ class ESCommunication {
 
     ConnStatusType m_status;
     bool m_valid_connection_options;
+    bool m_is_retrieving;
     ESResultQueue m_result_queue;
     runtime_options m_rt_opts;
     std::string m_client_encoding;
