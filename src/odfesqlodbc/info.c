@@ -113,7 +113,7 @@ RETCODE SQL_API ESAPI_GetInfo(HDBC hdbc, SQLUSMALLINT fInfoType,
 
         case SQL_CONCAT_NULL_BEHAVIOR: /* ODBC 1.0 */
             len = 2;
-            value = SQL_CB_NON_NULL;
+            value = SQL_CB_NULL;
             break;
 
         case SQL_CONVERT_INTEGER:
@@ -486,10 +486,7 @@ RETCODE SQL_API ESAPI_GetInfo(HDBC hdbc, SQLUSMALLINT fInfoType,
 
         case SQL_QUALIFIER_LOCATION: /* ODBC 2.0 */
             len = 2;
-            if (CurrCat(conn))
                 value = SQL_QL_START;
-            else
-                value = 0;
             break;
 
         case SQL_QUALIFIER_NAME_SEPARATOR: /* ODBC 1.0 */
@@ -497,10 +494,7 @@ RETCODE SQL_API ESAPI_GetInfo(HDBC hdbc, SQLUSMALLINT fInfoType,
             break;
 
         case SQL_QUALIFIER_TERM: /* ODBC 1.0 */
-            if (CurrCat(conn))
                 p = "catalog";
-            else
-                p = NULL_STRING;
             break;
 
         case SQL_QUALIFIER_USAGE: /* ODBC 2.0 */
@@ -534,7 +528,7 @@ RETCODE SQL_API ESAPI_GetInfo(HDBC hdbc, SQLUSMALLINT fInfoType,
             break;
 
         case SQL_SEARCH_PATTERN_ESCAPE: /* ODBC 1.0 */
-            p = "\\";
+            p = "";
             break;
 
         case SQL_SERVER_NAME: /* ODBC 1.0 */
@@ -677,10 +671,7 @@ RETCODE SQL_API ESAPI_GetInfo(HDBC hdbc, SQLUSMALLINT fInfoType,
             value = SQL_BS_SELECT_EXPLICIT | SQL_BS_ROW_COUNT_EXPLICIT;
             break;
         case SQL_CATALOG_NAME:
-            if (CurrCat(conn))
                 p = "Y";
-            else
-                p = "N";
             break;
         case SQL_COLLATION_SEQ:
             p = "";
