@@ -116,6 +116,7 @@ RETCODE SQL_API ESAPI_GetInfo(HDBC hdbc, SQLUSMALLINT fInfoType,
             value = SQL_CB_NULL;
             break;
 
+        case SQL_CONVERT_GUID:
         case SQL_CONVERT_INTEGER:
         case SQL_CONVERT_SMALLINT:
         case SQL_CONVERT_TINYINT:
