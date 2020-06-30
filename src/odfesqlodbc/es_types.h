@@ -44,6 +44,7 @@ extern "C" {
 #define ES_TYPE_NAME_NESTED "nested";
 #define ES_TYPE_NAME_DATE "date";
 #define ES_TYPE_NAME_OBJECT "object";
+#define ES_TYPE_NAME_VARCHAR "varchar";
 
 #define MS_ACCESS_SERIAL "int identity"
 #define ES_TYPE_BOOL 16
