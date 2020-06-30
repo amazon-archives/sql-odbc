@@ -19,7 +19,7 @@ include(CPackComponent)
 set(CMAKE_INSTALL_PREFIX ${INSTALL_ROOT})
 
 # General package info
-set(CPACK_PACKAGE_NAME "ODFE SQL ODBC Driver ${BITNESS}-bit")
+set(CPACK_PACKAGE_NAME "Open Distro for Elasticsearch SQL ODBC Driver ${BITNESS}-bit")
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Open Distro for Elasticsearch SQL ODBC Driver ${BITNESS}-bit")
 set(CPACK_PACKAGE_VENDOR "Amazon")
 set(CPACK_PACKAGE_INSTALL_DIRECTORY "${CPACK_PACKAGE_NAME}")
@@ -109,10 +109,10 @@ install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/Resources/odfe_sql_odbc.tdc" DESTINAT
 
 # Install AWS dependencies
 if(WIN32)
-    install(FILES "${PROJECT_ROOT}/sdk-build${BITNESS}/AWSSDK/bin/aws-c-common.dll" DESTINATION bin COMPONENT "Driver")
-    install(FILES "${PROJECT_ROOT}/sdk-build${BITNESS}/AWSSDK/bin/aws-c-event-stream.dll" DESTINATION bin COMPONENT "Driver")
-    install(FILES "${PROJECT_ROOT}/sdk-build${BITNESS}/AWSSDK/bin/aws-checksums.dll" DESTINATION bin COMPONENT "Driver")
-    install(FILES "${PROJECT_ROOT}/sdk-build${BITNESS}/AWSSDK/bin/aws-cpp-sdk-core.dll" DESTINATION bin COMPONENT "Driver")
+    install(FILES "${PROJECT_ROOT}/sdk-build${BITNESS}/bin/Release/aws-c-common.dll" DESTINATION bin COMPONENT "Driver")
+    install(FILES "${PROJECT_ROOT}/sdk-build${BITNESS}/bin/Release/aws-c-event-stream.dll" DESTINATION bin COMPONENT "Driver")
+    install(FILES "${PROJECT_ROOT}/sdk-build${BITNESS}/bin/Release/aws-checksums.dll" DESTINATION bin COMPONENT "Driver")
+    install(FILES "${PROJECT_ROOT}/sdk-build${BITNESS}/bin/Release/aws-cpp-sdk-core.dll" DESTINATION bin COMPONENT "Driver")
 endif()
 
 include(CPack)

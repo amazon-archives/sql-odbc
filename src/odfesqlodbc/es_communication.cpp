@@ -140,7 +140,9 @@ ESCommunication::ESCommunication()
 #endif  // __APPLE__
     : m_status(ConnStatusType::CONNECTION_BAD),
       m_valid_connection_options(false),
+      m_is_retrieving(false),
       m_error_message(""),
+      m_result_queue(2),
       m_client_encoding(m_supported_client_encodings[0])
 #ifdef __APPLE__
 #pragma clang diagnostic pop
@@ -207,10 +209,9 @@ void ESCommunication::DropDBConnection() {
     if (m_http_client) {
         m_http_client.reset();
     }
+
     m_status = ConnStatusType::CONNECTION_BAD;
-    if (!m_result_queue.empty()) {
-        m_result_queue.clear();
-    }
+    StopResultRetrieval();
 }
 
 bool ESCommunication::CheckConnectionOptions() {
@@ -438,7 +439,7 @@ int ESCommunication::ExecDirect(const char* query, const char* fetch_size_) {
     }
 
     // Convert body from Aws IOStream to string
-    ESResult* result = new ESResult;
+    std::unique_ptr< ESResult > result = std::make_unique< ESResult >();
     AwsHttpResponseToString(response, result->result_json);
 
     // If response was not valid, set error
@@ -455,7 +456,6 @@ int ESCommunication::ExecDirect(const char* query, const char* fetch_size_) {
                 " Response error: '" + result->result_json + "'.";
         }
         LogMsg(ES_ERROR, m_error_message.c_str());
-        delete result;
         return -1;
     }
 
@@ -463,35 +463,41 @@ int ESCommunication::ExecDirect(const char* query, const char* fetch_size_) {
     try {
         ConstructESResult(*result);
     } catch (std::runtime_error& e) {
-        m_error_message =
-            "Received runtime exception: " + std::string(e.what());
-        if (!result->result_json.empty())
+        m_error_message = "Received runtime exception: " + std::string(e.what());
+        if (!result->result_json.empty()) {
             m_error_message += " Result body: " + result->result_json;
+        }
         LogMsg(ES_ERROR, m_error_message.c_str());
-        delete result;
         return -1;
     }
-    SQLRETURN ret = m_result_queue.push(std::reference_wrapper< ESResult >(*result));
-    if (ret == SQL_ERROR) {
-        LogMsg(ES_ERROR, "Failed to add result in queue");
+
+    const std::string cursor = result->cursor;
+    while (!m_result_queue.push(QUEUE_TIMEOUT, result.get())) {
+        if (ConnStatusType::CONNECTION_OK == m_status) {
+            return -1;
+        }
     }
 
-    if (!result->cursor.empty()) {
-        // If response has cursor, this thread will retrives more results pages asynchronously.
-        auto send_cursor_queries = std::async(std::launch::async, [&]() {
-            SendCursorQueries(result->cursor.c_str());
-        });
+    result.release();
+
+    if (!cursor.empty()) {
+        // If the response has a cursor, this thread will retrieve more result pages asynchronously.
+        std::thread([&, cursor]() {
+            SendCursorQueries(cursor);
+        }).detach();
     }
+
     return 0;
 }
 
-void ESCommunication::SendCursorQueries(const char* _cursor) {
-    if (_cursor == NULL) {
+void ESCommunication::SendCursorQueries(std::string cursor) {
+    if (cursor.empty()) {
         return;
     }
+    m_is_retrieving = true;
+
     try {
-        std::string cursor(_cursor);
-        while (!cursor.empty() && !m_result_queue.IsFull()) {
+        while (!cursor.empty() && m_is_retrieving) {
             std::shared_ptr< Aws::Http::HttpResponse > response = IssueRequest(
                 SQL_ENDPOINT_FORMAT_JDBC, Aws::Http::HttpMethod::HTTP_POST,
                 ctype, "", "", cursor);
@@ -502,26 +508,36 @@ void ESCommunication::SendCursorQueries(const char* _cursor) {
                 LogMsg(ES_ERROR, m_error_message.c_str());
                 return;
             }
-            ESResult* es_result = new ESResult;
-            AwsHttpResponseToString(response, es_result->result_json);
-            PrepareCursorResult(*es_result);
-            if (es_result->es_result_doc.has("cursor")) {
-                cursor = es_result->es_result_doc["cursor"].as_string();
-                es_result->cursor =
-                    es_result->es_result_doc["cursor"].as_string();
+
+            std::unique_ptr<ESResult> result = std::make_unique<ESResult>();
+            AwsHttpResponseToString(response, result->result_json);
+            PrepareCursorResult(*result);
+
+            if (result->es_result_doc.has("cursor")) {
+                cursor = result->es_result_doc["cursor"].as_string();
+                result->cursor = result->es_result_doc["cursor"].as_string();
             } else {
                 SendCloseCursorRequest(cursor);
                 cursor.clear();
             }
-            SQLRETURN ret = m_result_queue.push(std::reference_wrapper< ESResult >(*es_result));
-            if (ret == SQL_ERROR) {
-                LogMsg(ES_ERROR, "Failed to add result in queue");
+
+            while (m_is_retrieving
+                   && !m_result_queue.push(QUEUE_TIMEOUT, result.get())) {
             }
+
+            // Don't release when attempting to push to the queue as it may take multiple tries.
+            result.release();
         }
     } catch (std::runtime_error& e) {
         m_error_message =
             "Received runtime exception: " + std::string(e.what());
         LogMsg(ES_ERROR, m_error_message.c_str());
+    }
+
+    if (!m_is_retrieving) {
+        m_result_queue.clear();
+    } else {
+        m_is_retrieving = false;
     }
 }
 
@@ -537,10 +553,9 @@ void ESCommunication::SendCloseCursorRequest(const std::string& cursor) {
     }
 }
 
-void ESCommunication::ClearQueue() {
-    if (!m_result_queue.empty()) {
-        m_result_queue.clear();
-    }
+void ESCommunication::StopResultRetrieval() {
+    m_is_retrieving = false;
+    m_result_queue.clear();
 }
 
 void ESCommunication::ConstructESResult(ESResult& result) {
@@ -582,12 +597,11 @@ inline void ESCommunication::LogMsg(ESLogLevel level, const char* msg) {
 }
 
 ESResult* ESCommunication::PopResult() {
-    if (m_result_queue.empty()) {
-        LogMsg(ES_WARNING, "Result queue is empty; returning null result.");
-        return NULL;
+    ESResult* result = NULL;
+    while (!m_result_queue.pop(QUEUE_TIMEOUT, result) && m_is_retrieving) {
     }
-    ESResult& result = m_result_queue.pop_front().get();
-    return &result;
+
+    return result;
 }
 
 // TODO #36 - Send query to database to get encoding
