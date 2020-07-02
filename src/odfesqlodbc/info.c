@@ -672,7 +672,10 @@ RETCODE SQL_API ESAPI_GetInfo(HDBC hdbc, SQLUSMALLINT fInfoType,
             value = SQL_BS_SELECT_EXPLICIT | SQL_BS_ROW_COUNT_EXPLICIT;
             break;
         case SQL_CATALOG_NAME:
+            if (CurrCat(conn))
                 p = "Y";
+            else
+                p = "N";
             break;
         case SQL_COLLATION_SEQ:
             p = "";
