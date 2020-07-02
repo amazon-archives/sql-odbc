@@ -150,6 +150,11 @@ const std::vector< table_data > table_data_all{
     {"", "", "kibana_sample_data_flights", "BASE TABLE", ""},
     {"", "", "kibana_sample_data_types", "BASE TABLE", ""},
 };
+const std::vector< table_data > excel_table_data_all{
+    {"", "", "kibana_sample_data_ecommerce", "TABLE", ""},
+    {"", "", "kibana_sample_data_flights", "TABLE", ""},
+    {"", "", "kibana_sample_data_types", "TABLE", ""},
+};
 const std::vector< table_data > table_data_types{
     {"", "", "", "BASE TABLE", ""}};
 const std::vector< table_data > table_data_schemas{{"", "", "", "", ""}};
@@ -300,6 +305,10 @@ TEST_SQL_TABLES(ValidTableType, (SQLTCHAR*)L"", (SQLTCHAR*)L"", (SQLTCHAR*)L"",
 TEST_SQL_TABLES(InvalidTableType, (SQLTCHAR*)L"", (SQLTCHAR*)L"",
                 (SQLTCHAR*)L"", (SQLTCHAR*)L"invalid_table_type",
                 table_data_types, false, true)
+
+// Excel SQLTables test
+TEST_SQL_TABLES(ExcelSQLTables, (SQLTCHAR*)L"%", NULL, NULL, L"TABLE,VIEW",
+                excel_table_data_all, false, false);
 
 // SQL Columns Tests
 // NULL test
