@@ -266,7 +266,7 @@ class BindTemplateSQLCHAR : public BindTemplate {
         for (size_t i = 0; i < size; i++) {
             m_data.push_back(*data++);
         }
-        m_data.push_back(NULL);
+        m_data.push_back(0);
     }
 
    private:
