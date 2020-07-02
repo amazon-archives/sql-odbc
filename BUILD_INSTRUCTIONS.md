@@ -91,14 +91,14 @@ Build the driver with `BUILD_WITH_TESTS` option disabled.
 Open the project's build directory in Developer PowerShell for VS.
 > msbuild .\PACKAGE.vcxproj -p:Configuration=Release
 
-Installer named as `ODFE SQL ODBC Driver-<version>-Windows.msi` will be generated in the build directory.
+Installer named as `Open Distro for Elasticsearch SQL ODBC Driver-<version>-Windows.msi` will be generated in the build directory.
 
 #### Mac
 
 Run below command from the project's build directory.
 >cpack .
 
-Installer named as `ODFE SQL ODBC Driver-<version>-Darwin.pkg` will be generated in the build directory.
+Installer named as `Open Distro for Elasticsearch SQL ODBC Driver-<version>-Darwin.pkg` will be generated in the build directory.
 
 ## Running Tests
 

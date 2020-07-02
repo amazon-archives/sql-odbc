@@ -20,24 +20,24 @@ You can use the installers generated as part of the most recent release.
 
 ### Windows
 
-1. Run the `.msi` installer to install the ODFE SQL ODBC Driver.
+1. Run the `.msi` installer to install the Open Distro for Elasticsearch SQL ODBC Driver.
 
 To use the driver with Tableau:
 1. Copy the `.tdc` file from `<driver-install-dir>/resources` to `<windows-user-dir>/Documents/My Tableau Repository/Datasources`.
 
-This will customize the connection from Tableau to ODFE, ensuring that the correct forms of queries are used. 
+This will customize the connection from Tableau to Open Distro for Elasticsearch, ensuring that the correct forms of queries are used. 
 
 ### Mac
 
-iODBC Driver Manager should be installed before installing the ODFE SQL ODBC Driver on Mac.
+iODBC Driver Manager should be installed before installing the Open Distro for Elasticsearch SQL ODBC Driver on Mac.
 
-1. Run the `.pkg` installer to install the ODFE SQL ODBC Driver.
-2. Configure a Driver and DSN entry for the ODFE SQL ODBC Driver, following the instructions [here](./docs/user/mac_configure_dsn.md).
+1. Run the `.pkg` installer to install the Open Distro for Elasticsearch SQL ODBC Driver.
+2. Configure a Driver and DSN entry for the Open Distro for Elasticsearch SQL ODBC Driver, following the instructions [here](./docs/user/mac_configure_dsn.md).
 
 To use the driver with Tableau:
 1. Copy the `.tdc` file from `<driver-install-dir>/resources` to `<mac-user-dir>/Documents/My Tableau Repository/Datasources`.
 
-This will customize the connection from Tableau to ODFE, ensuring that the correct forms of queries are used.
+This will customize the connection from Tableau to Open Distro for Elasticsearch, ensuring that the correct forms of queries are used.
 
 ## Using the Driver
 
@@ -45,7 +45,7 @@ The driver comes in the form of a library file:
 * Windows: `odfesqlodbc.dll`
 * Mac: `libodfesqlodbc.dylib`
 
-If using with ODBC compatible BI tools, refer to the tool documentation on configuring a new ODBC driver. In most cases, you will need to make the tool aware of the location of the driver library file and then use it to setup ODFE database connections.
+If using with ODBC compatible BI tools, refer to the tool documentation on configuring a new ODBC driver. In most cases, you will need to make the tool aware of the location of the driver library file and then use it to setup Open Distro for Elasticsearch database connections.
 
 ### Connection Strings and Configuring the Driver
 
