@@ -307,8 +307,8 @@ TEST_SQL_TABLES(InvalidTableType, (SQLTCHAR*)L"", (SQLTCHAR*)L"",
                 table_data_types, false, true)
 
 // Excel SQLTables test
-TEST_SQL_TABLES(ExcelSQLTables, (SQLTCHAR*)L"%", NULL, NULL, L"TABLE,VIEW",
-                excel_table_data_all, false, false);
+TEST_SQL_TABLES(ExcelSQLTables, (SQLTCHAR*)L"%", NULL, NULL,
+                (SQLTCHAR*)L"TABLE,VIEW", excel_table_data_all, false, false);
 
 // SQL Columns Tests
 // NULL test
