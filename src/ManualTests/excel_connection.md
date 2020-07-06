@@ -13,12 +13,16 @@
 * Open blank workbook in Microsoft Excel.
 * Click on Data > Get Data > From Other Sources > From ODBC
 
-<img src="img/odbc_data_source.png">
+<img src="img/odbc_data_source.png" width="400">
 
 * Select ODFE SQL ODBC DSN. Click OK.
 
-<img src="img/from_odbc_dsn.png">
+<img src="img/from_odbc_dsn.png" width="500">
 
 * Select Default/Custom in connection credentials windows and click on Connect.
 
-<img src="img/from_odbc_auth.png">
+<img src="img/from_odbc_auth.png" width="500">
+
+* Select a table from list to load data preview. Click on Load.
+
+<img src="img/from_odbc_table_list.png" width="500">
