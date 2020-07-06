@@ -507,8 +507,9 @@ const char *estype_attr_to_name(const ConnectionClass *conn, OID type,
         case ES_TYPE_OBJECT:
             return ES_TYPE_NAME_OBJECT;
         case ES_TYPE_VARCHAR:
-        default:
             return ES_TYPE_NAME_VARCHAR;
+        default:
+            return ES_TYPE_NAME_UNSUPPORTED;
     }
 }
 
