@@ -3,8 +3,8 @@
 ## Prerequisites
 * [Download and install](../../README.md) Open Distro for Elasticsearch SQL ODBC Driver.
 * [Install and configure](https://opendistro.github.io/for-elasticsearch-docs/docs/install/) Open Distro for Elasticsearch.
-* Open ODBC Data Source Administrator. Click on System DSN > ODFE SQL ODBC DSN > Configure.
-* Set all connection options & Click on Test. Connection test should return `Connection Successful`.
+* Open ODBC Data Source Administrator. Click on **System DSN** > **ODFE SQL ODBC DSN** > **Configure**.
+* Set all connection options & Click on **Test**. Connection test should return `Connection Successful`.
 
 ## Microsoft Excel Connectivity
 
