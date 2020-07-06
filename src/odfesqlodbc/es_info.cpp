@@ -25,7 +25,8 @@
 #include <unordered_map>
 #include <vector>
 
-// TODO #324 (SQL Plugin)- Update if Elasticsearch extends support for multiple tables
+// TODO #324 (SQL Plugin)- Update if Elasticsearch extends support for multiple
+// tables
 #define DEFAULT_TYPE_STR \
     { 'k', 'e', 'y', 'w', 'o', 'r', 'd', '\0' }
 #define DEFAULT_TYPE_INT (SQL_WVARCHAR)
@@ -79,8 +80,7 @@ const std::unordered_map< int, std::vector< int > > sql_es_type_map = {
     {SQL_REAL, {ES_TYPE_HALF_FLOAT, ES_TYPE_FLOAT4}},
     {SQL_DOUBLE, {ES_TYPE_FLOAT8, ES_TYPE_SCALED_FLOAT}},
     {SQL_WVARCHAR,
-     {ES_TYPE_KEYWORD, ES_TYPE_TEXT, ES_TYPE_NESTED, ES_TYPE_OBJECT,
-      ES_TYPE_UNSUPPORTED}},
+     {ES_TYPE_KEYWORD, ES_TYPE_TEXT, ES_TYPE_NESTED, ES_TYPE_OBJECT}},
     {SQL_TYPE_TIMESTAMP, {ES_TYPE_DATETIME}}};
 
 // Boilerplate code for easy column bind handling
