@@ -30,3 +30,7 @@
 * Select worksheet and click on **OK**.
 
 <img src="img/microsoft_query_import_data.png" width="300">
+
+* Data will be loaded in the spreadsheet
+
+<img src="img/microsoft_query_loaded_data.png" width="350">
