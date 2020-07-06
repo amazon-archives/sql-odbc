@@ -17,12 +17,12 @@
 
 * Select ODFE SQL ODBC DSN. Click OK.
 
-<img src="img/from_odbc_dsn.png" width="500">
+<img src="img/from_odbc_dsn.png" width="600">
 
 * Select Default/Custom in connection credentials windows and click on Connect.
 
-<img src="img/from_odbc_auth.png" width="500">
+<img src="img/from_odbc_auth.png" width="550">
 
 * Select a table from list to load data preview. Click on Load.
 
-<img src="img/from_odbc_table_list.png" width="500">
+<img src="img/from_odbc_table_list.png" width="700">
