@@ -25,4 +25,21 @@
 
 * Select a table from list to load data preview. Click on Load.
 
-<img src="img/from_odbc_table_list.png" width="700">
+<img src="img/from_odbc_table_list.png" width="750">
+
+#### Test Advanced options
+
+* Click on Advanced options after selecting DSN.
+* Add some connection options in Connection string.
+* Add any supported SQL statement.
+
+<img src="img/from_odbc_advanced_options.png" width="600">
+
+* Click on OK. 
+* Select Default option for authentication and Click on Connect.
+
+<img src="img/from_odbc_advanced_options_auth.png" width="600">
+
+* Data preview should be available. Load Data in spreadsheet.
+
+<img src="img/from_odbc_advanced_options_load_data.png" width="750">
