@@ -476,8 +476,13 @@ void SetTableTuples(QResultClass *res, const TableResultSet res_type,
     // General case
     if (res_type == TableResultSet::All) {
         RETCODE result = SQL_NO_DATA_FOUND;
-        while (SQL_SUCCEEDED(result = ESAPI_Fetch(tbl_stmt)))
+        while (SQL_SUCCEEDED(result = ESAPI_Fetch(tbl_stmt))) {
+            if (bind_tbl[TABLES_TABLE_TYPE]->AsString() == "BASE TABLE") {
+                std::string table("TABLE");
+                bind_tbl[TABLES_TABLE_TYPE]->UpdateData(&table, table.size());
+            }
             AssignData(res, bind_tbl);
+        }
         CheckResult(result);
     } else if (res_type == TableResultSet::TableLookUp) {
         // Get accepted table types
