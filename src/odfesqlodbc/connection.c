@@ -655,7 +655,8 @@ void CC_log_error(const char *func, const char *desc,
 }
 
 const char *CurrCat(const ConnectionClass *conn) {
-    return conn->cluster_name;
+    UNUSED(conn);
+    return NULL;
 }
 
 const char *CurrCatString(const ConnectionClass *conn) {
