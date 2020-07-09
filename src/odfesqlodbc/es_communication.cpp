@@ -412,11 +412,7 @@ std::vector< std::string > ESCommunication::GetColumnsWithSelectQuery(const std:
     if (table_name.empty()) {
         m_error_message = "Query is NULL";
         LogMsg(ES_ERROR, m_error_message.c_str());
-        //return list_of_column;
-    } else if (!m_http_client) {
-        m_error_message = "Unable to connect. Please try connecting again.";
-        LogMsg(ES_ERROR, m_error_message.c_str());
-        //return -1;
+        return list_of_column;
     }
 
     // Prepare query
@@ -435,7 +431,7 @@ std::vector< std::string > ESCommunication::GetColumnsWithSelectQuery(const std:
             "Failed to receive response from query. "
             "Received NULL response.";
         LogMsg(ES_ERROR, m_error_message.c_str());
-        //return list_of_column;
+        return list_of_column;
     }
 
     // Convert body from Aws IOStream to string
