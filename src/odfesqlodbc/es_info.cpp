@@ -478,15 +478,18 @@ void SetTableTuples(QResultClass *res, const TableResultSet res_type,
     // General case
     if (res_type == TableResultSet::All) {
         RETCODE result = SQL_NO_DATA_FOUND;
+        int ordinal_position = 0;
         while (SQL_SUCCEEDED(result = ESAPI_Fetch(tbl_stmt))) {
             if (bind_tbl[TABLES_TABLE_TYPE]->AsString() == "BASE TABLE") {
                 std::string table("TABLE");
                 bind_tbl[TABLES_TABLE_TYPE]->UpdateData(&table, table.size());
             }
-            if (list_of_columns != NULL) {
+            if (list_of_columns != NULL && !list_of_columns->empty()) {
                 if (std::find(list_of_columns->begin(), list_of_columns->end(),
                               bind_tbl[COLUMNS_COLUMN_NAME]->AsString())
                     != list_of_columns->end()) {
+                    ordinal_position++;
+                    bind_tbl[COLUMNS_ORDINAL_POSITION]->UpdateData(&ordinal_position, 0);
                     AssignData(res, bind_tbl);
                 }   
             } else {
@@ -782,9 +785,12 @@ ESAPI_Columns(HSTMT hstmt, const SQLCHAR *catalog_name_sql,
                             column_valid, flag);
 
         // Get list of columns with SELECT * query since columns doesn't match with DESCRIBE & SELECT * query
-        ConnectionClass *conn = SC_get_conn(stmt);
-        std::vector< std::string > list_of_columns =
-            ESGetColumnsWithSelectQuery(conn->esconn, table_name);
+        std::vector< std::string > list_of_columns;
+        if (table_valid) {
+            ConnectionClass *conn = SC_get_conn(stmt);
+            list_of_columns = ESGetColumnsWithSelectQuery(conn->esconn, table_name);
+        }
+         
 
         // TODO #324 (SQL Plugin)- evaluate catalog & schema support
 
