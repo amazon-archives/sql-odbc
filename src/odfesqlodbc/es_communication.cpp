@@ -416,7 +416,7 @@ std::vector< std::string > ESCommunication::GetColumnsWithSelectQuery(const std:
     }
 
     // Prepare query
-    std::string query = "SELECT * FROM " + table_name;
+    std::string query = "SELECT * FROM " + table_name + " LIMIT 0";
     std::string msg = "Attempting to execute a query \"" + query + "\"";
     LogMsg(ES_DEBUG, msg.c_str());
 
