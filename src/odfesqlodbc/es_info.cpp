@@ -157,6 +157,7 @@ class BindTemplate {
     BindTemplate &operator=(const BindTemplate &) = default;
     virtual std::string AsString() = 0;
     virtual void UpdateData(SQLPOINTER new_data, size_t size) = 0;
+    virtual void UpdateDataNull() = 0;
 
    private:
     SQLLEN m_len;
@@ -186,6 +187,9 @@ class BindTemplateInt4 : public BindTemplate {
     void UpdateData(SQLPOINTER new_data, size_t size) {
         (void)size;
         m_data = *(Int4 *)new_data;
+    }
+    void UpdateDataNull() {
+        m_data = NULL;
     }
 
    private:
@@ -221,6 +225,9 @@ class BindTemplateInt2 : public BindTemplate {
     void UpdateData(SQLPOINTER new_data, size_t size) {
         (void)size;
         m_data = *(Int2 *)new_data;
+    }
+    void UpdateDataNull() {
+        m_data = NULL;
     }
 
    private:
@@ -268,13 +275,16 @@ class BindTemplateSQLCHAR : public BindTemplate {
         }
         m_data.push_back(0);
     }
+    void UpdateDataNull() {
+        m_data.clear();
+    }
 
    private:
     std::vector< SQLCHAR > m_data;
 
    protected:
     SQLPOINTER GetDataForBind() {
-        return m_data.data();
+        return m_data.size() == 0 ? NULL : m_data.data();
     }
     SQLSMALLINT GetType() {
         return SQL_C_CHAR;
@@ -475,16 +485,21 @@ void SetTableTuples(QResultClass *res, const TableResultSet res_type,
 
     // General case
     if (res_type == TableResultSet::All) {
+        MYLOG(ES_WARNING, "TRS::All\n");
         RETCODE result = SQL_NO_DATA_FOUND;
         while (SQL_SUCCEEDED(result = ESAPI_Fetch(tbl_stmt))) {
             if (bind_tbl[TABLES_TABLE_TYPE]->AsString() == "BASE TABLE") {
                 std::string table("TABLE");
                 bind_tbl[TABLES_TABLE_TYPE]->UpdateData(&table, table.size());
             }
+            if (bind_tbl[TABLES_CATALOG_NAME]->AsString() != "") {
+                bind_tbl[TABLES_CATALOG_NAME]->UpdateDataNull();
+            }
             AssignData(res, bind_tbl);
         }
         CheckResult(result);
     } else if (res_type == TableResultSet::TableLookUp) {
+        MYLOG(ES_WARNING, "TRS::LookUp\n");
         // Get accepted table types
         std::vector< std::string > table_types;
         table_type.erase(
@@ -499,6 +514,10 @@ void SetTableTuples(QResultClass *res, const TableResultSet res_type,
             if (bind_tbl[TABLES_TABLE_TYPE]->AsString() == "BASE TABLE") {
                 std::string table("TABLE");
                 bind_tbl[TABLES_TABLE_TYPE]->UpdateData(&table, table.size());
+            }
+            if (bind_tbl[TABLES_CATALOG_NAME]->AsString() != "") {
+                std::string table("");
+                bind_tbl[TABLES_CATALOG_NAME]->UpdateData(&table, table.size());
             }
             if (std::find(table_types.begin(), table_types.end(),
                           bind_tbl[TABLES_TABLE_TYPE]->AsString())
@@ -525,12 +544,17 @@ void SetTableTuples(QResultClass *res, const TableResultSet res_type,
         size_t idx = NUM_OF_TABLES_FIELDS;
         switch (res_type) {
             case TableResultSet::Catalog:
+                MYLOG(ES_WARNING, "TRS::Catalog\n");
+                return;
                 idx = TABLES_CATALOG_NAME;
                 break;
             case TableResultSet::Schema:
+                MYLOG(ES_WARNING, "TRS::Schema\n");
+                return;
                 idx = TABLES_SCHEMA_NAME;
                 break;
             case TableResultSet::TableTypes:
+                MYLOG(ES_WARNING, "TRS::TableTypes\n");
                 idx = TABLES_TABLE_TYPE;
                 break;
             default:
@@ -539,6 +563,9 @@ void SetTableTuples(QResultClass *res, const TableResultSet res_type,
                     "Result type is not an expected type.");
         }
 
+        if (bind_tbl[TABLES_CATALOG_NAME]->AsString() != "") {
+            bind_tbl[TABLES_CATALOG_NAME]->UpdateDataNull();
+        }
         // Get new tuple and assign index of interest (NULL others)
         // TODO #324 (SQL Plugin)- Should these be unique?
         TupleField *tuple = QR_AddNew(res);
@@ -692,20 +719,32 @@ ESAPI_Tables(HSTMT hstmt, const SQLCHAR *catalog_name_sql,
 
         if (catalog_name == SQL_ALL_CATALOGS) {
             if (schema_valid && table_valid && (table_name == "")
-                && (schema_name == ""))
-                result_type = TableResultSet::Catalog;
-        } 
+                && (schema_name == "")) {
+                std::string error_msg("Catalogs not supported.");
+                SC_set_error(stmt, STMT_NOT_IMPLEMENTED_ERROR,
+                             error_msg.c_str(), func);
+                CleanUp(stmt, tbl_stmt);
+                return SQL_ERROR;
+            }
+            // result_type = TableResultSet::Catalog;
+        }
         if (schema_name == SQL_ALL_SCHEMAS) {
             if (catalog_valid && table_valid && (table_name == "")
-                && (catalog_name == ""))
-                result_type = TableResultSet::Schema;
-        } 
+                && (catalog_name == "")) {
+                std::string error_msg("Schemas not supported.");
+                SC_set_error(stmt, STMT_NOT_IMPLEMENTED_ERROR,
+                             error_msg.c_str(), func);
+                CleanUp(stmt, tbl_stmt);
+                return SQL_ERROR;
+            }
+            // result_type = TableResultSet::Schema;
+        }
         if (table_type_valid && (table_type == SQL_ALL_TABLE_TYPES)) {
             if (catalog_valid && table_valid && schema_valid
                 && (table_name == "") && (catalog_name == "")
                 && (schema_name == ""))
                 result_type = TableResultSet::TableTypes;
-        } 
+        }
         if (table_type_valid && (table_type != SQL_ALL_TABLE_TYPES)) {
             result_type = TableResultSet::TableLookUp;
         }
