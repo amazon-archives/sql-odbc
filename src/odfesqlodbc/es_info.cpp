@@ -157,7 +157,7 @@ class BindTemplate {
     BindTemplate &operator=(const BindTemplate &) = default;
     virtual std::string AsString() = 0;
     virtual void UpdateData(SQLPOINTER new_data, size_t size) = 0;
-    virtual void UpdateDataNull() = 0;
+    // virtual void UpdateDataNull() = 0;
 
    private:
     SQLLEN m_len;
@@ -188,9 +188,9 @@ class BindTemplateInt4 : public BindTemplate {
         (void)size;
         m_data = *(Int4 *)new_data;
     }
-    void UpdateDataNull() {
-        m_data = NULL;
-    }
+    // void UpdateDataNull() {
+    //     m_data = NULL;
+    // }
 
    private:
     Int4 m_data;
@@ -226,9 +226,9 @@ class BindTemplateInt2 : public BindTemplate {
         (void)size;
         m_data = *(Int2 *)new_data;
     }
-    void UpdateDataNull() {
-        m_data = NULL;
-    }
+    // void UpdateDataNull() {
+    //     m_data = NULL;
+    // }
 
    private:
     Int2 m_data;
@@ -275,16 +275,17 @@ class BindTemplateSQLCHAR : public BindTemplate {
         }
         m_data.push_back(0);
     }
-    void UpdateDataNull() {
-        m_data.clear();
-    }
+    // void UpdateDataNull() {
+    //     m_data.clear();
+    // }
 
    private:
     std::vector< SQLCHAR > m_data;
 
    protected:
     SQLPOINTER GetDataForBind() {
-        return m_data.size() == 0 ? NULL : m_data.data();
+        // return m_data.size() == 0 ? NULL : m_data.data();
+        return m_data.data();
     }
     SQLSMALLINT GetType() {
         return SQL_C_CHAR;
@@ -485,21 +486,19 @@ void SetTableTuples(QResultClass *res, const TableResultSet res_type,
 
     // General case
     if (res_type == TableResultSet::All) {
-        MYLOG(ES_WARNING, "TRS::All\n");
         RETCODE result = SQL_NO_DATA_FOUND;
         while (SQL_SUCCEEDED(result = ESAPI_Fetch(tbl_stmt))) {
             if (bind_tbl[TABLES_TABLE_TYPE]->AsString() == "BASE TABLE") {
                 std::string table("TABLE");
                 bind_tbl[TABLES_TABLE_TYPE]->UpdateData(&table, table.size());
             }
-            if (bind_tbl[TABLES_CATALOG_NAME]->AsString() != "") {
-                bind_tbl[TABLES_CATALOG_NAME]->UpdateDataNull();
-            }
+            // if (bind_tbl[TABLES_CATALOG_NAME]->AsString() != "") {
+            //     bind_tbl[TABLES_CATALOG_NAME]->UpdateDataNull();
+            // }
             AssignData(res, bind_tbl);
         }
         CheckResult(result);
     } else if (res_type == TableResultSet::TableLookUp) {
-        MYLOG(ES_WARNING, "TRS::LookUp\n");
         // Get accepted table types
         std::vector< std::string > table_types;
         table_type.erase(
@@ -563,9 +562,9 @@ void SetTableTuples(QResultClass *res, const TableResultSet res_type,
                     "Result type is not an expected type.");
         }
 
-        if (bind_tbl[TABLES_CATALOG_NAME]->AsString() != "") {
-            bind_tbl[TABLES_CATALOG_NAME]->UpdateDataNull();
-        }
+        // if (bind_tbl[TABLES_CATALOG_NAME]->AsString() != "") {
+        //     bind_tbl[TABLES_CATALOG_NAME]->UpdateDataNull();
+        // }
         // Get new tuple and assign index of interest (NULL others)
         // TODO #324 (SQL Plugin)- Should these be unique?
         TupleField *tuple = QR_AddNew(res);

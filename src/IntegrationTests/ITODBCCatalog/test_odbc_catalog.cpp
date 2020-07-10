@@ -157,9 +157,6 @@ const std::vector< table_data > excel_table_data_all{
 };
 const std::vector< table_data > table_data_types{
     {"", "", "", "BASE TABLE", ""}};
-const std::vector< table_data > table_data_schemas{{"", "", "", "", ""}};
-const std::vector< table_data > table_data_catalogs{
-    {"odfe-cluster", "", "", "", ""}};
 
 class TestSQLTables : public testing::Test {
    public:
@@ -280,13 +277,21 @@ class TestSQLCatalogKeys : public testing::Test {
 // NULL test
 TEST_SQL_TABLES(Null, NULL, NULL, NULL, NULL, table_data_all, true, false);
 
-// Catalog tests
-TEST_SQL_TABLES(WildCatalogs, (SQLTCHAR*)L"%", (SQLTCHAR*)L"", (SQLTCHAR*)L"",
-                NULL, table_data_catalogs, false, false)
+// Catalog tests (error: catalogs not supported)
+TEST_F(TestSQLTables, WildCatalogs) {
+    SQLRETURN ret = SQLTables(m_hstmt, (SQLTCHAR*)L"%", SQL_NTS, (SQLTCHAR*)L"",
+                              SQL_NTS, (SQLTCHAR*)L"", SQL_NTS, NULL, SQL_NTS);
+    EXPECT_EQ(ret, SQL_ERROR);
+    LogAnyDiagnostics(SQL_HANDLE_STMT, m_hstmt, ret);
+}
 
-// Schema tests
-TEST_SQL_TABLES(WildSchema, (SQLTCHAR*)L"", (SQLTCHAR*)L"%", (SQLTCHAR*)L"",
-                NULL, table_data_schemas, false, false)
+// Schema tests (error: schemas not supported)
+TEST_F(TestSQLTables, WildSchema) {
+    SQLRETURN ret = SQLTables(m_hstmt, (SQLTCHAR*)L"", SQL_NTS, (SQLTCHAR*)L"%",
+                              SQL_NTS, (SQLTCHAR*)L"", SQL_NTS, NULL, SQL_NTS);
+    EXPECT_EQ(ret, SQL_ERROR);
+    LogAnyDiagnostics(SQL_HANDLE_STMT, m_hstmt, ret);
+}
 
 // Table tests
 TEST_SQL_TABLES(ValidTable, NULL, NULL, (SQLTCHAR*)L"kibana_sample_data%", NULL,
