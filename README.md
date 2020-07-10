@@ -1,3 +1,6 @@
+__NOTE:__ We have merged this repository into [Open Distro for Elasticsearch SQL](https://github.com/opendistro-for-elasticsearch/sql) as of 7/9/20. Please visit [here](https://github.com/opendistro-for-elasticsearch/sql/tree/master/sql-odbc) for latest updates on SQL ODBC. Thanks.
+---
+
 # Open Distro for Elasticsearch ODBC Driver
 
 ElasticsearchODBC is a read-only ODBC driver for Windows and Mac for connecting to Open Distro for Elasticsearch SQL support.
